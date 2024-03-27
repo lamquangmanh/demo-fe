@@ -1,5 +1,5 @@
-import { ProtectedLayout } from "@/modules/common/layouts";
-import { ReactElement } from "react";
+import { ProtectedLayout } from '@/modules/common/layouts';
+import { ReactElement } from 'react';
 
 export default function Page() {
   return <div className="font-bold">Dashboard</div>;

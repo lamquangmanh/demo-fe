@@ -1,17 +1,17 @@
-import { MenuProps } from "@/modules/common/components/ui";
-import { useRouter } from "next/router";
-import Link from "next/link";
-import { Menu } from "../models/menu";
-import { ROUTE_MAP, ROUTE_NAME } from "../constant";
+import { MenuProps } from '@/modules/common/components/ui';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { Menu } from '../models/menu';
+import { ROUTE_MAP, ROUTE_NAME } from '../constant';
 
-type MenuItem = Required<MenuProps>["items"][number];
+type MenuItem = Required<MenuProps>['items'][number];
 
 type GetItem = {
   label: React.ReactNode | any;
   key?: React.Key | null;
   icon?: React.ReactNode;
   children?: MenuItem[];
-  type?: "group";
+  type?: 'group';
 };
 
 const getItem = ({ label, key, icon, children, type }: GetItem): MenuItem => {
@@ -27,7 +27,7 @@ const getItem = ({ label, key, icon, children, type }: GetItem): MenuItem => {
 export const useMenu = () => {
   const { pathname } = useRouter();
 
-  const pathsplit = pathname.split("/") as string[];
+  const pathsplit = pathname.split('/') as string[];
 
   const defaultOpenKeys = [pathsplit[1]];
   const selectedKeys = [...pathsplit.slice(1)];
@@ -42,7 +42,7 @@ export const useMenu = () => {
             {ROUTE_NAME[item.key]}
           </Link>
         ),
-      })
+      }),
     );
     return getItem({
       label: (

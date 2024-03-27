@@ -1,15 +1,15 @@
-import { DashboardIcon } from "@/modules/common/components/ui/icons";
+import { DashboardIcon } from '@/modules/common/components/ui/icons';
 
 const PATH_NAME = {
-  dashboard: "dashboard",
+  dashboard: 'dashboard',
 };
 
 export const ROUTE_TITLE_PAGE = {
-  [PATH_NAME.dashboard]: "Role & Account Management",
+  [PATH_NAME.dashboard]: 'Role & Account Management',
 };
 
 export const ROUTE_NAME = {
-  [PATH_NAME.dashboard]: "Dashboard",
+  [PATH_NAME.dashboard]: 'Dashboard',
 };
 
 export const ROUTE_MAP = [

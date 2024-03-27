@@ -1,1 +1,1 @@
-export * from "./routeMap";
+export * from './routeMap';
