@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  fcm-frontend:
+    image: fcm-frontend:latest
+    build:
+      target: runner
+      args:
+        - API_URL=http://fcm-bff:3001/graphql
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - '3000:3000'
+    # env_file:
+    #   - ${ENV_PATH}/frontend/.env
+networks:
+  intranet:
+
+
