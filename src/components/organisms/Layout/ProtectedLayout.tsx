@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-
-import {
-  Layout,
-  Button,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-} from '@/modules/common/components/ui';
-import { Sidebar } from '@/modules/common/components/Sidebar';
-
-const { Content, Sider, Header } = Layout;
+import { Layout, SidebarMenu, HeaderComponent, Content, Sider } from '@/components';
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -16,6 +7,10 @@ type DashboardLayoutProps = {
 
 export function ProtectedLayout({ children }: DashboardLayoutProps) {
   const [collapsed, setCollapsed] = useState<boolean>(false);
+
+  const handleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
 
   return (
     <>
@@ -27,21 +22,14 @@ export function ProtectedLayout({ children }: DashboardLayoutProps) {
           collapsible
           collapsed={collapsed}
         >
-          <Sidebar></Sidebar>
+          <SidebarMenu></SidebarMenu>
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>
-          <Header className="header-custom">
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: '16px',
-                width: 64,
-                height: 64,
-              }}
-            />
-          </Header>
+          <HeaderComponent
+            hanldeCollapsed={handleCollapsed}
+            collapsed={collapsed}
+          ></HeaderComponent>
+
           <Content
             style={{
               padding: 24,

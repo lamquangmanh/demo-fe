@@ -1,4 +1,4 @@
-import { DashboardIcon } from '@/modules/common/components/ui/icons';
+import { DashboardOutlined } from '@/components';
 
 const PATH_NAME = {
   dashboard: 'dashboard',
@@ -16,6 +16,6 @@ export const ROUTE_MAP = [
   {
     key: PATH_NAME.dashboard,
     path: PATH_NAME.dashboard,
-    icon: DashboardIcon,
+    icon: DashboardOutlined,
   },
 ];

@@ -1,8 +1,8 @@
-import { MenuProps } from '@/modules/common/components/ui';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Menu } from '../models/menu';
+import { Menu } from '@/interfaces';
 import { ROUTE_MAP, ROUTE_NAME } from '../constant';
+import { MenuProps } from 'antd';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
