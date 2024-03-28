@@ -1,3 +1,3 @@
-export * from './Antd';
-export * from './Icons';
-export * from './SidebarMenu';
+export * from './antd';
+export * from './icons';
+export * from './sidebar-menu';
