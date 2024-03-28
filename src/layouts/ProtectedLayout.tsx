@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { Layout, SidebarMenu, HeaderComponent, Content, Sider } from '@/components';
+import { Layout } from '@/components/atoms';
+import { Header } from '@/components/organisms';
+import { SidebarMenu } from '@/components/molecules';
+
+const { Sider, Content } = Layout;
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
 };
 
-export function ProtectedLayout({ children }: DashboardLayoutProps) {
+export default function ProtectedLayout({ children }: DashboardLayoutProps) {
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
   const handleCollapsed = () => {
@@ -14,21 +18,18 @@ export function ProtectedLayout({ children }: DashboardLayoutProps) {
 
   return (
     <>
-      <Layout className="min-h-screen">
+      <Layout className="h-full">
         <Sider
           width={200}
-          style={{ background: '#f5f5f5' }}
           trigger={null}
           collapsible
           collapsed={collapsed}
+          className="h-screen !bg-white"
         >
           <SidebarMenu></SidebarMenu>
         </Sider>
         <Layout style={{ padding: '0 24px 24px' }}>
-          <HeaderComponent
-            hanldeCollapsed={handleCollapsed}
-            collapsed={collapsed}
-          ></HeaderComponent>
+          <Header hanldeCollapsed={handleCollapsed} collapsed={collapsed}></Header>
 
           <Content
             style={{

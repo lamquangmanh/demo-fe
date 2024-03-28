@@ -7,4 +7,5 @@ export interface Menu {
   icon?: React.ElementType;
   path?: string;
   children?: MenuItem[];
+  disabled?: boolean;
 }

@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Layout, Button, Switch, MenuUnfoldOutlined, MenuFoldOutlined, Header } from '@/components';
+import React from 'react';
+import { Button, Switch, MenuUnfoldOutlined, MenuFoldOutlined } from '@/components/atoms';
 
 type Prop = {
   hanldeCollapsed: () => void;
   collapsed: boolean;
 };
 
-export function HeaderComponent({ hanldeCollapsed, collapsed }: Prop) {
+export default function Header({ hanldeCollapsed, collapsed }: Prop) {
   return (
-    <Header className="flex items-center justify-between bg-[#f5f5f5] p-0">
+    <div className="flex items-center justify-between bg-[#f5f5f5] p-0">
       <Button
         type="text"
         icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -20,6 +20,6 @@ export function HeaderComponent({ hanldeCollapsed, collapsed }: Prop) {
         }}
       />
       <Switch checkedChildren={'qwe'} unCheckedChildren="关闭" defaultChecked />
-    </Header>
+    </div>
   );
 }

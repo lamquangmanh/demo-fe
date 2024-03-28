@@ -1,7 +1,7 @@
-import { Menu } from '@/components';
+import { Menu } from '@/components/atoms';
 import { useMenu } from '@/common/hooks';
 
-export const SidebarMenu = () => {
+const SidebarMenu = () => {
   const { items, defaultOpenKeys, selectedKeys } = useMenu();
 
   return (
@@ -17,3 +17,5 @@ export const SidebarMenu = () => {
     </>
   );
 };
+
+export default SidebarMenu;

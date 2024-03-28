@@ -46,7 +46,7 @@ export const useMenu = () => {
     );
     return getItem({
       label: (
-        <Link passHref href={`/${parent.key}`}>
+        <Link className={parent?.disabled ? 'disabled' : ''} passHref href={`/${parent.key}`}>
           {ROUTE_NAME[parent.key]}
         </Link>
       ),

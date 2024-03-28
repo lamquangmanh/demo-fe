@@ -1,4 +1,4 @@
-import { ProtectedLayout } from '@/components';
+import { ProtectedLayout } from '@/layouts';
 import { ReactElement } from 'react';
 
 export default function Page() {
