@@ -1,9 +1,15 @@
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
+import { useTranslation } from 'next-i18next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import type { GetStaticProps } from 'next'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
+  const { t, i18n } = useTranslation('common')
+
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
@@ -111,8 +117,21 @@ export default function Home() {
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
+          <p> {t('HELLO')}</p>
         </a>
       </div>
     </main>
   )
 }
+
+export const getStaticProps: GetStaticProps = async ({
+  locale,
+}) => ({
+  props: {
+    ...(await serverSideTranslations(locale ?? 'en', [
+      'common',
+      'header',
+      'menu'
+    ])),
+  },
+})
