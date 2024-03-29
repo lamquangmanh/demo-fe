@@ -13,6 +13,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.5",
     "@apollo/client": "^3.9.9",
+    "@babel/highlight": "^7.24.2",
     "@graphql-codegen/cli": "^5.0.2",
     "@types/node": "18.17.0",
     "@types/react": "18.2.72",
