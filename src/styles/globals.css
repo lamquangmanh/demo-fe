@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .disabled {
     pointer-events: none
 }

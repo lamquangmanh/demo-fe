@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Menu } from '@/interfaces';
+import { Menu } from '@/common/interfaces';
 import { ROUTE_MAP, ROUTE_NAME } from '../constant';
 import { MenuProps } from 'antd';
 
