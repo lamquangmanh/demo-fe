@@ -10,7 +10,7 @@ import {
   EllipsisOutlined,
 } from '@ant-design/icons';
 
-import { BsCalendar3Range as DashboardIcon } from 'react-icons/bs';
+import { BsCalendar3Range as DashboardIcon, BsSun, BsSunFill } from 'react-icons/bs';
 
 export {
   MenuFoldOutlined,
@@ -23,4 +23,6 @@ export {
   UserOutlined,
   UploadOutlined,
   EllipsisOutlined,
+  BsSun,
+  BsSunFill,
 };
