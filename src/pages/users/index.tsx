@@ -1,5 +1,5 @@
 import { ProtectedLayout } from '@/layouts';
-import { ReactElement, useCallback, useState } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { useTranslation } from 'next-i18next';
@@ -7,16 +7,8 @@ import { Space, Table, Tag, Dropdown, Input, Modal, Button } from 'antd';
 import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
 import UserModal from '@/modules/users/components/userModal';
-import { User } from '@/modules/users/graphql/model';
-
-interface DataType {
-  key: string;
-  name: string;
-  username: string;
-  email?: string;
-  address?: string;
-  tags: string[];
-}
+import { User } from '@/modules/users/models';
+import { useUser } from '@/modules/users/hooks/useUser';
 
 export default function UserManagement() {
   // Translation hook
@@ -28,144 +20,7 @@ export default function UserManagement() {
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [editUser, setEditUser] = useState<any>();
-  const [data, setData] = useState<DataType[]>([
-    {
-      key: '1',
-      name: 'Lương Duy Phước',
-      username: 'phuocnt',
-      email: 'phuocnt@cyberlogitec.com',
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'loser'],
-    },
-    {
-      key: '2',
-      name: 'Tiger',
-      username: 'tigernt',
-      email: 'tigernt@cyberlogitec.com',
-      address: 'London No. 1 Lake Park',
-      tags: ['cool'],
-    },
-    {
-      key: '3',
-      name: 'Tùng',
-      username: 'tungclv',
-      email: 'tungclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '4',
-      name: 'Thái',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '5',
-      name: 'A',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '6',
-      name: 'B',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '7',
-      name: 'C',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '8',
-      name: 'D',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '9',
-      name: 'E',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '10',
-      name: 'F',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '11',
-      name: 'G',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '12',
-      name: 'H',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '13',
-      name: 'I',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '14',
-      name: 'K',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '15',
-      name: 'L',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '16',
-      name: 'M',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '17',
-      name: 'N',
-      username: 'thaiclv',
-      email: 'thaiclv@cyberlogitec.com',
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-  ]);
+  const { apiGetListUser, setDataListUser, dataListUser } = useUser();
 
   // Actions
   const items = [
@@ -174,7 +29,7 @@ export default function UserManagement() {
   ];
 
   // Table columns
-  const columns: TableProps<DataType>['columns'] = [
+  const columns: TableProps<User>['columns'] = [
     {
       title: t('FULLNAME'),
       dataIndex: 'name',
@@ -241,8 +96,14 @@ export default function UserManagement() {
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value.toLowerCase();
     setSearchText(searchValue);
-    const filteredData = data.filter((item) => item.name.toLowerCase().includes(searchValue));
-    setData(filteredData);
+    const filteredData = dataListUser.filter((item) =>
+      item.name.toLowerCase().includes(searchValue),
+    );
+    setDataListUser(filteredData);
+  }, []);
+
+  useEffect(() => {
+    apiGetListUser();
   }, []);
 
   // Actions with user rows
@@ -288,14 +149,14 @@ export default function UserManagement() {
           </Button>
         </div>
         <Table
-          dataSource={data}
+          dataSource={dataListUser}
           columns={columns}
-          rowKey={(record) => record.key}
+          rowKey={(record) => record.id}
           pagination={{
             defaultPageSize: 5,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '20'],
-            total: data.length,
+            total: dataListUser.length,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
           }}
         />
