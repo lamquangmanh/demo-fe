@@ -8,6 +8,7 @@ import {
 } from '@/components/atoms/icons';
 const PATH_NAME = {
   dashboard: 'dashboard',
+  users: 'users',
   example1: 'example1',
   example2: 'example2',
   example3: 'example3',
@@ -17,6 +18,7 @@ const PATH_NAME = {
 
 export const ROUTE_TITLE_PAGE = {
   [PATH_NAME.dashboard]: 'Dashboard',
+  [PATH_NAME.users]: 'Users',
   [PATH_NAME.example1]: 'example1',
   [PATH_NAME.example2]: 'example2',
   [PATH_NAME.example3]: 'example3',
@@ -26,6 +28,7 @@ export const ROUTE_TITLE_PAGE = {
 
 export const ROUTE_NAME = {
   [PATH_NAME.dashboard]: 'Dashboard',
+  [PATH_NAME.users]: 'Users',
   [PATH_NAME.example1]: 'Example1',
   [PATH_NAME.example2]: 'Example2',
   [PATH_NAME.example3]: 'Example3',
@@ -38,6 +41,11 @@ export const ROUTE_MAP = [
     key: PATH_NAME.dashboard,
     path: PATH_NAME.dashboard,
     icon: DashboardOutlined,
+  },
+  {
+    key: PATH_NAME.users,
+    path: PATH_NAME.users,
+    icon: UserOutlined,
   },
   {
     key: PATH_NAME.example1,

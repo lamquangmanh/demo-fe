@@ -1,4 +1,4 @@
-import { gql } from '@/common/adapters/graphQL/client';
+import { graphClient, gql } from '@/common/adapters/graphQL/client';
 
 export const GET_USERS = gql`
   query GetUsers {

@@ -1,0 +1,12 @@
+{
+  "HELLO": "Hello CLV",
+  "DASHBOARD": "Dashboard",
+  "USER_MANAGEMENT": "User Management",
+  "FULLNAME": "Full Name",
+  "EMAIL": "Email",
+  "ADDRESS": "Address",
+  "USERNAME": "Username",
+  "EDIT": "Edit",
+  "DELETE": "Delete",
+  "SEARCH": "Search"
+}
