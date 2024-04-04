@@ -1,6 +1,6 @@
 import { graphClient, gql } from '@/common/adapters/graphQL/client';
-import { User } from '../grapql/model';
-import { CREATE_USER, GET_USERS } from '../grapql/gql';
+import { User } from '../graphql/model';
+import { CREATE_USER, GET_USERS } from '../graphql/gql';
 
 const getListUser = async () => {
   const responeData = await graphClient.query({ query: GET_USERS });
