@@ -1,5 +1,5 @@
 import { graphClient } from '@/common/adapters/graphQL/client';
-import { User } from '../graphql/model';
+import { User } from '@/modules/users/models';
 import { CREATE_USER, DELETE_USER, GET_USERS, UPDATE_USER } from '../graphql/gql';
 
 const getListUserService = async (): Promise<User[]> => {

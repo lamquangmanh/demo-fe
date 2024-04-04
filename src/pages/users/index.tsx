@@ -6,17 +6,8 @@ import { useTranslation } from 'next-i18next';
 import { Space, Table, Tag, Dropdown, Input } from 'antd';
 import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
-import { getListUserService } from '@/modules/users/services';
 import { useUser } from '@/modules/users/hooks/useUser';
-import { User } from '@/modules/users/graphql/model';
-interface DataType {
-  key: string;
-  name: string;
-  username: string;
-  email?: string;
-  address?: string;
-  tags: string[];
-}
+import { User } from '@/modules/users/models';
 
 export default function UserManagement() {
   // Translation hook
@@ -24,8 +15,6 @@ export default function UserManagement() {
 
   // States
   const [searchText, setSearchText] = useState<string>('');
-  // const [dataLisstUser, setData] = useState<DataType[]>([
-  // ]);
 
   const { apiGetListUser, dataLisstUser } = useUser();
 
@@ -103,6 +92,7 @@ export default function UserManagement() {
     );
     // setData(filteredData);
   }, []);
+
   useEffect(() => {
     apiGetListUser();
   }, []);
