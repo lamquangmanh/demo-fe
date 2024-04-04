@@ -1,11 +1,13 @@
 import { ProtectedLayout } from '@/layouts';
-import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { useTranslation } from 'next-i18next';
-import { Space, Table, Tag, Dropdown, Input } from 'antd';
+import { Space, Table, Tag, Dropdown, Input, Modal, Button } from 'antd';
 import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
+import UserModal from '@/modules/users/components/userModal';
+import { User } from '@/modules/users/graphql/model';
 
 interface DataType {
   key: string;
@@ -22,6 +24,10 @@ export default function UserManagement() {
 
   // States
   const [searchText, setSearchText] = useState<string>('');
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [editUser, setEditUser] = useState<any>();
   const [data, setData] = useState<DataType[]>([
     {
       key: '1',
@@ -216,7 +222,12 @@ export default function UserManagement() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Dropdown menu={{ items }}>
+          <Dropdown
+            menu={{
+              onClick: (e: any) => handleDropdownItemClick(record, e),
+              items: items,
+            }}
+          >
             <a className="text-xl">
               <EllipsisOutlined />
             </a>
@@ -226,13 +237,37 @@ export default function UserManagement() {
     },
   ];
 
-  // Search function
+  // Handle filter search
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value.toLowerCase();
     setSearchText(searchValue);
     const filteredData = data.filter((item) => item.name.toLowerCase().includes(searchValue));
     setData(filteredData);
   }, []);
+
+  // Actions with user rows
+  const handleDropdownItemClick = (record: any, e: any) => {
+    if (e.key === '1') {
+      setIsEdit(true);
+      setEditUser({ name: record.name, username: record.username });
+      setIsUserModalOpen(true);
+    } else {
+      setIsDeleteOpen(true);
+    }
+  };
+
+  // Handle delete user
+  const handleDelete = () => {
+    // graphql mutation
+    setIsDeleteOpen(false);
+  };
+
+  // Handle create user
+  const handleCreate = () => {
+    setEditUser(null);
+    setIsEdit(false);
+    setIsUserModalOpen(true);
+  };
 
   return (
     <>
@@ -247,6 +282,11 @@ export default function UserManagement() {
           placeholder={t('SEARCH')}
           value={searchText}
         />
+        <div className="mb-5 flex justify-end">
+          <Button type="primary" style={{ background: '#f759ab' }} onClick={handleCreate}>
+            {t('CREATE_USER')}
+          </Button>
+        </div>
         <Table
           dataSource={data}
           columns={columns}
@@ -260,6 +300,25 @@ export default function UserManagement() {
           }}
         />
       </div>
+      <Modal
+        title={t('DELETE_USER')}
+        open={isDeleteOpen}
+        okText={t('DELETE')}
+        onOk={handleDelete}
+        okButtonProps={{ style: { backgroundColor: '#f759ab' } }}
+        cancelText={t('CANCEL')}
+        onCancel={() => setIsDeleteOpen(false)}
+      >
+        <p>{t('DELETE_MESSAGE')}</p>
+      </Modal>
+      {isUserModalOpen && (
+        <UserModal
+          isEdit={isEdit}
+          isOpen={isUserModalOpen}
+          setIsOpen={setIsUserModalOpen}
+          userData={editUser}
+        />
+      )}
     </>
   );
 }
