@@ -16,7 +16,7 @@ export default function UserManagement() {
   // States
   const [searchText, setSearchText] = useState<string>('');
 
-  const { apiGetListUser, dataLisstUser } = useUser();
+  const { apiGetListUser, setDataListUser, dataLisstUser } = useUser();
 
   // Actions
   const items = [
@@ -90,7 +90,7 @@ export default function UserManagement() {
     const filteredData = dataLisstUser.filter((item) =>
       item.name.toLowerCase().includes(searchValue),
     );
-    // setData(filteredData);
+    setDataListUser(filteredData);
   }, []);
 
   useEffect(() => {

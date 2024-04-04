@@ -1,13 +1,22 @@
 import { useState } from 'react';
-import { getListUserService } from '../services';
+import { createUserService, getListUserService, updateUserService } from '../services';
 import { User } from '@/modules/users/models';
 
 export const useUser = () => {
   const [dataLisstUser, setDataListUser] = useState<User[]>([]);
   const apiGetListUser = async () => {
     const responseData = await getListUserService();
-    console.log('-----------responseData', responseData);
     setDataListUser(responseData || []);
+  };
+
+  const apiCreateUser = async (param: User) => {
+    const responseData = await createUserService(param);
+    // setDataListUser(responseData || []);
+  };
+
+  const apiUpdateUser = async (param: User) => {
+    const responseData = await updateUserService(param);
+    // setDataListUser(responseData || []);
   };
   return {
     /**
@@ -17,6 +26,9 @@ export const useUser = () => {
     /**
      * functions
      */
+    setDataListUser,
     apiGetListUser,
+    apiCreateUser,
+    apiUpdateUser,
   };
 };
