@@ -3,7 +3,8 @@ import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { useTranslation } from 'next-i18next';
-import { Space, Table, Tag, Dropdown, EllipsisOutlined, Input } from '@/components/atoms';
+import { Space, Table, Tag, Dropdown, Input } from 'antd';
+import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
 
 interface DataType {
