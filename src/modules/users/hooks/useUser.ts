@@ -5,17 +5,20 @@ import { User } from '@/common/adapters/graphQL/gql/graphql';
 
 export const useUser = () => {
   const [dataListUser, setDataListUser] = useState<User[]>([]);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+
   const apiGetListUser = async () => {
-    const { data } = await getListUserService({
-      limit: 10,
-      size: 1,
+    const { data, total } = await getListUserService({
+      pageSize: 10,
+      page: 1,
     });
     setDataListUser(data || []);
+    setTotalUsers(total || 0);
   };
 
   const apiCreateUser = async (param: User) => {
-    // const responseData = await createUserService(param);
-    // setDataListUser(responseData || []);
+    //const responseData = await createUserService(param);
+    //setDataListUser(responseData);
   };
 
   const apiUpdateUser = async (param: User) => {
@@ -27,6 +30,7 @@ export const useUser = () => {
      * states
      */
     dataListUser,
+    totalUsers,
     /**
      * functions
      */

@@ -21,7 +21,12 @@ export default function UserManagementPage() {
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [editUser, setEditUser] = useState<any>();
-  const { apiGetListUser, setDataListUser, dataListUser } = useUser();
+  const { apiGetListUser, setDataListUser, dataListUser, totalUsers } = useUser();
+
+  // Get Users API
+  useEffect(() => {
+    apiGetListUser();
+  }, []);
 
   // Actions
   const items = [
@@ -35,7 +40,7 @@ export default function UserManagementPage() {
       title: t('FULLNAME'),
       dataIndex: 'name',
       key: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      sorter: (a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0),
     },
     {
       title: t('USERNAME'),
@@ -98,13 +103,9 @@ export default function UserManagementPage() {
     const searchValue = e.target.value.toLowerCase();
     setSearchText(searchValue);
     const filteredData = dataListUser.filter((item) =>
-      item.name.toLowerCase().includes(searchValue),
+      item.name?.toLowerCase().includes(searchValue),
     );
     setDataListUser(filteredData);
-  }, []);
-
-  useEffect(() => {
-    apiGetListUser();
   }, []);
 
   // Actions with user rows
@@ -152,12 +153,12 @@ export default function UserManagementPage() {
         <Table
           dataSource={dataListUser}
           columns={columns}
-          //rowKey={(record) => record.id}
+          rowKey={(record) => record.id}
           pagination={{
             defaultPageSize: 5,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '20'],
-            total: dataListUser.length,
+            total: totalUsers,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
           }}
         />

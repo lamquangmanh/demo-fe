@@ -16,8 +16,8 @@ const UserModal: React.FC<UserModalProps> = ({ isEdit, isOpen, setIsOpen, userDa
   const { t } = useTranslation('common');
 
   // States
-  const [username, setUsername] = useState(userData?.username);
-  const [name, setName] = useState(userData?.name);
+  const [username, setUsername] = useState<string>(userData?.username || '');
+  const [name, setName] = useState<string>(userData?.name || '');
   const { apiCreateUser } = useUser();
 
   //Handle submit create/edit user
@@ -27,6 +27,7 @@ const UserModal: React.FC<UserModalProps> = ({ isEdit, isOpen, setIsOpen, userDa
         // Call graphql mutation for update
       } else {
         const res = apiCreateUser({
+          id: 1,
           username: username,
           name: name,
         });
