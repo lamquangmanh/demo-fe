@@ -1,24 +1,55 @@
-name: CD Pipeline
+# name: CD Pipeline
 
+# on:
+#   workflow_run:
+#     workflows: ['CI Docker Pipeline']
+#     types:
+#       - completed
+
+# jobs:
+#   build:
+#     runs-on: self-hosted
+
+#     steps:
+#       - name: Pull Docker image
+#         run: docker pull abc/xxx:latest
+
+#       - name: Delete Old docker container
+#         run: docker rm -f xxx || true
+
+#       - name: Run Docker Container
+#         env:
+#           PORT: ${{secrets.PORT}}
+#         run: |
+#           docker run -d -p $PORT:$PORT --restart unless-stopped --env-file ~/.env --name xxx abc/xxx:latest
+name: Deploy to staging
 on:
-  workflow_run:
-    workflows: ['CI Docker Pipeline']
-    types:
-      - completed
-
+  push:
+    branches: ['main']
 jobs:
-  build:
-    runs-on: self-hosted
-
+  run-script:
+    runs-on: ubuntu-latest
     steps:
-      - name: Pull Docker image
-        run: docker pull abc/xxx:latest
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Delete Old docker container
-        run: docker rm -f xxx || true
-
-      - name: Run Docker Container
-        env:
-          PORT: ${{secrets.PORT}}
+      - name: Set up SSH
         run: |
-          docker run -d -p $PORT:$PORT --restart unless-stopped --env-file ~/.env --name xxx abc/xxx:latest
+          mkdir -p ~/.ssh/core-fe
+          sudo chmod 700 ~/.ssh/core-fe
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/core-fe/id_rsa
+          sudo chmod 600 ~/.ssh/core-fe/id_rsa
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Install dependencies
+        run: npm install --global pm2
+
+      - name: Run script to deploy
+        run: npm run deployment
+        shell: bash
+        # env:
+        #   NEXT_PUBLIC_API_URL: ${{ vars.STG_NEXT_PUBLIC_API_URL }}
