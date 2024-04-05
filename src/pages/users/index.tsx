@@ -7,7 +7,8 @@ import { Space, Table, Tag, Dropdown, Input } from 'antd';
 import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
 import { useUser } from '@/modules/users/hooks/useUser';
-import { User } from '@/modules/users/models';
+import { User } from '@/common/adapters/graphQL/gql/graphql';
+// import { User } from '@/modules/users/models';
 
 export default function UserManagement() {
   // Translation hook
@@ -47,26 +48,6 @@ export default function UserManagement() {
       title: t('ADDRESS'),
       dataIndex: 'address',
       key: 'address',
-    },
-    {
-      title: t('TAGS'),
-      key: 'tags',
-      dataIndex: 'tags',
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
     },
     {
       title: 'Action',

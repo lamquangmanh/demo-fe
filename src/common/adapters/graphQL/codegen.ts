@@ -1,7 +1,7 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 const configCodegen: CodegenConfig = {
-  schema: process.env.API_URL,
+  schema: process.env.NEXT_PUBLIC_API_URL,
   documents: ['src/modules/**/*', '!src/common/adapters/graphQL/gql/**/*'],
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {

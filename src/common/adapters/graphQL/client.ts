@@ -8,7 +8,7 @@ import {
   useQuery,
 } from '@apollo/client';
 
-const httpLink = new HttpLink({ uri: '/api' });
+const httpLink = new HttpLink({ uri: process.env.NEXT_PUBLIC_API_URL });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
