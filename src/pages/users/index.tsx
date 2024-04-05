@@ -6,9 +6,10 @@ import { useTranslation } from 'next-i18next';
 import { Space, Table, Tag, Dropdown, Input, Modal, Button } from 'antd';
 import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
-import UserModal from '@/modules/users/components/userModal';
-import { User } from '@/modules/users/models';
 import { useUser } from '@/modules/users/hooks/useUser';
+import { User } from '@/common/adapters/graphQL/gql/graphql';
+// import { User } from '@/modules/users/models';
+import UserModal from '@/modules/users/components/userModal';
 
 export default function UserManagementPage() {
   // Translation hook

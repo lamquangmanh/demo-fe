@@ -1,8 +1,8 @@
 import { graphClient, gql } from '@/common/adapters/graphQL/client';
 
 export const GET_USERS = gql`
-  query {
-    getUsers(usersFilterDto: { size: 20, limit: 0 }) {
+  query getListUser($query: UsersFilterDto!) {
+    getUsers(usersFilterDto: $query) {
       data {
         id
         username
@@ -32,11 +32,11 @@ export const CREATE_USER = gql`
 //   }
 // `;
 
-export const DELETE_USER = gql`
-  mutation DeleteUser($id: String!) {
-    deleteUser(id: $id) {
-      id
-      username
-    }
-  }
-`;
+// export const DELETE_USER = gql`
+//   mutation DeleteUser($id: String!) {
+//     deleteUser(id: $id) {
+//       id
+//       username
+//     }
+//   }
+// `;
