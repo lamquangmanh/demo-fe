@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 import { useTranslation } from 'next-i18next';
+import { useUser } from '../hooks/useUser';
+import { User } from '../models';
 
 interface UserModalProps {
   isEdit: boolean;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  userData?: UserData;
-}
-
-interface UserData {
-  username: string;
-  name: string;
+  userData?: User;
 }
 
 const UserModal: React.FC<UserModalProps> = ({ isEdit, isOpen, setIsOpen, userData }) => {
@@ -21,15 +18,21 @@ const UserModal: React.FC<UserModalProps> = ({ isEdit, isOpen, setIsOpen, userDa
   // States
   const [username, setUsername] = useState(userData?.username);
   const [name, setName] = useState(userData?.name);
+  const { apiCreateUser } = useUser();
 
   //Handle submit create/edit user
   const handleSubmit = () => {
-    if (isEdit) {
-      // Call graphql mutation for update
-    } else {
-      // Call graphql mutation for create
+    if (username && name) {
+      if (isEdit) {
+        // Call graphql mutation for update
+      } else {
+        const res = apiCreateUser({
+          username: username,
+          name: name,
+        });
+        console.log(res);
+      }
     }
-    console.log(userData);
     setIsOpen(false);
   };
 

@@ -151,7 +151,7 @@ export default function UserManagementPage() {
         <Table
           dataSource={dataListUser}
           columns={columns}
-          rowKey={(record) => record.id}
+          //rowKey={(record) => record.id}
           pagination={{
             defaultPageSize: 5,
             showSizeChanger: true,
