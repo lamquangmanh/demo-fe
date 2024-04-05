@@ -1,8 +1,8 @@
 export type User = {
-  id: string;
+  id: number;
   name: string;
   username: string;
-  email: string;
-  address: string;
-  tags: string[];
+  // email: string;
+  // address: string;
+  // tags: string[];
 };

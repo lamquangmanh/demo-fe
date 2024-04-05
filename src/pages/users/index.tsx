@@ -10,7 +10,7 @@ import UserModal from '@/modules/users/components/userModal';
 import { User } from '@/modules/users/models';
 import { useUser } from '@/modules/users/hooks/useUser';
 
-export default function UserManagement() {
+export default function UserManagementPage() {
   // Translation hook
   const { t } = useTranslation('common');
 
@@ -42,36 +42,36 @@ export default function UserManagement() {
       key: 'username',
       render: (text) => <a>{text}</a>,
     },
-    {
-      title: t('EMAIL'),
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: t('ADDRESS'),
-      dataIndex: 'address',
-      key: 'address',
-    },
-    {
-      title: t('TAGS'),
-      key: 'tags',
-      dataIndex: 'tags',
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
+    // {
+    //   title: t('EMAIL'),
+    //   dataIndex: 'email',
+    //   key: 'email',
+    // },
+    // {
+    //   title: t('ADDRESS'),
+    //   dataIndex: 'address',
+    //   key: 'address',
+    // },
+    // {
+    //   title: t('TAGS'),
+    //   key: 'tags',
+    //   dataIndex: 'tags',
+    //   render: (_, { tags }) => (
+    //     <>
+    //       {tags.map((tag) => {
+    //         let color = tag.length > 5 ? 'geekblue' : 'green';
+    //         if (tag === 'loser') {
+    //           color = 'volcano';
+    //         }
+    //         return (
+    //           <Tag color={color} key={tag}>
+    //             {tag.toUpperCase()}
+    //           </Tag>
+    //         );
+    //       })}
+    //     </>
+    //   ),
+    // },
     {
       title: 'Action',
       key: 'action',
@@ -184,7 +184,7 @@ export default function UserManagement() {
   );
 }
 
-UserManagement.getLayout = function getLayout(page: ReactElement) {
+UserManagementPage.getLayout = function getLayout(page: ReactElement) {
   return <ProtectedLayout>{page}</ProtectedLayout>;
 };
 

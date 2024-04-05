@@ -11,7 +11,7 @@ export const useUser = () => {
 
   const apiCreateUser = async (param: User) => {
     const responseData = await createUserService(param);
-    // setDataListUser(responseData || []);
+    setDataListUser(responseData || []);
   };
 
   const apiUpdateUser = async (param: User) => {
