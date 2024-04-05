@@ -14,14 +14,20 @@ import UserModal from '@/modules/users/components/userModal';
 export default function UserManagementPage() {
   // Translation hook
   const { t } = useTranslation('common');
-
+  const {
+    dataListUser,
+    apiGetListUser,
+    setDataListUser,
+    apiCreateUser,
+    apiUpdateUser,
+    apiDeleteUser,
+  } = useUser();
   // States
   const [searchText, setSearchText] = useState<string>('');
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [editUser, setEditUser] = useState<any>();
-  const { apiGetListUser, setDataListUser, dataListUser } = useUser();
 
   // Actions
   const items = [
@@ -122,6 +128,7 @@ export default function UserManagementPage() {
   const handleDelete = () => {
     // graphql mutation
     setIsDeleteOpen(false);
+    // apiDeleteUser(id)
   };
 
   // Handle create user
@@ -179,6 +186,8 @@ export default function UserManagementPage() {
           isOpen={isUserModalOpen}
           setIsOpen={setIsUserModalOpen}
           userData={editUser}
+          handleUpdate={apiUpdateUser}
+          handleCreate={apiCreateUser}
         />
       )}
     </>

@@ -1,33 +1,53 @@
 import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 import { useTranslation } from 'next-i18next';
+import { useUser } from '../hooks/useUser';
+import { AddUserDto, UpdateUserDto } from '@/common/adapters/graphQL/gql/graphql';
 
 interface UserModalProps {
   isEdit: boolean;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   userData?: UserData;
+  handleUpdate: (body: UpdateUserDto) => {};
+  handleCreate: (body: AddUserDto) => {};
 }
 
 interface UserData {
+  id: number;
   username: string;
   name: string;
 }
 
-const UserModal: React.FC<UserModalProps> = ({ isEdit, isOpen, setIsOpen, userData }) => {
+const UserModal: React.FC<UserModalProps> = ({
+  isEdit,
+  isOpen,
+  setIsOpen,
+  userData,
+  handleUpdate,
+  handleCreate,
+}) => {
   // Translation hook
   const { t } = useTranslation('common');
-
   // States
-  const [username, setUsername] = useState(userData?.username);
-  const [name, setName] = useState(userData?.name);
+  const [username, setUsername] = useState<string>(userData?.username || '');
+  const [name, setName] = useState<string>(userData?.name || '');
 
   //Handle submit create/edit user
   const handleSubmit = () => {
     if (isEdit) {
       // Call graphql mutation for update
+      handleUpdate({
+        id: userData?.id || 0,
+        name,
+        username,
+      });
     } else {
       // Call graphql mutation for create
+      handleCreate({
+        name,
+        username,
+      });
     }
     console.log(userData);
     setIsOpen(false);

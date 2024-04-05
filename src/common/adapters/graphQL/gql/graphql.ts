@@ -1,6 +1,5 @@
-import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
-
 /* eslint-disable */
+import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -19,8 +18,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
-  /** json custom scalar type */
-  Json: { input: any; output: any };
 };
 
 export type AddUserDto = {
@@ -92,15 +89,28 @@ export type UpdateUserResponse = {
 export type User = {
   __typename?: 'User';
   id: Scalars['Float']['output'];
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   username: Scalars['String']['output'];
 };
 
 export type UsersFilterDto = {
-  limit?: InputMaybe<Scalars['Float']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
-  size?: InputMaybe<Scalars['Float']['input']>;
+  page?: InputMaybe<Scalars['Float']['input']>;
+  pageSize?: InputMaybe<Scalars['Float']['input']>;
   sort?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GetListUserQueryVariables = Exact<{
+  query: UsersFilterDto;
+}>;
+
+export type GetListUserQuery = {
+  __typename?: 'Query';
+  getUsers: {
+    __typename?: 'GetUsersResponse';
+    total: number;
+    data: Array<{ __typename?: 'User'; id: number; username: string; name?: string | null }>;
+  };
 };
 
 export class TypedDocumentString<TResult, TVariables>
@@ -120,3 +130,16 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
+
+export const GetListUserDocument = new TypedDocumentString(`
+    query getListUser($query: UsersFilterDto!) {
+  getUsers(usersFilterDto: $query) {
+    data {
+      id
+      username
+      name
+    }
+    total
+  }
+}
+    `) as unknown as TypedDocumentString<GetListUserQuery, GetListUserQueryVariables>;
