@@ -17,7 +17,7 @@ const createUserService = async (data: User): Promise<[User]> => {
       mutation: CREATE_USER,
       variables: { body: data },
     });
-    return response.data;
+    return response.data.addUser;
   } catch (error: any) {
     throw error.graphQLErrors[0];
   }

@@ -8,5 +8,11 @@
   "USERNAME": "Tên đăng nhập",
   "EDIT": "Chỉnh sửa",
   "DELETE": "Xóa",
-  "SEARCH": "Tìm kiếm"
+  "SEARCH": "Tìm kiếm",
+  "DELETE_MESSAGE": "Bạn có chắc chắn muốn xóa?",
+  "DELETE_USER": "Xóa người dùng",
+  "CREATE_USER": "Tạo người dùng",
+  "CREATE": "Tạo mới",
+  "EDIT_USER": "Chỉnh sửa người dùng",
+  "CANCEL": "Hủy"
 }

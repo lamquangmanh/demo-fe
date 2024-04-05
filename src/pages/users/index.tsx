@@ -3,21 +3,25 @@ import { ChangeEvent, ReactElement, useCallback, useEffect, useState } from 'rea
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { useTranslation } from 'next-i18next';
-import { Space, Table, Tag, Dropdown, Input } from 'antd';
+import { Space, Table, Tag, Dropdown, Input, Modal, Button } from 'antd';
 import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
 import { useUser } from '@/modules/users/hooks/useUser';
 import { User } from '@/common/adapters/graphQL/gql/graphql';
 // import { User } from '@/modules/users/models';
+import UserModal from '@/modules/users/components/userModal';
 
-export default function UserManagement() {
+export default function UserManagementPage() {
   // Translation hook
   const { t } = useTranslation('common');
 
   // States
   const [searchText, setSearchText] = useState<string>('');
-
-  const { apiGetListUser, setDataListUser, dataLisstUser } = useUser();
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [editUser, setEditUser] = useState<any>();
+  const { apiGetListUser, setDataListUser, dataListUser } = useUser();
 
   // Actions
   const items = [
@@ -39,22 +43,47 @@ export default function UserManagement() {
       key: 'username',
       render: (text) => <a>{text}</a>,
     },
-    {
-      title: t('EMAIL'),
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: t('ADDRESS'),
-      dataIndex: 'address',
-      key: 'address',
-    },
+    // {
+    //   title: t('EMAIL'),
+    //   dataIndex: 'email',
+    //   key: 'email',
+    // },
+    // {
+    //   title: t('ADDRESS'),
+    //   dataIndex: 'address',
+    //   key: 'address',
+    // },
+    // {
+    //   title: t('TAGS'),
+    //   key: 'tags',
+    //   dataIndex: 'tags',
+    //   render: (_, { tags }) => (
+    //     <>
+    //       {tags.map((tag) => {
+    //         let color = tag.length > 5 ? 'geekblue' : 'green';
+    //         if (tag === 'loser') {
+    //           color = 'volcano';
+    //         }
+    //         return (
+    //           <Tag color={color} key={tag}>
+    //             {tag.toUpperCase()}
+    //           </Tag>
+    //         );
+    //       })}
+    //     </>
+    //   ),
+    // },
     {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Dropdown menu={{ items }}>
+          <Dropdown
+            menu={{
+              onClick: (e: any) => handleDropdownItemClick(record, e),
+              items: items,
+            }}
+          >
             <a className="text-xl">
               <EllipsisOutlined />
             </a>
@@ -64,11 +93,11 @@ export default function UserManagement() {
     },
   ];
 
-  // Search function
+  // Handle filter search
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value.toLowerCase();
     setSearchText(searchValue);
-    const filteredData = dataLisstUser.filter((item) =>
+    const filteredData = dataListUser.filter((item) =>
       item.name.toLowerCase().includes(searchValue),
     );
     setDataListUser(filteredData);
@@ -77,6 +106,30 @@ export default function UserManagement() {
   useEffect(() => {
     apiGetListUser();
   }, []);
+
+  // Actions with user rows
+  const handleDropdownItemClick = (record: any, e: any) => {
+    if (e.key === '1') {
+      setIsEdit(true);
+      setEditUser({ name: record.name, username: record.username });
+      setIsUserModalOpen(true);
+    } else {
+      setIsDeleteOpen(true);
+    }
+  };
+
+  // Handle delete user
+  const handleDelete = () => {
+    // graphql mutation
+    setIsDeleteOpen(false);
+  };
+
+  // Handle create user
+  const handleCreate = () => {
+    setEditUser(null);
+    setIsEdit(false);
+    setIsUserModalOpen(true);
+  };
 
   return (
     <>
@@ -91,24 +144,48 @@ export default function UserManagement() {
           placeholder={t('SEARCH')}
           value={searchText}
         />
+        <div className="mb-5 flex justify-end">
+          <Button type="primary" style={{ background: '#f759ab' }} onClick={handleCreate}>
+            {t('CREATE_USER')}
+          </Button>
+        </div>
         <Table
-          dataSource={dataLisstUser}
+          dataSource={dataListUser}
           columns={columns}
           rowKey={(record) => record.id}
           pagination={{
             defaultPageSize: 5,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '20'],
-            total: dataLisstUser.length,
+            total: dataListUser.length,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
           }}
         />
       </div>
+      <Modal
+        title={t('DELETE_USER')}
+        open={isDeleteOpen}
+        okText={t('DELETE')}
+        onOk={handleDelete}
+        okButtonProps={{ style: { backgroundColor: '#f759ab' } }}
+        cancelText={t('CANCEL')}
+        onCancel={() => setIsDeleteOpen(false)}
+      >
+        <p>{t('DELETE_MESSAGE')}</p>
+      </Modal>
+      {isUserModalOpen && (
+        <UserModal
+          isEdit={isEdit}
+          isOpen={isUserModalOpen}
+          setIsOpen={setIsUserModalOpen}
+          userData={editUser}
+        />
+      )}
     </>
   );
 }
 
-UserManagement.getLayout = function getLayout(page: ReactElement) {
+UserManagementPage.getLayout = function getLayout(page: ReactElement) {
   return <ProtectedLayout>{page}</ProtectedLayout>;
 };
 

@@ -4,7 +4,7 @@ import { User } from '@/common/adapters/graphQL/gql/graphql';
 // import { User } from '@/modules/users/models';
 
 export const useUser = () => {
-  const [dataLisstUser, setDataListUser] = useState<User[]>([]);
+  const [dataListUser, setDataListUser] = useState<User[]>([]);
   const apiGetListUser = async () => {
     const { data } = await getListUserService({
       limit: 10,
@@ -26,7 +26,7 @@ export const useUser = () => {
     /**
      * states
      */
-    dataLisstUser,
+    dataListUser,
     /**
      * functions
      */

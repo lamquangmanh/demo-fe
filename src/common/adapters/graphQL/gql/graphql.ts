@@ -1,3 +1,5 @@
+import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
+
 /* eslint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -17,6 +19,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  /** json custom scalar type */
+  Json: { input: any; output: any };
 };
 
 export type AddUserDto = {

@@ -8,5 +8,11 @@
   "USERNAME": "Username",
   "EDIT": "Edit",
   "DELETE": "Delete",
-  "SEARCH": "Search"
+  "SEARCH": "Search",
+  "DELETE_MESSAGE": "Are you sure you want to delete?",
+  "DELETE_USER": "Delete User",
+  "CREATE_USER": "Create User",
+  "CREATE": "Create",
+  "EDIT_USER": "Edit User",
+  "CANCEL": "Cancel"
 }
