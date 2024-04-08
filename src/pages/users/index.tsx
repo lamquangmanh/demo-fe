@@ -27,7 +27,9 @@ export default function UserManagementPage() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [editUser, setEditUser] = useState<any>();
+  const [editUser, setEditUser] = useState<User>();
+
+  const [tmpUserDelete, setTmpUserDelete] = useState<User>();
 
   // Actions
   const items = [
@@ -117,18 +119,22 @@ export default function UserManagementPage() {
   const handleDropdownItemClick = (record: any, e: any) => {
     if (e.key === '1') {
       setIsEdit(true);
-      setEditUser({ name: record.name, username: record.username });
+      setEditUser({ id: record.id, name: record.name, username: record.username });
       setIsUserModalOpen(true);
     } else {
       setIsDeleteOpen(true);
+      setTmpUserDelete(record);
     }
   };
 
   // Handle delete user
   const handleDelete = () => {
     // graphql mutation
+    console.log('userrrrrr', tmpUserDelete);
     setIsDeleteOpen(false);
-    // apiDeleteUser(id)
+    if (tmpUserDelete) {
+      apiDeleteUser(tmpUserDelete?.id);
+    }
   };
 
   // Handle create user

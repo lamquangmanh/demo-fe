@@ -10,28 +10,32 @@ import { AddUserDto, UpdateUserDto, User } from '@/common/adapters/graphQL/gql/g
 
 export const useUser = () => {
   const [dataListUser, setDataListUser] = useState<User[]>([]);
+
   const apiGetListUser = async () => {
+    console.log('22222222');
     const { data } = await getListUserService({
       pageSize: 10,
       page: 1,
     });
+    console.log('datadatadatadatadata', data);
     setDataListUser(data || []);
   };
 
   const apiCreateUser = async (body: AddUserDto) => {
-    const responeData = await createUserService(body);
-    setDataListUser([...dataListUser, responeData]);
+    await createUserService(body);
+    // setDataListUser([...dataListUser, responeData]);
+    await apiGetListUser();
   };
 
   const apiUpdateUser = async (body: UpdateUserDto) => {
-    const responseData = await updateUserService(body);
-    // handle update
-    setDataListUser([...dataListUser]);
+    await updateUserService(body);
+    await apiGetListUser();
   };
 
   const apiDeleteUser = async (id: number) => {
-    const responeData = await deleteUserService(id);
-    setDataListUser(dataListUser.filter((id) => id !== id));
+    await deleteUserService(id);
+    console.log('------111111');
+    await apiGetListUser();
   };
 
   return {

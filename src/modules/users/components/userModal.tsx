@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { useUser } from '../hooks/useUser';
-import { AddUserDto, UpdateUserDto } from '@/common/adapters/graphQL/gql/graphql';
+import { AddUserDto, UpdateUserDto, User } from '@/common/adapters/graphQL/gql/graphql';
 
 interface UserModalProps {
   isEdit: boolean;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  userData?: UserData;
+  userData?: User;
   handleUpdate: (body: UpdateUserDto) => {};
   handleCreate: (body: AddUserDto) => {};
 }
