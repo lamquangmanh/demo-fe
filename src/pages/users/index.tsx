@@ -7,26 +7,52 @@ import { Space, Table, Tag, Dropdown, Input, Modal, Button } from 'antd';
 import { EllipsisOutlined } from '@/components/atoms';
 import type { TableProps } from '@/components/atoms';
 import { useUser } from '@/modules/users/hooks/useUser';
-import { User } from '@/common/adapters/graphQL/gql/graphql';
-// import { User } from '@/modules/users/models';
+import { useRouter } from 'next/router';
 import UserModal from '@/modules/users/components/userModal';
+import { User } from '@/common/adapters/graphQL/gql/graphql';
 
 export default function UserManagementPage() {
   // Translation hook
   const { t } = useTranslation('common');
 
+  // User hook
+  const { apiGetListUser, setDataListUser, dataListUser, totalUsers } = useUser();
+
+  // Router
+  const router = useRouter();
+
   // States
   const [searchText, setSearchText] = useState<string>('');
+  const [sort, setSort] = useState<string>('asc');
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(5);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [editUser, setEditUser] = useState<any>();
-  const { apiGetListUser, setDataListUser, dataListUser, totalUsers } = useUser();
+  const [editUser, setEditUser] = useState<User>();
 
   // Get Users API
   useEffect(() => {
-    apiGetListUser();
-  }, []);
+    // Retrieve page and pageSize from URL query parameters
+    const { page: urlPage, pageSize: urlPageSize } = router.query;
+    const parsedPage = parseInteger(urlPage, 1);
+    const parsedPageSize = parseInteger(urlPageSize, 5);
+
+    setPage(parsedPage);
+    setPageSize(parsedPageSize);
+
+    // Fetch data using retrieved parameters
+    apiGetListUser(parsedPageSize, parsedPage, searchText);
+  }, [router.query, searchText]);
+
+  // Function to parse integer from string, handling potential NaN values
+  const parseInteger = (value: string | string[] | undefined, defaultValue: number) => {
+    if (Array.isArray(value)) {
+      value = value[0];
+    }
+    const parsedValue = parseInt(value as string, 10);
+    return isNaN(parsedValue) ? defaultValue : parsedValue;
+  };
 
   // Actions
   const items = [
@@ -40,7 +66,7 @@ export default function UserManagementPage() {
       title: t('FULLNAME'),
       dataIndex: 'name',
       key: 'name',
-      sorter: (a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0),
+      // sorter: (a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0),
     },
     {
       title: t('USERNAME'),
@@ -48,36 +74,6 @@ export default function UserManagementPage() {
       key: 'username',
       render: (text) => <a>{text}</a>,
     },
-    // {
-    //   title: t('EMAIL'),
-    //   dataIndex: 'email',
-    //   key: 'email',
-    // },
-    // {
-    //   title: t('ADDRESS'),
-    //   dataIndex: 'address',
-    //   key: 'address',
-    // },
-    // {
-    //   title: t('TAGS'),
-    //   key: 'tags',
-    //   dataIndex: 'tags',
-    //   render: (_, { tags }) => (
-    //     <>
-    //       {tags.map((tag) => {
-    //         let color = tag.length > 5 ? 'geekblue' : 'green';
-    //         if (tag === 'loser') {
-    //           color = 'volcano';
-    //         }
-    //         return (
-    //           <Tag color={color} key={tag}>
-    //             {tag.toUpperCase()}
-    //           </Tag>
-    //         );
-    //       })}
-    //     </>
-    //   ),
-    // },
     {
       title: 'Action',
       key: 'action',
@@ -102,17 +98,13 @@ export default function UserManagementPage() {
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value.toLowerCase();
     setSearchText(searchValue);
-    const filteredData = dataListUser.filter((item) =>
-      item.name?.toLowerCase().includes(searchValue),
-    );
-    setDataListUser(filteredData);
   }, []);
 
   // Actions with user rows
-  const handleDropdownItemClick = (record: any, e: any) => {
+  const handleDropdownItemClick = (record: User, e: any) => {
     if (e.key === '1') {
       setIsEdit(true);
-      setEditUser({ name: record.name, username: record.username });
+      setEditUser(record);
       setIsUserModalOpen(true);
     } else {
       setIsDeleteOpen(true);
@@ -127,9 +119,19 @@ export default function UserManagementPage() {
 
   // Handle create user
   const handleCreate = () => {
-    setEditUser(null);
+    setEditUser(undefined);
     setIsEdit(false);
     setIsUserModalOpen(true);
+  };
+
+  // Handle pagination
+  const handlePagination = (page: number, pageSize: number) => {
+    router.push({
+      pathname: '/users',
+      query: { page: page, pageSize: pageSize },
+    });
+    setPage(page);
+    setPageSize(pageSize);
   };
 
   return (
@@ -158,8 +160,11 @@ export default function UserManagementPage() {
             defaultPageSize: 5,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '20'],
+            pageSize: pageSize,
+            current: page,
             total: totalUsers,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+            onChange: (page, pageSize) => handlePagination(page, pageSize),
           }}
         />
       </div>

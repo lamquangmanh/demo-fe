@@ -7,10 +7,17 @@ export const useUser = () => {
   const [dataListUser, setDataListUser] = useState<User[]>([]);
   const [totalUsers, setTotalUsers] = useState<number>(0);
 
-  const apiGetListUser = async () => {
+  const apiGetListUser = async (
+    pageSize: number,
+    page: number,
+    searchText?: string,
+    sortType?: string,
+  ) => {
     const { data, total } = await getListUserService({
-      pageSize: 10,
-      page: 1,
+      name: searchText,
+      pageSize: pageSize,
+      page: page,
+      sort: sortType,
     });
     setDataListUser(data || []);
     setTotalUsers(total || 0);

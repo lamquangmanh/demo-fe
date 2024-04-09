@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 import { useTranslation } from 'next-i18next';
 import { useUser } from '../hooks/useUser';
-import { User } from '../models';
+import { User } from '@/common/adapters/graphQL/gql/graphql';
 
 interface UserModalProps {
   isEdit: boolean;
