@@ -1,4 +1,4 @@
-import { graphClient, gql } from '@/common/adapters/graphQL/client';
+import { gql } from '@/common/adapters/graphQL/client';
 
 export const GET_USERS = gql`
   query getListUser($query: UsersFilterDto!) {
@@ -14,8 +14,8 @@ export const GET_USERS = gql`
 `;
 
 export const CREATE_USER = gql`
-  mutation {
-    addUser(addUserDto: { name: "name3", username: "username3" }) {
+  mutation createUser($body: AddUserDto!) {
+    addUser(addUserDto: $body) {
       id
       name
       username
@@ -23,20 +23,20 @@ export const CREATE_USER = gql`
   }
 `;
 
-// export const UPDATE_USER = gql`
-//   mutation UpdateUser($username: String!) {
-//     updateUser(username: $username) {
-//       id
-//       username
-//     }
-//   }
-// `;
+export const UPDATE_USER = gql`
+  mutation updateUser($body: UpdateUserDto!) {
+    updateUser(updateUserDto: $body) {
+      id
+      name
+      username
+    }
+  }
+`;
 
-// export const DELETE_USER = gql`
-//   mutation DeleteUser($id: String!) {
-//     deleteUser(id: $id) {
-//       id
-//       username
-//     }
-//   }
-// `;
+export const DELETE_USER = gql`
+  mutation DeleteUser($id: Float!) {
+    deleteUser(id: $id) {
+      deletedCount
+    }
+  }
+`;

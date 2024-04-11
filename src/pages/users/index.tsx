@@ -10,17 +10,24 @@ import { useUser } from '@/modules/users/hooks/useUser';
 import { useRouter } from 'next/router';
 import UserModal from '@/modules/users/components/userModal';
 import { User } from '@/common/adapters/graphQL/gql/graphql';
+import { SortAscendingOutlined } from '@ant-design/icons';
 
 export default function UserManagementPage() {
   // Translation hook
   const { t } = useTranslation('common');
 
-  // User hook
-  const { apiGetListUser, setDataListUser, dataListUser, totalUsers } = useUser();
-
   // Router
   const router = useRouter();
 
+  const {
+    dataListUser,
+    apiGetListUser,
+    setDataListUser,
+    apiCreateUser,
+    apiUpdateUser,
+    apiDeleteUser,
+    totalUsers,
+  } = useUser();
   // States
   const [searchText, setSearchText] = useState<string>('');
   const [sort, setSort] = useState<string>('asc');
@@ -34,15 +41,20 @@ export default function UserManagementPage() {
   // Get Users API
   useEffect(() => {
     // Retrieve page and pageSize from URL query parameters
-    const { page: urlPage, pageSize: urlPageSize } = router.query;
+    const { page: urlPage, pageSize: urlPageSize, sort: urlSort } = router.query;
+
     const parsedPage = parseInteger(urlPage, 1);
     const parsedPageSize = parseInteger(urlPageSize, 5);
+    const parsedSort = urlSort ? urlSort.toString() : 'name.asc';
 
     setPage(parsedPage);
     setPageSize(parsedPageSize);
+    setSort(parsedSort);
+
+    console.log(router.query);
 
     // Fetch data using retrieved parameters
-    apiGetListUser(parsedPageSize, parsedPage, searchText);
+    apiGetListUser(parsedPageSize, parsedPage, searchText, parsedSort);
   }, [router.query, searchText]);
 
   // Function to parse integer from string, handling potential NaN values
@@ -66,7 +78,8 @@ export default function UserManagementPage() {
       title: t('FULLNAME'),
       dataIndex: 'name',
       key: 'name',
-      // sorter: (a, b) => (a.name && b.name ? a.name.localeCompare(b.name) : 0),
+      sorter: true,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: t('USERNAME'),
@@ -115,6 +128,7 @@ export default function UserManagementPage() {
   const handleDelete = () => {
     // graphql mutation
     setIsDeleteOpen(false);
+    // apiDeleteUser(id)
   };
 
   // Handle create user
@@ -128,10 +142,17 @@ export default function UserManagementPage() {
   const handlePagination = (page: number, pageSize: number) => {
     router.push({
       pathname: '/users',
-      query: { page: page, pageSize: pageSize },
+      query: { ...router.query, page: page, pageSize: pageSize },
     });
-    setPage(page);
-    setPageSize(pageSize);
+  };
+
+  // Handle alphabet sort on name
+  const handleSort = (pagination: any, order: any) => {
+    const nextSort = order.order === 'descend' ? 'name.desc' : 'name.asc';
+    router.push({
+      pathname: '/users',
+      query: { page: pagination.current, pageSize: pagination.pageSize, sort: nextSort },
+    });
   };
 
   return (
@@ -166,6 +187,11 @@ export default function UserManagementPage() {
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
             onChange: (page, pageSize) => handlePagination(page, pageSize),
           }}
+          onChange={(pagination, sorter) => {
+            if (sorter) {
+              handleSort(pagination, sorter);
+            }
+          }}
         />
       </div>
       <Modal
@@ -185,6 +211,8 @@ export default function UserManagementPage() {
           isOpen={isUserModalOpen}
           setIsOpen={setIsUserModalOpen}
           userData={editUser}
+          handleUpdate={apiUpdateUser}
+          handleCreate={apiCreateUser}
         />
       )}
     </>
