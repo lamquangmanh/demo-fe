@@ -11,7 +11,8 @@
     "prepare": "husky",
     "codegen": "graphql-codegen --require dotenv/config --config ./src/common/adapters/graphQL/codegen.ts dotenv_config_path=.env.local",
     "compile": "graphql-codegen",
-    "watch": "graphql-codegen -w"
+    "watch": "graphql-codegen -w",
+    "deployment": "pm2 deploy ecosystem.config.js core_fe update"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.5",
