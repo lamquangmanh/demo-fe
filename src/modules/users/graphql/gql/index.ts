@@ -26,9 +26,7 @@ export const CREATE_USER = gql`
 export const UPDATE_USER = gql`
   mutation updateUser($body: UpdateUserDto!) {
     updateUser(updateUserDto: $body) {
-      id
-      name
-      username
+      modifiedCount
     }
   }
 `;

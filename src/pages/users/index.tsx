@@ -10,7 +10,7 @@ import { useUser } from '@/modules/users/hooks/useUser';
 import { useRouter } from 'next/router';
 import UserModal from '@/modules/users/components/userModal';
 import { User } from '@/common/adapters/graphQL/gql/graphql';
-import { SortAscendingOutlined } from '@ant-design/icons';
+import debounce from 'lodash.debounce';
 
 export default function UserManagementPage() {
   // Translation hook
@@ -28,15 +28,19 @@ export default function UserManagementPage() {
     apiDeleteUser,
     totalUsers,
   } = useUser();
+
   // States
-  const [searchText, setSearchText] = useState<string>('');
-  const [sort, setSort] = useState<string>('asc');
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(5);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isUserModalOpen, setIsUserModalOpen] = useState<boolean>(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+
   const [editUser, setEditUser] = useState<User>();
+  const [searchText, setSearchText] = useState<string>('');
+  const [query, setQuery] = useState<{ page: number; pageSize: number; sort: string }>({
+    page: 1,
+    pageSize: 5,
+    sort: 'asc',
+  });
 
   // Get Users API
   useEffect(() => {
@@ -47,11 +51,7 @@ export default function UserManagementPage() {
     const parsedPageSize = parseInteger(urlPageSize, 5);
     const parsedSort = urlSort ? urlSort.toString() : 'name.asc';
 
-    setPage(parsedPage);
-    setPageSize(parsedPageSize);
-    setSort(parsedSort);
-
-    console.log(router.query);
+    setQuery({ page: parsedPage, pageSize: parsedPageSize, sort: parsedSort });
 
     // Fetch data using retrieved parameters
     apiGetListUser(parsedPageSize, parsedPage, searchText, parsedSort);
@@ -128,7 +128,7 @@ export default function UserManagementPage() {
   const handleDelete = () => {
     // graphql mutation
     setIsDeleteOpen(false);
-    // apiDeleteUser(id)
+    //apiDeleteUser(id)
   };
 
   // Handle create user
@@ -149,6 +149,7 @@ export default function UserManagementPage() {
   // Handle alphabet sort on name
   const handleSort = (pagination: any, order: any) => {
     const nextSort = order.order === 'descend' ? 'name.desc' : 'name.asc';
+
     router.push({
       pathname: '/users',
       query: { page: pagination.current, pageSize: pagination.pageSize, sort: nextSort },
@@ -181,13 +182,13 @@ export default function UserManagementPage() {
             defaultPageSize: 5,
             showSizeChanger: true,
             pageSizeOptions: ['5', '10', '20'],
-            pageSize: pageSize,
-            current: page,
+            pageSize: query.pageSize,
+            current: query.page,
             total: totalUsers,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
             onChange: (page, pageSize) => handlePagination(page, pageSize),
           }}
-          onChange={(pagination, sorter) => {
+          onChange={(pagination, filters, sorter) => {
             if (sorter) {
               handleSort(pagination, sorter);
             }
