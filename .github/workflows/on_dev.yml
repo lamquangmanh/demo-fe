@@ -10,6 +10,8 @@ jobs:
   call_ci_process:
     name: Run CI Process
     uses: lamquangmanh/github-workflows/.github/workflows/ui-ci.yml@main
+    with:
+      environment: dev
     secrets: inherit
 
   call_cd_process:
