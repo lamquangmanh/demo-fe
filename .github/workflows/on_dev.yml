@@ -27,5 +27,5 @@ jobs:
     uses: lamquangmanh/github-workflows/.github/workflows/minikube-ui-k8s.yml@main
     with:
       environment: dev
-      path: 'overlays/frontend/dev'
+      path: 'minikube/overlays/frontend/'
     secrets: inherit
