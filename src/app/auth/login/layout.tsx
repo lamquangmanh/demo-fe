@@ -3,7 +3,7 @@ import { ConfigProvider } from 'antd';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 // import globals css
-import './globals.css';
+import '../../globals.css';
 import { THEME_CONFIG } from '@/constants';
 
 const geistSans = Geist({
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   description: 'Admin Dashboard',
 };
 
-// this layout is used for all pages after login successfully
-export default function RootLayout({
+// this layout is used for login page or unauthorized page
+export default function LoginLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

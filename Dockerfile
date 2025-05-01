@@ -1,5 +1,5 @@
 # Step 1: Use an official Node.js runtime as a base image
-FROM node:18-alpine AS builder
+FROM node:22-bullseye AS builder
 
 # Step 2: Set the working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Step 7: Create a production stage to serve the app
-FROM node:18-alpine AS production
+FROM node:22-bullseye AS production
 
 # Step 8: Set the working directory
 WORKDIR /app

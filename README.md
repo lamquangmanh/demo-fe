@@ -34,3 +34,50 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Clear Architecture principles
+
+```bash
+src/
+├── app/                     # Next.js App Router entrypoints
+│   ├── (auth)/              # Auth routes (login, register)
+│   ├── dashboard/           # Protected route (admin UI)
+│   ├── layout.tsx           # Root layout
+│   └── page.tsx             # Entry/home
+│
+├── presentation/            # UI layer (components/pages/hooks)
+│   ├── components/          # Reusable UI components (Button, Table, etc.)
+│   ├── layouts/             # UI layout components (Sidebar, Header, etc.)
+│   ├── hooks/               # UI-related hooks
+│   └── pages/               # View logic (mapped to routes)
+│
+├── application/             # Application layer (use-cases, services)
+│   ├── use-cases/           # Business use-cases
+│   └── services/            # Interfaces for API/data services
+│
+├── domain/                  # Domain layer (entities, types)
+│   ├── entities/            # Business models (User, Product)
+│   └── types/               # Types
+│
+├── infrastructure/          # Infrastructure (APIs, databases)
+│   ├── graphql/             # Graphql API call logic (e.g. Axios)
+│   └── repositories/        # Concrete implementations of repositories
+│
+├── theme/                   # Ant Design theme config
+├── constants/               # Static config (routes, roles, etc.)
+├── utils/                   # Utility functions
+└── styles/                  # Global CSS/styling
+
+```
+
+🧠 Example: Login Flow
+
+UI: presentation/pages/LoginPage.tsx
+
+Use-case: application/use-cases/auth/LoginUseCase.ts
+
+Service: application/services/AuthService.ts
+
+Infra: infrastructure/api/authApi.ts
+
+Model: domain/entities/User.ts
