@@ -1,32 +1,40 @@
-# Step 1: Use an official Node.js runtime as a base image
+# 1. Install dependencies and build the app
 FROM node:22-bullseye AS builder
 
-# Step 2: Set the working directory
 WORKDIR /app
 
-# Step 3: Copy package.json and package-lock.json (or yarn.lock)
-COPY package*.json ./
+# Copy only package files first for better cache
+COPY package.json yarn.lock ./
 
-# Step 4: Install dependencies
-RUN npm install
+# Install dependencies using yarn
+RUN yarn install --frozen-lockfile
 
-# Step 5: Copy the entire application to the container
+# Copy the rest of the app
 COPY . .
 
-# Step 6: Build the Next.js application
-RUN npm run build
+# Build the Next.js app for production
+RUN yarn build
 
-# Step 7: Create a production stage to serve the app
-FROM node:22-bullseye AS production
+# 2. Run the production app with npm start
+FROM node:22-bullseye AS runner
 
-# Step 8: Set the working directory
+# Set NODE_ENV to production for optimized performance
+ENV NODE_ENV production
+
 WORKDIR /app
 
-# Step 9: Copy only the build output and dependencies from the builder stage
-COPY --from=builder /app ./
+# Install only production dependencies
+COPY --from=builder /app/package.json /app/yarn.lock ./
+RUN yarn install --frozen-lockfile --production
 
-# Step 10: Expose the port the app will run on
+# Copy build output and static files from the builder image
+COPY --from=builder /app/.next .next
+COPY --from=builder /app/public public
+COPY --from=builder /app/next.config.js .
+COPY --from=builder /app/.env .env
+
+# Expose the app on port 3000
 EXPOSE 3000
 
-# Step 11: Start the Next.js application in production mode
-CMD ["npm", "start"]
+# Use npm to start the Next.js app
+CMD ["npm", "run", "start"]
