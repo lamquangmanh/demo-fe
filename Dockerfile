@@ -31,7 +31,7 @@ RUN yarn install --frozen-lockfile --production
 COPY --from=builder /app/.next .next
 COPY --from=builder /app/public public
 COPY --from=builder /app/next.config.js .
-COPY --from=builder /app/.env .env
+# COPY --from=builder /app/.env .env
 
 # Expose the app on port 3000
 EXPOSE 3000
