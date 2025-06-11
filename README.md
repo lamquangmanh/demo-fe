@@ -57,15 +57,20 @@ src/
 │
 ├── domain/                  # Domain layer (entities, types)
 │   ├── entities/            # Business models (User, Product)
-│   └── types/               # Types
+│   └── stores/              # Store using Zustand
 │
 ├── infrastructure/          # Infrastructure (APIs, databases)
 │   ├── graphql/             # Graphql API call logic (e.g. Axios)
-│   └── repositories/        # Concrete implementations of repositories
+│   └── websocket/           # Websocket
 │
-├── theme/                   # Ant Design theme config
-├── constants/               # Static config (routes, roles, etc.)
-├── utils/                   # Utility functions
+├── common/                  # Common (configs, constants, interfaces, theme, utils, languages)
+│   ├── configs/             # configs
+│   ├── interfaces/          # interfaces
+│   ├── theme/               # theme
+│   ├── utils/               # utils
+│   ├── languages/           # languages
+│   └── constants/           # constants
+│
 └── styles/                  # Global CSS/styling
 
 ```
@@ -78,6 +83,6 @@ Use-case: application/use-cases/auth/LoginUseCase.ts
 
 Service: application/services/AuthService.ts
 
-Infra: infrastructure/api/authApi.ts
+Infra: infrastructure/graphql/client.graphql
 
 Model: domain/entities/User.ts

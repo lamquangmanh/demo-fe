@@ -1,0 +1,14 @@
+{
+  "header": {
+    "appName": "Admin Panel",
+    "user": {
+      "profile": "Thông tin cá nhân",
+      "settings": "Cài đặt",
+      "logout": "Đăng xuất"
+    },
+    "language": {
+      "en": "English",
+      "vi": "Việt Nam"
+    }
+  }
+}

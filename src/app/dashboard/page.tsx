@@ -1,12 +1,12 @@
+'use client';
+
 // import from libs
 import { Card, Row, Col } from 'antd';
 
-// import authorized layout
-import AuthorizedLayout from '@/presentation/layouts/AuthorizedLayout';
-
 export default function DashboardPage() {
   return (
-    <AuthorizedLayout>
+    <>
+      <div>Dashboard Page</div>
       <Row gutter={16}>
         <Col span={8}>
           <Card title="Users" variant="borderless">
@@ -24,6 +24,6 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
-    </AuthorizedLayout>
+    </>
   );
 }

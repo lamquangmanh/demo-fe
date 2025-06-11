@@ -1,10 +1,24 @@
-import type { Metadata } from 'next';
-import { ConfigProvider } from 'antd';
+'use client';
+import '@ant-design/v5-patch-for-react-19';
+
+import { usePathname } from 'next/navigation';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 // import globals css
+import 'antd/dist/reset.css';
 import './globals.css';
-import { THEME_CONFIG } from '@/constants';
+
+import {
+  GraphqlProvider,
+  AntdProvider,
+  LanguageProvider,
+  NotificationProvider,
+} from '@/presentation/providers';
+// import authorized layout
+import AuthorizedLayout from '@/presentation/layouts/AuthorizedLayout';
+
+// init i18n
+import '@/infrastructure/i18n/i18n';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,24 +30,37 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-  title: 'Admin Dashboard',
-  description: 'Admin Dashboard',
+type LayoutProps = {
+  children: React.ReactNode;
 };
 
 // this layout is used for all pages after login successfully
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+function RootLayout({ children }: LayoutProps) {
+  const pathname = usePathname();
+
+  // ignore layout for auth pages
+  const isAuthPage = ['/auth/login', '/auth/forgot-password'].includes(
+    pathname
+  );
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ConfigProvider theme={THEME_CONFIG}>{children}</ConfigProvider>
+        <GraphqlProvider>
+          <NotificationProvider>
+            <LanguageProvider>
+              <AntdProvider>
+                {isAuthPage && <>{children}</>}
+                {!isAuthPage && <AuthorizedLayout>{children}</AuthorizedLayout>}
+              </AntdProvider>
+            </LanguageProvider>
+          </NotificationProvider>
+        </GraphqlProvider>
       </body>
     </html>
   );
 }
+
+export default RootLayout;

@@ -1,0 +1,112 @@
+query Login($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
+    accessToken
+    refreshToken
+  }
+}
+
+query GetMe {
+  getMe {
+    userId
+    username
+    email
+    status
+    avatar
+    phone
+  }
+}
+
+query GetSuperMenus {
+  getSuperMenus {
+    superMenus {
+      moduleId
+      name
+      description
+      url
+      menus {
+        resourceId
+        name
+        url
+        subMenus {
+          actionId
+          name
+          requestType
+          url
+          method
+        }
+      }
+    }
+  }
+}
+
+query Module($moduleId: String!) {
+  module(moduleId: $moduleId) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    moduleId
+    name
+    description
+  }
+}
+
+query GetModules(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  modules(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    data {
+      createdAt
+      createdUserId
+      updatedAt
+      updatedUserId
+      deletedAt
+      deletedUserId
+      moduleId
+      name
+      description
+    }
+
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+  }
+}
+
+mutation CreateModule($name: String!, $description: String) {
+  createModule(name: $name, description: $description) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    moduleId
+    name
+    description
+  }
+}
+
+mutation UpdateModule(
+  $moduleId: String!
+  $name: String!
+  $description: String
+) {
+  updateModule(moduleId: $moduleId, name: $name, description: $description) {
+    success
+  }
+}
+
+mutation DeleteModule($moduleId: String!) {
+  deleteModule(moduleId: $moduleId) {
+    success
+  }
+}
