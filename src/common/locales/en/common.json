@@ -10,5 +10,18 @@
       "en": "English",
       "vi": "Việt Nam"
     }
+  },
+  "table": {
+    "filter": {
+      "search": "Search",
+      "reset": "Reset",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "add": "Add"
+    },
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "deleteYesButton": "Yes",
+    "deleteNoButton": "No"
   }
 }

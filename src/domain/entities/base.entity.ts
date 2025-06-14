@@ -1,10 +1,10 @@
 export interface BaseEntity {
-  createdAt?: string;
-  createdUserId?: string;
-  createdUser?: { username: string };
-  updatedAt?: string;
-  updatedUserId?: string;
-  updatedUser?: { username: string };
-  deletedAt?: string;
-  deletedUserId?: string;
+  createdAt?: string | undefined | null;
+  createdUserId?: string | undefined | null;
+  createdUser?: { username: string } | undefined | null;
+  updatedAt?: string | undefined | null;
+  updatedUserId?: string | undefined | null;
+  updatedUser?: { username: string } | undefined | null;
+  deletedAt?: string | undefined | null;
+  deletedUserId?: string | undefined | null;
 }

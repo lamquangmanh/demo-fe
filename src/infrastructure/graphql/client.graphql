@@ -19,20 +19,17 @@ query GetMe {
 query GetSuperMenus {
   getSuperMenus {
     superMenus {
-      moduleId
       name
       description
       url
+      icon
       menus {
-        resourceId
         name
         url
+        icon
         subMenus {
-          actionId
           name
-          requestType
           url
-          method
         }
       }
     }
@@ -107,6 +104,112 @@ mutation UpdateModule(
 
 mutation DeleteModule($moduleId: String!) {
   deleteModule(moduleId: $moduleId) {
+    success
+  }
+}
+
+query GetPermissionsByUser {
+  getPermissionsByUser {
+    permissions {
+      name
+      url
+      method
+      requestType
+    }
+  }
+}
+
+query Product($productId: String!) {
+  product(productId: $productId) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    productId
+    name
+    url
+    icon
+    description
+  }
+}
+
+query Products(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  products(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+    data {
+      createdAt
+      createdUserId
+      updatedAt
+      updatedUserId
+      deletedAt
+      deletedUserId
+      productId
+      name
+      url
+      icon
+      description
+    }
+  }
+}
+
+mutation CreateProduct(
+  $name: String!
+  $url: String!
+  $description: String
+  $icon: String
+) {
+  createProduct(
+    name: $name
+    url: $url
+    description: $description
+    icon: $icon
+  ) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    productId
+    name
+    url
+    icon
+    description
+  }
+}
+
+mutation UpdateProduct(
+  $name: String!
+  $url: String!
+  $productId: String!
+  $description: String
+  $icon: String
+) {
+  updateProduct(
+    name: $name
+    url: $url
+    productId: $productId
+    description: $description
+    icon: $icon
+  ) {
+    success
+  }
+}
+
+mutation DeleteProduct($productId: String!) {
+  deleteProduct(productId: $productId) {
     success
   }
 }

@@ -38,55 +38,55 @@ export function useListModule(options?: Record<string, any>) {
   );
 
   // handle login function
-  const handleLogin = useCallback(
-    async (variables: LoginQueryVariables) => {
-      try {
-        const result = await runLoginQuery(variables);
+  // const handleLogin = useCallback(
+  //   async (variables: LoginQueryVariables) => {
+  //     try {
+  //       const result = await runLoginQuery(variables);
 
-        // handle error if any
-        if (!result || result?.errors) {
-          console.error('GraphQL errors:', result?.errors);
-          // You can throw or handle errors here
-          // show a notification
-          notify.error({
-            message: 'Something went wrong',
-            description: 'Please check your credentials and try again.',
-            duration: 10,
-          });
-          return;
-        }
+  //       // handle error if any
+  //       if (!result || result?.error) {
+  //         console.log('GraphQL errors:', result);
+  //         // You can throw or handle errors here
+  //         // show a notification
+  //         notify.error({
+  //           message: 'Something went wrong',
+  //           description: 'Please check your credentials and try again.',
+  //           duration: 10,
+  //         });
+  //         return;
+  //       }
 
-        // set cookies with accessToken and refreshToken
-        const accessToken = result?.data?.login?.accessToken ?? '';
-        const refreshToken = result?.data?.login?.refreshToken ?? '';
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        setAccessToken(accessToken);
-        setRefreshToken(refreshToken);
+  //       // set cookies with accessToken and refreshToken
+  //       const accessToken = result?.data?.login?.accessToken ?? '';
+  //       const refreshToken = result?.data?.login?.refreshToken ?? '';
+  //       localStorage.setItem('accessToken', accessToken);
+  //       localStorage.setItem('refreshToken', refreshToken);
+  //       setAccessToken(accessToken);
+  //       setRefreshToken(refreshToken);
 
-        // handle success
-        notify.success({
-          message: 'Login successful',
-          description: 'You have successfully logged in.',
-          duration: 20,
-        });
-        // // redirect to dashboard
-        router.push(DASHBOARD_PATH);
-      } catch (error) {
-        console.error('Network or unexpected error:', error);
-        // Handle error appropriately, e.g., show a notification
-        notify.error({
-          message: 'Something went wrong',
-          description:
-            error?.toString() ?? 'Please check your credentials and try again.',
-        });
-      }
-    },
-    [runLoginQuery, router, notify]
-  );
+  //       // handle success
+  //       notify.success({
+  //         message: 'Login successful',
+  //         description: 'You have successfully logged in.',
+  //         duration: 20,
+  //       });
+  //       // // redirect to dashboard
+  //       router.push(DASHBOARD_PATH);
+  //     } catch (error) {
+  //       console.log('Network or unexpected error:', error);
+  //       // Handle error appropriately, e.g., show a notification
+  //       notify.error({
+  //         message: 'Something went wrong',
+  //         description:
+  //           error?.toString() ?? 'Please check your credentials and try again.',
+  //       });
+  //     }
+  //   },
+  //   [runLoginQuery, router, notify]
+  // );
 
   return {
-    handleLogin,
+    // handleLogin,
     loading,
     data,
     error,

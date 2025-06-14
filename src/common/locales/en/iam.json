@@ -1,0 +1,52 @@
+{
+  "product": {
+    "list": {
+      "title": "Product Management",
+      "table": {
+        "name": "Name",
+        "description": "Description",
+        "createdAt": "Created at",
+        "createdUser": "Created User",
+        "updatedAt": "Updated at",
+        "updatedUser": "Updated User",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No Products Found",
+        "description": "You can create a new product by clicking the button below."
+      }
+    },
+    "form": {
+      "name": "Name",
+      "description": "Description",
+      "url": "Url",
+      "icon": "Icon",
+      "error": {
+        "name": "Please enter the product name",
+        "description": "Please enter a description",
+        "url": "Please enter a url",
+        "icon": "Please enter icon link or text"
+      }
+    },
+    "create": {
+      "title": "Create a new Product",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Product created successfully"
+    },
+    "edit": {
+      "title": "Edit Product",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Product updated successfully"
+    },
+    "delete": {
+      "confirmTitle": "Delete Product",
+      "confirmMessage": "Are you sure you want to delete this product?",
+      "successMessage": "Successfully",
+      "successDescription": "Product deleted successfully"
+    }
+  }
+}

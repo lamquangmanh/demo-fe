@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  FlexibleValueScalar: { input: any; output: any; }
 };
 
 /** Action entity */
@@ -63,7 +64,7 @@ export type DeleteSuccessResponse = {
 
 export type FilterArgs = {
   field: Scalars['String']['input'];
-  value: Scalars['String']['input'];
+  value: Scalars['FlexibleValueScalar']['input'];
 };
 
 /** Get list */
@@ -87,6 +88,19 @@ export type GetMeResponse = {
 export type GetModulesResponse = {
   __typename?: 'GetModulesResponse';
   data: Array<ModuleEntity>;
+  pagination: PaginationResponse;
+};
+
+/** Get list */
+export type GetPermissionsByUserResponse = {
+  __typename?: 'GetPermissionsByUserResponse';
+  permissions: Array<PermissionInfo>;
+};
+
+/** Get list */
+export type GetProductsResponse = {
+  __typename?: 'GetProductsResponse';
+  data: Array<ProductEntity>;
   pagination: PaginationResponse;
 };
 
@@ -125,14 +139,10 @@ export type LoginResponse = {
 
 export type Menu = {
   __typename?: 'Menu';
-  /** Name of the super menu */
+  icon?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  /** Unique identifier for the super menu */
-  resourceId: Scalars['String']['output'];
-  /** List of sub-menus under the menu */
   subMenus: Array<SubMenu>;
-  /** URL of the super menu icon */
-  url: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 /** Module entity */
@@ -148,6 +158,7 @@ export type ModuleEntity = {
   deletedUserId?: Maybe<Scalars['String']['output']>;
   /** Optional description of the action */
   description?: Maybe<Scalars['String']['output']>;
+  icon?: Maybe<Scalars['String']['output']>;
   /** Module ID */
   moduleId: Scalars['String']['output'];
   /** Name */
@@ -156,19 +167,23 @@ export type ModuleEntity = {
   updatedAt?: Maybe<Scalars['String']['output']>;
   /** Updated user id */
   updatedUserId?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
   createModule: ModuleEntity;
+  createProduct: ProductEntity;
   createResource: ResourceEntity;
   createRole: RoleEntity;
   createUser: UserEntity;
   deleteModule: DeleteSuccessResponse;
+  deleteProduct: DeleteSuccessResponse;
   deleteResource: DeleteSuccessResponse;
   deleteRole: DeleteSuccessResponse;
   deleteUser: DeleteSuccessResponse;
   updateModule: UpdateSuccessResponse;
+  updateProduct: UpdateSuccessResponse;
   updateResource: UpdateSuccessResponse;
   updateRole: UpdateSuccessResponse;
   updateUser: UpdateSuccessResponse;
@@ -178,6 +193,14 @@ export type Mutation = {
 export type MutationCreateModuleArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateProductArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  url: Scalars['String']['input'];
 };
 
 
@@ -212,6 +235,11 @@ export type MutationDeleteModuleArgs = {
 };
 
 
+export type MutationDeleteProductArgs = {
+  productId: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteResourceArgs = {
   resourceId: Scalars['String']['input'];
 };
@@ -231,6 +259,15 @@ export type MutationUpdateModuleArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   moduleId: Scalars['String']['input'];
   name: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateProductArgs = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  productId: Scalars['String']['input'];
+  url: Scalars['String']['input'];
 };
 
 
@@ -299,9 +336,39 @@ export type PermissionEntity = {
   updatedUserId?: Maybe<Scalars['String']['output']>;
 };
 
+export type PermissionInfo = {
+  __typename?: 'PermissionInfo';
+  method: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  requestType: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+};
+
 export type PermissionInput = {
   actionId: Scalars['String']['input'];
   resourceId: Scalars['String']['input'];
+};
+
+/** Product entity */
+export type ProductEntity = {
+  __typename?: 'ProductEntity';
+  /** Created At */
+  createdAt?: Maybe<Scalars['String']['output']>;
+  /** Created user id */
+  createdUserId?: Maybe<Scalars['String']['output']>;
+  /** Deleted At */
+  deletedAt?: Maybe<Scalars['String']['output']>;
+  /** Deleted user id */
+  deletedUserId?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  icon?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  productId: Scalars['String']['output'];
+  /** Updated At */
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  /** Updated user id */
+  updatedUserId?: Maybe<Scalars['String']['output']>;
+  url: Scalars['String']['output'];
 };
 
 export type Query = {
@@ -309,10 +376,13 @@ export type Query = {
   action: ActionEntity;
   actions: GetActionsResponse;
   getMe: GetMeResponse;
+  getPermissionsByUser: GetPermissionsByUserResponse;
   getSuperMenus: GetSuperMenusResponse;
   login: LoginResponse;
   module: ModuleEntity;
   modules: GetModulesResponse;
+  product: ProductEntity;
+  products: GetProductsResponse;
   resource: ResourceEntity;
   resources: GetResourcesResponse;
   role: RoleEntity;
@@ -346,6 +416,18 @@ export type QueryModuleArgs = {
 
 
 export type QueryModulesArgs = {
+  filters: Array<FilterArgs>;
+  pagination: PaginationArgs;
+  sorts: Array<SortArgs>;
+};
+
+
+export type QueryProductArgs = {
+  productId: Scalars['String']['input'];
+};
+
+
+export type QueryProductsArgs = {
   filters: Array<FilterArgs>;
   pagination: PaginationArgs;
   sorts: Array<SortArgs>;
@@ -462,20 +544,17 @@ export enum SortOrder {
 
 export type SubMenu = {
   __typename?: 'SubMenu';
-  actionId: Scalars['String']['output'];
-  method: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  requestType: Scalars['String']['output'];
   url: Scalars['String']['output'];
 };
 
 export type SuperMenu = {
   __typename?: 'SuperMenu';
   description?: Maybe<Scalars['String']['output']>;
+  icon?: Maybe<Scalars['String']['output']>;
   menus: Array<Menu>;
-  moduleId: Scalars['String']['output'];
   name: Scalars['String']['output'];
-  url?: Maybe<Scalars['String']['output']>;
+  url: Scalars['String']['output'];
 };
 
 /** Update successfully response */
@@ -569,7 +648,7 @@ export type GetMeQuery = { __typename?: 'Query', getMe: { __typename?: 'GetMeRes
 export type GetSuperMenusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetSuperMenusQuery = { __typename?: 'Query', getSuperMenus: { __typename?: 'GetSuperMenusResponse', superMenus: Array<{ __typename?: 'SuperMenu', moduleId: string, name: string, description?: string | null, url?: string | null, menus: Array<{ __typename?: 'Menu', resourceId: string, name: string, url: string, subMenus: Array<{ __typename?: 'SubMenu', actionId: string, name: string, requestType: string, url: string, method: string }> }> }> } };
+export type GetSuperMenusQuery = { __typename?: 'Query', getSuperMenus: { __typename?: 'GetSuperMenusResponse', superMenus: Array<{ __typename?: 'SuperMenu', name: string, description?: string | null, url: string, icon?: string | null, menus: Array<{ __typename?: 'Menu', name: string, url?: string | null, icon?: string | null, subMenus: Array<{ __typename?: 'SubMenu', name: string, url: string }> }> }> } };
 
 export type ModuleQueryVariables = Exact<{
   moduleId: Scalars['String']['input'];
@@ -610,6 +689,55 @@ export type DeleteModuleMutationVariables = Exact<{
 
 
 export type DeleteModuleMutation = { __typename?: 'Mutation', deleteModule: { __typename?: 'DeleteSuccessResponse', success: boolean } };
+
+export type GetPermissionsByUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPermissionsByUserQuery = { __typename?: 'Query', getPermissionsByUser: { __typename?: 'GetPermissionsByUserResponse', permissions: Array<{ __typename?: 'PermissionInfo', name: string, url: string, method: string, requestType: string }> } };
+
+export type ProductQueryVariables = Exact<{
+  productId: Scalars['String']['input'];
+}>;
+
+
+export type ProductQuery = { __typename?: 'Query', product: { __typename?: 'ProductEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, productId: string, name: string, url: string, icon?: string | null, description?: string | null } };
+
+export type ProductsQueryVariables = Exact<{
+  pagination: PaginationArgs;
+  sorts: Array<SortArgs> | SortArgs;
+  filters: Array<FilterArgs> | FilterArgs;
+}>;
+
+
+export type ProductsQuery = { __typename?: 'Query', products: { __typename?: 'GetProductsResponse', pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number }, data: Array<{ __typename?: 'ProductEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, productId: string, name: string, url: string, icon?: string | null, description?: string | null }> } };
+
+export type CreateProductMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'ProductEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, productId: string, name: string, url: string, icon?: string | null, description?: string | null } };
+
+export type UpdateProductMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+  productId: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  icon?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct: { __typename?: 'UpdateSuccessResponse', success: boolean } };
+
+export type DeleteProductMutationVariables = Exact<{
+  productId: Scalars['String']['input'];
+}>;
+
+
+export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct: { __typename?: 'DeleteSuccessResponse', success: boolean } };
 
 
 export const LoginDocument = gql`
@@ -702,20 +830,17 @@ export const GetSuperMenusDocument = gql`
     query GetSuperMenus {
   getSuperMenus {
     superMenus {
-      moduleId
       name
       description
       url
+      icon
       menus {
-        resourceId
         name
         url
+        icon
         subMenus {
-          actionId
           name
-          requestType
           url
-          method
         }
       }
     }
@@ -971,3 +1096,280 @@ export function useDeleteModuleMutation(baseOptions?: Apollo.MutationHookOptions
 export type DeleteModuleMutationHookResult = ReturnType<typeof useDeleteModuleMutation>;
 export type DeleteModuleMutationResult = Apollo.MutationResult<DeleteModuleMutation>;
 export type DeleteModuleMutationOptions = Apollo.BaseMutationOptions<DeleteModuleMutation, DeleteModuleMutationVariables>;
+export const GetPermissionsByUserDocument = gql`
+    query GetPermissionsByUser {
+  getPermissionsByUser {
+    permissions {
+      name
+      url
+      method
+      requestType
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetPermissionsByUserQuery__
+ *
+ * To run a query within a React component, call `useGetPermissionsByUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPermissionsByUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPermissionsByUserQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPermissionsByUserQuery(baseOptions?: Apollo.QueryHookOptions<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>(GetPermissionsByUserDocument, options);
+      }
+export function useGetPermissionsByUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>(GetPermissionsByUserDocument, options);
+        }
+export function useGetPermissionsByUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>(GetPermissionsByUserDocument, options);
+        }
+export type GetPermissionsByUserQueryHookResult = ReturnType<typeof useGetPermissionsByUserQuery>;
+export type GetPermissionsByUserLazyQueryHookResult = ReturnType<typeof useGetPermissionsByUserLazyQuery>;
+export type GetPermissionsByUserSuspenseQueryHookResult = ReturnType<typeof useGetPermissionsByUserSuspenseQuery>;
+export type GetPermissionsByUserQueryResult = Apollo.QueryResult<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>;
+export const ProductDocument = gql`
+    query Product($productId: String!) {
+  product(productId: $productId) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    productId
+    name
+    url
+    icon
+    description
+  }
+}
+    `;
+
+/**
+ * __useProductQuery__
+ *
+ * To run a query within a React component, call `useProductQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProductQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProductQuery({
+ *   variables: {
+ *      productId: // value for 'productId'
+ *   },
+ * });
+ */
+export function useProductQuery(baseOptions: Apollo.QueryHookOptions<ProductQuery, ProductQueryVariables> & ({ variables: ProductQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ProductQuery, ProductQueryVariables>(ProductDocument, options);
+      }
+export function useProductLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProductQuery, ProductQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ProductQuery, ProductQueryVariables>(ProductDocument, options);
+        }
+export function useProductSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ProductQuery, ProductQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ProductQuery, ProductQueryVariables>(ProductDocument, options);
+        }
+export type ProductQueryHookResult = ReturnType<typeof useProductQuery>;
+export type ProductLazyQueryHookResult = ReturnType<typeof useProductLazyQuery>;
+export type ProductSuspenseQueryHookResult = ReturnType<typeof useProductSuspenseQuery>;
+export type ProductQueryResult = Apollo.QueryResult<ProductQuery, ProductQueryVariables>;
+export const ProductsDocument = gql`
+    query Products($pagination: PaginationArgs!, $sorts: [SortArgs!]!, $filters: [FilterArgs!]!) {
+  products(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+    data {
+      createdAt
+      createdUserId
+      updatedAt
+      updatedUserId
+      deletedAt
+      deletedUserId
+      productId
+      name
+      url
+      icon
+      description
+    }
+  }
+}
+    `;
+
+/**
+ * __useProductsQuery__
+ *
+ * To run a query within a React component, call `useProductsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProductsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProductsQuery({
+ *   variables: {
+ *      pagination: // value for 'pagination'
+ *      sorts: // value for 'sorts'
+ *      filters: // value for 'filters'
+ *   },
+ * });
+ */
+export function useProductsQuery(baseOptions: Apollo.QueryHookOptions<ProductsQuery, ProductsQueryVariables> & ({ variables: ProductsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ProductsQuery, ProductsQueryVariables>(ProductsDocument, options);
+      }
+export function useProductsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProductsQuery, ProductsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ProductsQuery, ProductsQueryVariables>(ProductsDocument, options);
+        }
+export function useProductsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ProductsQuery, ProductsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ProductsQuery, ProductsQueryVariables>(ProductsDocument, options);
+        }
+export type ProductsQueryHookResult = ReturnType<typeof useProductsQuery>;
+export type ProductsLazyQueryHookResult = ReturnType<typeof useProductsLazyQuery>;
+export type ProductsSuspenseQueryHookResult = ReturnType<typeof useProductsSuspenseQuery>;
+export type ProductsQueryResult = Apollo.QueryResult<ProductsQuery, ProductsQueryVariables>;
+export const CreateProductDocument = gql`
+    mutation CreateProduct($name: String!, $url: String!, $description: String, $icon: String) {
+  createProduct(name: $name, url: $url, description: $description, icon: $icon) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    productId
+    name
+    url
+    icon
+    description
+  }
+}
+    `;
+export type CreateProductMutationFn = Apollo.MutationFunction<CreateProductMutation, CreateProductMutationVariables>;
+
+/**
+ * __useCreateProductMutation__
+ *
+ * To run a mutation, you first call `useCreateProductMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateProductMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createProductMutation, { data, loading, error }] = useCreateProductMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      url: // value for 'url'
+ *      description: // value for 'description'
+ *      icon: // value for 'icon'
+ *   },
+ * });
+ */
+export function useCreateProductMutation(baseOptions?: Apollo.MutationHookOptions<CreateProductMutation, CreateProductMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateProductMutation, CreateProductMutationVariables>(CreateProductDocument, options);
+      }
+export type CreateProductMutationHookResult = ReturnType<typeof useCreateProductMutation>;
+export type CreateProductMutationResult = Apollo.MutationResult<CreateProductMutation>;
+export type CreateProductMutationOptions = Apollo.BaseMutationOptions<CreateProductMutation, CreateProductMutationVariables>;
+export const UpdateProductDocument = gql`
+    mutation UpdateProduct($name: String!, $url: String!, $productId: String!, $description: String, $icon: String) {
+  updateProduct(
+    name: $name
+    url: $url
+    productId: $productId
+    description: $description
+    icon: $icon
+  ) {
+    success
+  }
+}
+    `;
+export type UpdateProductMutationFn = Apollo.MutationFunction<UpdateProductMutation, UpdateProductMutationVariables>;
+
+/**
+ * __useUpdateProductMutation__
+ *
+ * To run a mutation, you first call `useUpdateProductMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProductMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProductMutation, { data, loading, error }] = useUpdateProductMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      url: // value for 'url'
+ *      productId: // value for 'productId'
+ *      description: // value for 'description'
+ *      icon: // value for 'icon'
+ *   },
+ * });
+ */
+export function useUpdateProductMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProductMutation, UpdateProductMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProductMutation, UpdateProductMutationVariables>(UpdateProductDocument, options);
+      }
+export type UpdateProductMutationHookResult = ReturnType<typeof useUpdateProductMutation>;
+export type UpdateProductMutationResult = Apollo.MutationResult<UpdateProductMutation>;
+export type UpdateProductMutationOptions = Apollo.BaseMutationOptions<UpdateProductMutation, UpdateProductMutationVariables>;
+export const DeleteProductDocument = gql`
+    mutation DeleteProduct($productId: String!) {
+  deleteProduct(productId: $productId) {
+    success
+  }
+}
+    `;
+export type DeleteProductMutationFn = Apollo.MutationFunction<DeleteProductMutation, DeleteProductMutationVariables>;
+
+/**
+ * __useDeleteProductMutation__
+ *
+ * To run a mutation, you first call `useDeleteProductMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteProductMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteProductMutation, { data, loading, error }] = useDeleteProductMutation({
+ *   variables: {
+ *      productId: // value for 'productId'
+ *   },
+ * });
+ */
+export function useDeleteProductMutation(baseOptions?: Apollo.MutationHookOptions<DeleteProductMutation, DeleteProductMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteProductMutation, DeleteProductMutationVariables>(DeleteProductDocument, options);
+      }
+export type DeleteProductMutationHookResult = ReturnType<typeof useDeleteProductMutation>;
+export type DeleteProductMutationResult = Apollo.MutationResult<DeleteProductMutation>;
+export type DeleteProductMutationOptions = Apollo.BaseMutationOptions<DeleteProductMutation, DeleteProductMutationVariables>;

@@ -9,7 +9,7 @@ let client: any = null;
 
 const getHeaders = () => {
   // Get access token from local storage
-  const accessToken = localStorage?.getItem('accessToken') || '';
+  const accessToken = localStorage?.getItem('accessToken') ?? '';
   // Get refresh token from local storage
   // const refreshToken = localStorage.getItem('refreshToken') || '';
   // Return headers with tokens

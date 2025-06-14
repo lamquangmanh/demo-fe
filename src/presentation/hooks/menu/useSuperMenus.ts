@@ -36,7 +36,7 @@ export function useSuperMenus() {
 
       // handle error if any
       if (!result || result.error) {
-        console.error('GraphQL errors:', result?.error);
+        console.log('GraphQL errors:', result);
         // You can throw or handle errors here
         return;
       }
@@ -46,7 +46,7 @@ export function useSuperMenus() {
         setSuperMenus(result.data.getSuperMenus.superMenus);
       }
     } catch (error) {
-      console.error('Network or unexpected error:', error);
+      console.log('Network or unexpected error:', error);
     }
   }, [getSuperMenuQuery, setSuperMenus]);
 

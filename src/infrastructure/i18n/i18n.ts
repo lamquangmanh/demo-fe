@@ -4,6 +4,7 @@ import { initReactI18next } from 'react-i18next';
 
 // Import translation files
 import enCommonFile from '@/common/locales/en/common.json';
+import enIamFile from '@/common/locales/en/iam.json';
 
 import viCommonFile from '@/common/locales/vi/common.json';
 
@@ -12,7 +13,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { common: enCommonFile },
+      en: { common: enCommonFile, iam: enIamFile },
       vi: { common: viCommonFile },
     },
     lng: 'en',

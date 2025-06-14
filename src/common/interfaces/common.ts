@@ -4,3 +4,9 @@ export interface IAppList {
   desc?: string;
   icon?: string;
 }
+
+export interface TableDataResponse<T> {
+  data: T[];
+  total: number;
+  success?: boolean;
+}

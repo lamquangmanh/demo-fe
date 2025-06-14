@@ -19,7 +19,6 @@ export function AntdProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ConfigProvider
-      // locale={enUS}
       theme={THEME_CONFIG}
       locale={localeMap[typedLocale] || enUS}
     >

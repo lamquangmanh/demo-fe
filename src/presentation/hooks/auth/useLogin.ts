@@ -45,7 +45,7 @@ export function useLogin(options?: Record<string, any>) {
 
         // handle error if any
         if (!result || result?.error) {
-          console.error('GraphQL errors:', result?.error);
+          console.log('GraphQL errors:', result?.error);
           // You can throw or handle errors here
           // show a notification
           notify.error({
@@ -73,7 +73,7 @@ export function useLogin(options?: Record<string, any>) {
         // // redirect to dashboard
         router.push(DASHBOARD_PATH);
       } catch (error) {
-        console.error('Network or unexpected error:', error);
+        console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
         notify.error({
           message: 'Something went wrong',
@@ -82,7 +82,7 @@ export function useLogin(options?: Record<string, any>) {
         });
       }
     },
-    [runLoginQuery, router, notify]
+    [runLoginQuery, router, notify, setAccessToken, setRefreshToken]
   );
 
   return {

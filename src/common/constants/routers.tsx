@@ -14,6 +14,7 @@ export const IAM_USERS_PATH = '/iam/users';
 export const IAM_ROLES_PATH = '/iam/roles';
 export const IAM_RESOURCES_PATH = '/iam/resources';
 export const IAM_MODULES_PATH = '/iam/modules';
+export const IAM_PRODUCTS_PATH = '/iam/products';
 
 export const ROUTES = [
   {
@@ -30,6 +31,7 @@ export const ROUTES = [
       { path: IAM_ROLES_PATH, name: 'Roles' },
       { path: IAM_RESOURCES_PATH, name: 'Resources' },
       { path: IAM_MODULES_PATH, name: 'Modules' },
+      { path: IAM_PRODUCTS_PATH, name: 'Products' },
     ],
   },
 ];
