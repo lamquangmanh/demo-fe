@@ -5,3 +5,4 @@ export const CONFIGS = {
 };
 
 console.log('CONFIGS:', CONFIGS);
+console.log('envs:', process.env);
