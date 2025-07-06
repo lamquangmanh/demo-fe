@@ -6,12 +6,12 @@ import type { FormInstance } from 'antd';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 
 import { ModuleEntity } from '@/domain/entities';
-interface User {
-  key: string;
-  name: string;
-  email: string;
-  role: string;
-}
+// interface User {
+//   key: string;
+//   name: string;
+//   email: string;
+//   role: string;
+// }
 
 // const dummyData: User[] = [
 //   {
@@ -36,37 +36,37 @@ interface User {
 //   { key: '5', name: 'Emma Brown', email: 'emma@example.com', role: 'User' },
 // ];
 
-const mockUsers = Array.from({ length: 57 }, (_, i) => ({
-  key: i,
-  name: `User ${i + 1}`,
-  email: `user${i + 1}@example.com`,
-  role: 'Moderator',
-}));
+// const mockUsers = Array.from({ length: 57 }, (_, i) => ({
+//   key: i,
+//   name: `User ${i + 1}`,
+//   email: `user${i + 1}@example.com`,
+//   role: 'Moderator',
+// }));
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Mock data fetcher
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fetchData = async (params: any) => {
-  await sleep(5000); // simulate 5s delay
+// // Mock data fetcher
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// const fetchData = async (params: any) => {
+//   await sleep(5000); // simulate 5s delay
 
-  // Simulate backend filtering
-  const { name, email, current = 1, pageSize = 10 } = params;
-  const filteredData = mockUsers.filter(
-    (user) =>
-      (!name || user.name.includes(name)) &&
-      (!email || user.email.includes(email))
-  );
+//   // Simulate backend filtering
+//   const { name, email, current = 1, pageSize = 10 } = params;
+//   const filteredData = mockUsers.filter(
+//     (user) =>
+//       (!name || user.name.includes(name)) &&
+//       (!email || user.email.includes(email))
+//   );
 
-  const start = (current - 1) * pageSize;
-  const end = start + pageSize;
+//   const start = (current - 1) * pageSize;
+//   const end = start + pageSize;
 
-  return {
-    data: filteredData.slice(start, end),
-    total: filteredData.length,
-    success: true,
-  };
-};
+//   return {
+//     data: filteredData.slice(start, end),
+//     total: filteredData.length,
+//     success: true,
+//   };
+// };
 
 const ListModule = () => {
   const actionRef = useRef<ActionType | null>(null);
@@ -76,22 +76,22 @@ const ListModule = () => {
     page: 1,
   });
 
-  const [selectedUser, setSelectedUser] = useState<ModuleEntity | null>(null);
-  const [open, setOpen] = useState(false);
+  // const [selectedUser, setSelectedUser] = useState<ModuleEntity | null>(null);
+  // const [open, setOpen] = useState(false);
 
-  const handleView = (user: ModuleEntity) => {
-    setSelectedUser(user);
-    setOpen(true);
-  };
+  // const handleView = (user: ModuleEntity) => {
+  //   // setSelectedUser(user);
+  //   // setOpen(true);
+  // };
 
-  const handleUpdate = (values: Partial<ModuleEntity>) => {
-    setDataSource((prev) =>
-      prev.map((user) =>
-        user.id === selectedUser?.id ? { ...user, ...values } : user
-      )
-    );
-    setOpen(false);
-  };
+  // const handleUpdate = (values: Partial<ModuleEntity>) => {
+  //   setDataSource((prev) =>
+  //     prev.map((user) =>
+  //       user.id === selectedUser?.id ? { ...user, ...values } : user
+  //     )
+  //   );
+  //   // setOpen(false);
+  // };
 
   const columns: ProColumns<ModuleEntity>[] = [
     {
@@ -140,11 +140,7 @@ const ListModule = () => {
       title: 'Action',
       key: 'action',
       search: false,
-      render: (_, record) => (
-        <Button type="primary" onClick={() => handleView(record)}>
-          Edit
-        </Button>
-      ),
+      render: () => <Button type="primary">Edit</Button>,
     },
   ];
 
@@ -192,7 +188,7 @@ const ListModule = () => {
             actionRef.current?.reloadAndRest?.();
           },
         }}
-        request={fetchData}
+        // request={fetchData}
         // request={async (params) => {
         //   const { name, email, role } = params;
 

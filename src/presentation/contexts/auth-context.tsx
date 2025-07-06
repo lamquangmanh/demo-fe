@@ -1,6 +1,10 @@
-// context/auth-context.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+import {
+  getLocalStorage,
+  setLocalStorage,
+  removeLocalStorage,
+} from '@/common/utils';
 // import presentation/hooks
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -23,18 +27,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     // Optional: load token from cookie/localStorage
-    const savedToken = localStorage.getItem('token');
+    const savedToken = getLocalStorage('token');
     if (savedToken) setToken(savedToken);
   }, []);
 
   const login = (newToken: string) => {
     setToken(newToken);
-    localStorage.setItem('token', newToken);
+    setLocalStorage('token', newToken);
   };
 
   const logout = () => {
     setToken(null);
-    localStorage.removeItem('token');
+    removeLocalStorage('token');
   };
 
   return (

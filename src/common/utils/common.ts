@@ -65,3 +65,29 @@ export const buildFilterArgs = (filter: object): FilterArgs[] => {
 
   return filters;
 };
+
+export const setLocalStorage = (key: string, value: string) => {
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    localStorage.setItem(key, value);
+  }
+};
+
+export const getLocalStorage = (key: string): string | null => {
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return localStorage.getItem(key);
+  }
+  return null;
+};
+
+export const removeLocalStorage = (key: string): string | null => {
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return localStorage.removeItem(key);
+  }
+  return null;
+};

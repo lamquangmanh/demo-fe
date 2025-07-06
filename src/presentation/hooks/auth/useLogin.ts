@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 // import from domain
 import { DASHBOARD_PATH } from '@/common/constants';
+import { setLocalStorage } from '@/common/utils';
 
 // import from presentation/hooks
 import { useAbstractHook } from '../common/useAbtractHook';
@@ -59,8 +60,9 @@ export function useLogin(options?: Record<string, any>) {
         // set cookies with accessToken and refreshToken
         const accessToken = result?.data?.login?.accessToken ?? '';
         const refreshToken = result?.data?.login?.refreshToken ?? '';
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
+        setLocalStorage('accessToken', accessToken);
+        setLocalStorage('refreshToken', refreshToken);
+
         setAccessToken(accessToken);
         setRefreshToken(refreshToken);
 

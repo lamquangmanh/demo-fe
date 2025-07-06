@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 
 // import from common
 import { LOGIN_PATH } from '@/common/constants';
+import { removeLocalStorage } from '@/common/utils';
+
 // import from domain
 import { useAuthStore } from '@/domain/stores';
 
@@ -16,8 +18,8 @@ export function useLogout() {
   const handleLogout = useCallback(() => {
     try {
       // clear accessToken and refreshToken from localStorage
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      removeLocalStorage('accessToken');
+      removeLocalStorage('refreshToken');
 
       // clear auth store
       clear();

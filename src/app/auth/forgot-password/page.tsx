@@ -4,7 +4,7 @@ import { Button, Checkbox, Form, Input, Flex, Card } from 'antd';
 import { useRouter } from 'next/navigation';
 
 // import from domain
-import { DASHBOARD_PATH, AUTH_FORGOT_PASSWORD_PATH } from '@/common/constants';
+import { DASHBOARD_PATH } from '@/common/constants';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
