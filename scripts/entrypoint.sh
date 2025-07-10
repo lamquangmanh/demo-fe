@@ -10,5 +10,9 @@ function apply_path {
 }
 
 apply_path
+
+# Build Next.js app at runtime using the injected env vars
+yarn build
+
 echo "Starting Nextjs"
 exec "$@"

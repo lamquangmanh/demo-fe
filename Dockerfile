@@ -17,7 +17,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Build the Next.js app for production
-RUN yarn build
+# RUN yarn build
 
 # 2. Run the production app with npm start
 FROM node:22-bullseye AS runner
