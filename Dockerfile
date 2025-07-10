@@ -1,6 +1,10 @@
 # 1. Install dependencies and build the app
 FROM node:22-bullseye AS builder
 
+ARG NEXT_PUBLIC_GRAPHQL_ENDPOINT
+
+ENV NEXT_PUBLIC_GRAPHQL_ENDPOINT=$NEXT_PUBLIC_GRAPHQL_ENDPOINT
+
 WORKDIR /app
 
 # Copy only package files first for better cache
@@ -42,4 +46,4 @@ ENTRYPOINT ["/app/entrypoint.sh"]
 EXPOSE 3000
 
 # Use npm to start the Next.js app
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]
