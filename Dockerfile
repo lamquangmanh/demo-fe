@@ -30,8 +30,13 @@ RUN yarn install --frozen-lockfile --production
 # Copy build output and static files from the builder image
 COPY --from=builder /app/.next .next
 COPY --from=builder /app/public public
-# COPY --from=builder /app/next.config.js .
+COPY --from=builder /app/next.config.js .
 # COPY --from=builder /app/.env .env
+COPY ./scripts/entrypoint.sh .
+
+RUN ["chmod", "+x", "./entrypoint.sh"]
+
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Expose the app on port 3000
 EXPOSE 3000
