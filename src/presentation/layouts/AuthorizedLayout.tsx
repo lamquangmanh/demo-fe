@@ -53,7 +53,7 @@ const AuthorizedLayout = ({ children }: LayoutProps) => {
   // initialize super menus from menu store
   // and fetch super menus from server if not already fetched
   // This is to ensure that the super menus are available for the layout
-  const { superMenus, appList } = useMenuStore();
+  const { superMenus, appList, isLoaded, setIsLoaded } = useMenuStore();
   const { getSuperMenuRequest } = useSuperMenus();
 
   // Check if user is authenticated, if not redirect to login page
@@ -67,10 +67,11 @@ const AuthorizedLayout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     // If superMenus are not fetched, fetch them
-    if (superMenus.length === 0) {
+    if (!isLoaded) {
       getSuperMenuRequest();
+      setIsLoaded(true);
     }
-  }, [superMenus.length, getSuperMenuRequest]);
+  }, [superMenus.length, isLoaded, setIsLoaded, getSuperMenuRequest]);
 
   // Prevent hydration mismatch
   const isMounted = useComponentMounted();

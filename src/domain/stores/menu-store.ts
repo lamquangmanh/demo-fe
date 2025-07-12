@@ -6,6 +6,7 @@ import { IAppList } from '@/common/interfaces';
 import { getAppListFromSuperMenus } from '@/common/utils';
 
 export interface MenuState {
+  isLoaded: boolean;
   superMenus: SuperMenu[];
   menus: Menu[];
   appList: IAppList[];
@@ -14,9 +15,11 @@ export interface MenuState {
   clearAll: () => void;
   clearMenus: () => void;
   clearSuperMenu: () => void;
+  setIsLoaded: (isLoaded: boolean) => void;
 }
 
 export const useMenuStore = create<MenuState>((set) => ({
+  isLoaded: false,
   superMenus: [],
   menus: [],
   appList: [],
@@ -41,4 +44,9 @@ export const useMenuStore = create<MenuState>((set) => ({
       return { ...state, superMenus: [] };
     }),
   clearAll: () => set({ superMenus: [], menus: [], appList: [] }),
+  setIsLoaded: (isLoaded: boolean) =>
+    set((state: MenuState) => ({
+      ...state,
+      isLoaded,
+    })),
 }));
