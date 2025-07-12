@@ -25,7 +25,7 @@ WORKDIR /app
 COPY --from=builder /app /app
 
 # Install only production dependencies
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --frozen-lockfile
 
 # Copy entrypoint script to build and start at runtime
 COPY ./scripts/entrypoint.sh .
