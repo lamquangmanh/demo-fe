@@ -1,4 +1,17 @@
-# #!/usr/bin/env bash
+#!/bin/bash
+set -e
+
+echo "[entrypoint] Building Next.js app at runtime with injected envs..."
+echo "NEXT_PUBLIC_GRAPHQL_ENDPOINT = $NEXT_PUBLIC_GRAPHQL_ENDPOINT"
+
+# Build app with current env (injected by K8s)
+yarn build
+
+echo "[entrypoint] Starting app..."
+exec npm run start
+
+
+#!/usr/bin/env bash
 # set -Ex
 
 # function apply_path {
@@ -18,15 +31,3 @@
 # exec "$@"
 
 # --------------------------
-
-#!/bin/bash
-set -e
-
-echo "[entrypoint] Building Next.js app at runtime with injected envs..."
-echo "NEXT_PUBLIC_GRAPHQL_ENDPOINT = $NEXT_PUBLIC_GRAPHQL_ENDPOINT"
-
-# Build app with current env (injected by K8s)
-yarn build
-
-echo "[entrypoint] Starting app..."
-exec npm run start
