@@ -9,69 +9,57 @@ import { useAbstractHook, useNotify } from '../common';
 
 // import from infrastructure
 import {
-  GetModulesDocument,
-  GetModulesQueryVariables,
-  GetModulesResponse,
+  ModuleDocument,
+  ModuleQueryVariables,
+  ModuleEntity as ModuleResponse,
 } from '@/infrastructure/graphql';
 
 // import from common
-import { TableDataResponse } from '@/common/interfaces';
-import { NO_DATA, DEFAULT_ERROR } from '@/common/constants';
+import { DEFAULT_ERROR } from '@/common/constants';
 
 // import from domain
 import { ModuleEntity } from '@/domain/entities';
 
 type UseListModuleOptions = QueryHookOptions<
-  { modules: GetModulesResponse },
-  GetModulesQueryVariables
+  { module: ModuleResponse },
+  ModuleQueryVariables
 >;
 
-export function useListModule(options?: UseListModuleOptions) {
+export function useDetailModule(options?: UseListModuleOptions) {
   // initialize hooks
   const { runQuery, loading, data, error, called } = useAbstractHook<
-    { modules: GetModulesResponse },
-    GetModulesQueryVariables
-  >(GetModulesDocument, options);
+    { module: ModuleResponse },
+    ModuleQueryVariables
+  >(ModuleDocument, options);
 
   // initialize notify hook
   const [notify] = useNotify();
 
-  const handleGetModulesRequest = useCallback(
-    async (
-      variables?: GetModulesQueryVariables
-    ): Promise<TableDataResponse<ModuleEntity>> => {
+  const handleGetDetailModuleRequest = useCallback(
+    async (variables?: ModuleQueryVariables): Promise<ModuleEntity | null> => {
       try {
-        // if loading is true, return early
-        if (loading) {
-          return NO_DATA;
-        }
-
         const result = await runQuery(variables);
         // handle error if any
         if (!result || result?.error) {
           console.log('GraphQL error:', result?.error);
           notify.error(DEFAULT_ERROR);
-          return NO_DATA;
+          return null;
         }
 
         // handle success
-        return {
-          data: result.data?.modules?.data || [],
-          total: result.data?.modules?.pagination?.totalItems || 0,
-          success: true,
-        };
+        return result.data?.module || null;
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
         notify.error(DEFAULT_ERROR);
-        return NO_DATA;
+        return null;
       }
     },
     [runQuery, loading, notify]
   );
 
   return {
-    handleGetModulesRequest,
+    handleGetDetailModuleRequest,
     loading,
     data,
     error,

@@ -10,5 +10,18 @@
       "en": "English",
       "vi": "Việt Nam"
     }
+  },
+  "table": {
+    "filter": {
+      "search": "Tìm kiếm",
+      "reset": "Đặt lại",
+      "confirm": "Xác nhận",
+      "cancel": "Huỷ",
+      "add": "Thêm"
+    },
+    "editButton": "Cập nhật",
+    "deleteButton": "Xoá",
+    "deleteYesButton": "Đồng ý",
+    "deleteNoButton": "Không"
   }
 }

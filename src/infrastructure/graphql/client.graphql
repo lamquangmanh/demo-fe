@@ -45,8 +45,15 @@ query Module($moduleId: String!) {
     deletedAt
     deletedUserId
     moduleId
+    productId
     name
     description
+    icon
+    url
+    product {
+      productId
+      name
+    }
   }
 }
 
@@ -64,8 +71,23 @@ query GetModules(
       deletedAt
       deletedUserId
       moduleId
+      productId
       name
       description
+      icon
+      url
+      createdUser {
+        username
+        email
+      }
+      updatedUser {
+        username
+        email
+      }
+      deletedUser {
+        username
+        email
+      }
     }
 
     pagination {
@@ -78,8 +100,20 @@ query GetModules(
   }
 }
 
-mutation CreateModule($name: String!, $description: String) {
-  createModule(name: $name, description: $description) {
+mutation CreateModule(
+  $name: String!
+  $description: String
+  $productId: String!
+  $icon: String
+  $url: String
+) {
+  createModule(
+    name: $name
+    description: $description
+    productId: $productId
+    icon: $icon
+    url: $url
+  ) {
     createdAt
     createdUserId
     updatedAt
@@ -87,17 +121,30 @@ mutation CreateModule($name: String!, $description: String) {
     deletedAt
     deletedUserId
     moduleId
+    productId
     name
     description
+    icon
+    url
   }
 }
 
 mutation UpdateModule(
   $moduleId: String!
+  $productId: String!
   $name: String!
   $description: String
+  $icon: String
+  $url: String
 ) {
-  updateModule(moduleId: $moduleId, name: $name, description: $description) {
+  updateModule(
+    moduleId: $moduleId
+    productId: $productId
+    name: $name
+    description: $description
+    icon: $icon
+    url: $url
+  ) {
     success
   }
 }
@@ -160,6 +207,18 @@ query Products(
       url
       icon
       description
+      createdUser {
+        username
+        email
+      }
+      updatedUser {
+        username
+        email
+      }
+      deletedUser {
+        username
+        email
+      }
     }
   }
 }

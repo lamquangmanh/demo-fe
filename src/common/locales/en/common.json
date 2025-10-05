@@ -23,5 +23,8 @@
     "deleteButton": "Delete",
     "deleteYesButton": "Yes",
     "deleteNoButton": "No"
+  },
+  "form": {
+    "noDataFoundText": "No data found"
   }
 }

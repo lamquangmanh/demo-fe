@@ -1,160 +1,197 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { Typography, Button } from 'antd';
+import { Typography, Button, Flex, Popconfirm } from 'antd';
 import type { FormInstance } from 'antd';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import { useTranslation } from 'next-i18next';
+import dayjs from 'dayjs';
 
+// import from domain
 import { ModuleEntity } from '@/domain/entities';
-// interface User {
-//   key: string;
-//   name: string;
-//   email: string;
-//   role: string;
-// }
 
-// const dummyData: User[] = [
-//   {
-//     key: '1',
-//     name: 'Alice Johnson',
-//     email: 'alice@example.com',
-//     role: 'Admin',
-//   },
-//   { key: '2', name: 'Bob Smith', email: 'bob@example.com', role: 'User' },
-//   {
-//     key: '3',
-//     name: 'Charlie Rose',
-//     email: 'charlie@example.com',
-//     role: 'User',
-//   },
-//   {
-//     key: '4',
-//     name: 'David Lee',
-//     email: 'david@example.com',
-//     role: 'Moderator',
-//   },
-//   { key: '5', name: 'Emma Brown', email: 'emma@example.com', role: 'User' },
-// ];
+// import from common
+import { PAGE_SIZE_OPTIONS, DEFAULT_SORT } from '@/common/constants';
+import { buildSortArgs, buildFilterArgs } from '@/common/utils';
 
-// const mockUsers = Array.from({ length: 57 }, (_, i) => ({
-//   key: i,
-//   name: `User ${i + 1}`,
-//   email: `user${i + 1}@example.com`,
-//   role: 'Moderator',
-// }));
+// import from presentation/hooks
+import {
+  useListModule,
+  useDeleteModule,
+  useDetailModule,
+} from '@/presentation/hooks';
 
-// const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// // Mock data fetcher
-// // eslint-disable-next-line @typescript-eslint/no-explicit-any
-// const fetchData = async (params: any) => {
-//   await sleep(5000); // simulate 5s delay
-
-//   // Simulate backend filtering
-//   const { name, email, current = 1, pageSize = 10 } = params;
-//   const filteredData = mockUsers.filter(
-//     (user) =>
-//       (!name || user.name.includes(name)) &&
-//       (!email || user.email.includes(email))
-//   );
-
-//   const start = (current - 1) * pageSize;
-//   const end = start + pageSize;
-
-//   return {
-//     data: filteredData.slice(start, end),
-//     total: filteredData.length,
-//     success: true,
-//   };
-// };
+// import create Module drawer
+import ModuleCreateDrawer from './Create';
+import ModuleEditDrawer from './Edit';
 
 const ListModule = () => {
+  const { t } = useTranslation('iam');
   const actionRef = useRef<ActionType | null>(null);
   const formRef = useRef<FormInstance | undefined>(undefined);
+
+  // state to manage selected module and edit popup
+  const [selectedModule, setSelectedModule] = useState<ModuleEntity | null>(
+    null
+  );
+  const [selectedModuleDelete, setSelectedModuleDelete] =
+    useState<ModuleEntity | null>(null);
+  const [openEditPopup, setOpenEditPopup] = useState(false);
+
+  // state to manage create module popup
+  const [openCreatePopup, setOpenCreatePopup] = useState(false);
+
+  const { handleDeleteModuleRequest } = useDeleteModule();
+
   const [pagination, setPagination] = useState({
     pageSize: 10,
     page: 1,
   });
 
-  // const [selectedUser, setSelectedUser] = useState<ModuleEntity | null>(null);
-  // const [open, setOpen] = useState(false);
+  // use custom hook to handle Module listing
+  const { handleGetModulesRequest, loading } = useListModule();
+  const { handleGetDetailModuleRequest, loading: loadingDetail } =
+    useDetailModule();
 
-  // const handleView = (user: ModuleEntity) => {
-  //   // setSelectedUser(user);
-  //   // setOpen(true);
-  // };
+  const handleEdit = async (module: ModuleEntity) => {
+    setOpenEditPopup(true);
+    // setSelectedModule(module);
+    const detail = await handleGetDetailModuleRequest({
+      moduleId: module.moduleId,
+    });
+    setSelectedModule(detail);
+  };
 
-  // const handleUpdate = (values: Partial<ModuleEntity>) => {
-  //   setDataSource((prev) =>
-  //     prev.map((user) =>
-  //       user.id === selectedUser?.id ? { ...user, ...values } : user
-  //     )
-  //   );
-  //   // setOpen(false);
-  // };
+  const handleDelete = (module: ModuleEntity) => {
+    setSelectedModuleDelete(module);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedModuleDelete) return;
+
+    // Call the delete Module request here
+    await handleDeleteModuleRequest({
+      moduleId: selectedModuleDelete.moduleId,
+    });
+
+    // Reset the selected Module after deletion
+    setSelectedModuleDelete(null);
+    // Reload the table data
+    actionRef.current?.reloadAndRest?.();
+  };
 
   const columns: ProColumns<ModuleEntity>[] = [
     {
-      title: 'Id',
-      dataIndex: 'moduleId',
-      width: 80,
+      title: t('module.list.table.name', { ns: 'iam' }),
+      dataIndex: 'name',
+      valueType: 'text',
+      sorter: true,
+    },
+    {
+      title: t('module.list.table.description', { ns: 'iam' }),
+      dataIndex: 'description',
+      valueType: 'text',
       search: false,
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      valueType: 'text',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      valueType: 'text',
-    },
-    {
-      title: 'Created At',
+      title: t('product.list.table.createdAt', { ns: 'iam' }),
       dataIndex: 'createdAt',
       valueType: 'dateTime',
       search: false,
+      sorter: true,
+      width: 200,
+      render: (_, record) =>
+        record.createdAt
+          ? dayjs(record.createdAt).format('YYYY-MM-DD HH:mm [GMT]Z')
+          : 'N/A',
     },
     {
-      title: 'Created User',
+      title: t('product.list.table.createdUser', { ns: 'iam' }),
       dataIndex: 'createdUser.username',
       valueType: 'text',
       search: false,
+      width: 200,
       render: (text, record) => record.createdUser?.username || 'N/A',
     },
     {
-      title: 'Updated At',
+      title: t('product.list.table.updatedAt', { ns: 'iam' }),
       dataIndex: 'updatedAt',
       valueType: 'dateTime',
       search: false,
+      sorter: true,
+      width: 200,
+      render: (_, record) =>
+        record.updatedAt
+          ? dayjs(record.updatedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
+          : 'N/A',
     },
     {
-      title: 'Updated User',
+      title: t('product.list.table.updatedUser', { ns: 'iam' }),
       dataIndex: 'updatedUser.username',
       valueType: 'text',
       search: false,
+      width: 200,
       render: (text, record) => record.updatedUser?.username || 'N/A',
     },
     {
-      title: 'Action',
+      title: t('product.list.table.deletedAt', { ns: 'iam' }),
+      dataIndex: 'deletedAt',
+      valueType: 'dateTime',
+      search: false,
+      sorter: true,
+      width: 200,
+      render: (_, record) =>
+        record.deletedAt
+          ? dayjs(record.deletedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
+          : 'N/A',
+    },
+    {
+      title: t('product.list.table.deletedUser', { ns: 'iam' }),
+      dataIndex: 'deletedUser.username',
+      valueType: 'text',
+      search: false,
+      width: 200,
+      render: (text, record) => record.deletedUser?.username || 'N/A',
+    },
+    {
+      title: t('module.list.table.actions', { ns: 'iam' }),
       key: 'action',
       search: false,
-      render: () => <Button type="primary">Edit</Button>,
+      fixed: 'right',
+      width: 160,
+      render: (_, record) => (
+        <Flex gap="small" wrap>
+          <Button type="primary" onClick={() => handleEdit(record)}>
+            {t('table.editButton', { ns: 'common' })}
+          </Button>
+
+          <Popconfirm
+            title={t('module.delete.confirmTitle', { ns: 'iam' })}
+            description={t('module.delete.confirmMessage', { ns: 'iam' })}
+            onConfirm={handleConfirmDelete}
+            okText={t('table.deleteYesButton', { ns: 'common' })}
+            cancelText={t('table.deleteNoButton', { ns: 'common' })}
+          >
+            <Button danger onClick={() => handleDelete(record)}>
+              {t('table.deleteButton', { ns: 'common' })}
+            </Button>
+          </Popconfirm>
+        </Flex>
+      ),
     },
   ];
 
   return (
-    <>
-      <Typography.Title level={3}>Module Management</Typography.Title>
+    <div>
+      <Typography.Title level={3}>{t('module.list.title')}</Typography.Title>
       <ProTable<ModuleEntity>
         columns={columns}
         actionRef={actionRef}
         formRef={formRef}
-        rowKey="key"
+        rowKey="moduleId"
         search={{
           labelWidth: 'auto',
-          // optionRender: (searchConfig, formProps, dom) => [
           optionRender: (searchConfig) => [
             <Button
               key="search"
@@ -163,24 +200,37 @@ const ListModule = () => {
                 searchConfig.form?.submit();
               }}
             >
-              Search
+              {t('table.filter.search', { ns: 'common' })}
             </Button>,
             <Button
               key="reset"
               onClick={() => {
                 searchConfig.form?.resetFields();
-                searchConfig.form?.submit(); // Trigger search after reset
+                // Trigger search after reset
+                searchConfig.form?.submit();
               }}
             >
-              Reset
+              {t('table.filter.reset', { ns: 'common' })}
             </Button>,
           ],
         }}
+        toolBarRender={() => [
+          <Button
+            key="button"
+            type="primary"
+            onClick={() => {
+              setOpenCreatePopup(true);
+            }}
+          >
+            <PlusCircleOutlined />
+            {t('table.filter.add', { ns: 'common' })}
+          </Button>,
+        ]}
         pagination={{
           current: pagination.page,
           pageSize: pagination.pageSize,
           showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'],
+          pageSizeOptions: PAGE_SIZE_OPTIONS,
           onChange: (page, pageSize) => {
             setPagination({ page, pageSize });
 
@@ -188,31 +238,41 @@ const ListModule = () => {
             actionRef.current?.reloadAndRest?.();
           },
         }}
-        // request={fetchData}
-        // request={async (params) => {
-        //   const { name, email, role } = params;
-
-        //   const filtered = dummyData.filter((user) => {
-        //     const matchesName = name
-        //       ? user.name.toLowerCase().includes(name.toLowerCase())
-        //       : true;
-        //     const matchesEmail = email
-        //       ? user.email.toLowerCase().includes(email.toLowerCase())
-        //       : true;
-        //     const matchesRole = role ? user.role === role : true;
-        //     return matchesName && matchesEmail && matchesRole;
-        //   });
-
-        //   return {
-        //     data: filtered,
-        //     success: true,
-        //     total: filtered.length,
-        //   };
-        // }}
+        request={async (params, sorter) => {
+          return await handleGetModulesRequest({
+            pagination: {
+              page: params.current || 1,
+              limit: params.pageSize || 10,
+            },
+            sorts: buildSortArgs(sorter, DEFAULT_SORT),
+            filters: buildFilterArgs(params),
+          });
+        }}
+        loading={loading}
         dateFormatter="string"
-        // headerTitle="Module Management"
+        scroll={{ x: 'max-content' }} // enables horizontal scroll automatically
       />
-    </>
+
+      <ModuleCreateDrawer
+        open={openCreatePopup}
+        onClose={() => setOpenCreatePopup(false)}
+        onCreateSuccess={() => {
+          setOpenCreatePopup(false);
+          actionRef.current?.reloadAndRest?.();
+        }}
+      />
+
+      <ModuleEditDrawer
+        open={openEditPopup}
+        onClose={() => setOpenEditPopup(false)}
+        initialData={selectedModule || undefined}
+        isLoading={loadingDetail}
+        onUpdateSuccess={() => {
+          setOpenEditPopup(false);
+          actionRef.current?.reloadAndRest?.();
+        }}
+      />
+    </div>
   );
 };
 

@@ -47,13 +47,14 @@ src/
 │
 ├── presentation/            # UI layer (components/pages/hooks)
 │   ├── components/          # Reusable UI components (Button, Table, etc.)
+│   ├── components/atoms     # Atoms (Button, Label, etc.)
+│   ├── components/molecules # Molecules (Table, etc.)
+│   ├── components/organisms # Organisms (SideLeft, SideRight, TopMenu, etc.)
 │   ├── layouts/             # UI layout components (Sidebar, Header, etc.)
-│   ├── hooks/               # UI-related hooks
-│   └── pages/               # View logic (mapped to routes)
-│
-├── application/             # Application layer (use-cases, services)
-│   ├── use-cases/           # Business use-cases
-│   └── services/            # Interfaces for API/data services
+│   ├── context/             # Context of application
+│   ├── hooks/               # Hooks that handle logic call api or logic of page
+│   ├── providers/           # Providers: GraphqlProvider, LanguageProvider, NotificationProvider ...
+│   └── pages/               # Page component and logic (mapped to routes)
 │
 ├── domain/                  # Domain layer (entities, types)
 │   ├── entities/            # Business models (User, Product)
@@ -61,7 +62,7 @@ src/
 │
 ├── infrastructure/          # Infrastructure (APIs, databases)
 │   ├── graphql/             # Graphql API call logic (e.g. Axios)
-│   └── websocket/           # Websocket
+│   └── i18n/                # Languages
 │
 ├── common/                  # Common (configs, constants, interfaces, theme, utils, languages)
 │   ├── configs/             # configs

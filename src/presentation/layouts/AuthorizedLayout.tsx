@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import ProLayout from '@ant-design/pro-layout';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
@@ -47,6 +47,8 @@ const AuthorizedLayout = ({ children }: LayoutProps) => {
     (state: AuthState) => state.isAuthenticated
   );
 
+  const [hydrated, setHydrated] = useState(false);
+
   // initialize language store
   const { setLanguage } = useLanguageStore();
 
@@ -56,14 +58,34 @@ const AuthorizedLayout = ({ children }: LayoutProps) => {
   const { superMenus, appList, isLoaded, setIsLoaded } = useMenuStore();
   const { getSuperMenuRequest } = useSuperMenus();
 
+  useEffect(() => {
+    // Note: This is just in case you want to take into account manual rehydration.
+    // You can remove the following line if you don't need it.
+    const unsubHydrate = useAuthStore.persist.onHydrate(() =>
+      setHydrated(false)
+    );
+
+    const unsubFinishHydration = useAuthStore.persist.onFinishHydration(() =>
+      setHydrated(true)
+    );
+
+    setHydrated(useAuthStore.persist.hasHydrated());
+
+    return () => {
+      unsubHydrate();
+      unsubFinishHydration();
+    };
+  }, []);
+
   // Check if user is authenticated, if not redirect to login page
   // This effect runs on the client side to ensure the user is authenticated
   // before rendering the layout
   useEffect(() => {
+    if (!hydrated) return;
     if (!isAuthenticated) {
       router.push(LOGIN_PATH);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, hydrated]);
 
   useEffect(() => {
     // If superMenus are not fetched, fetch them

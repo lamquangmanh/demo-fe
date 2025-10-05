@@ -1,39 +1,40 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Drawer, Form, Button, Space } from 'antd';
+import { Drawer, Form, Button, Space, Spin } from 'antd';
 import { useTranslation } from 'next-i18next';
 
 // import form component
-import ProductForm from './form/Form';
+import ModuleForm from './Form';
 
 // import from domain
-import { ProductEntity } from '@/domain/entities';
+import { ModuleEntity } from '@/domain/entities';
 
 // import from presentation/hooks
-import { useUpdateProduct } from '@/presentation/hooks';
+import { useUpdateModule } from '@/presentation/hooks';
 
-interface ProductEditDrawerProps {
+interface ModuleEditDrawerProps {
   open: boolean;
   onClose: () => void;
   onUpdateSuccess: () => void;
-  initialData?: ProductEntity;
+  initialData?: ModuleEntity;
+  isLoading?: boolean;
 }
 
-const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
+const ModuleEditDrawer: React.FC<ModuleEditDrawerProps> = ({
   open,
   onClose,
   onUpdateSuccess,
   initialData,
+  isLoading,
 }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { handleUpdateProductRequest, loading: isSubmiting } =
-    useUpdateProduct();
+  const { handleUpdateModuleRequest, loading: isSubmiting } = useUpdateModule();
 
   useEffect(() => {
     // Reset form fields when the drawer opens or initialData changes
-    if (initialData && initialData.productId && form) {
+    if (initialData && initialData.moduleId && form) {
       if (initialData) {
         form?.setFieldsValue(initialData);
       } else {
@@ -42,10 +43,12 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
     }
   }, [initialData, form]);
 
-  const handleFinish = async (values: ProductEntity) => {
-    await handleUpdateProductRequest({
+  const handleFinish = async (values: ModuleEntity) => {
+    if (!initialData || !initialData.moduleId) return;
+    await handleUpdateModuleRequest({
       ...values,
-      productId: initialData?.productId ?? '',
+      moduleId: initialData.moduleId,
+      productId: values.productId ?? '',
     });
 
     // Call the success callback and reset the form
@@ -61,7 +64,7 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
 
   return (
     <Drawer
-      title={t('product.edit.title', { ns: 'iam' })}
+      title={t('module.edit.title', { ns: 'iam' })}
       width={400}
       onClose={handleClose}
       open={open}
@@ -69,21 +72,32 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
       footer={
         <Space style={{ float: 'right' }}>
           <Button onClick={handleClose}>
-            {t('product.edit.cancelButton', { ns: 'iam' })}
+            {t('module.edit.cancelButton', { ns: 'iam' })}
           </Button>
           <Button
             type="primary"
             loading={isSubmiting}
             onClick={() => form.submit()}
           >
-            {t('product.edit.saveButton', { ns: 'iam' })}
+            {t('module.edit.saveButton', { ns: 'iam' })}
           </Button>
         </Space>
       }
     >
-      <ProductForm onFinish={handleFinish} form={form} />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-full">
+          <Spin size="large" />
+        </div>
+      ) : null}
+      {!isLoading && (
+        <ModuleForm
+          onFinish={handleFinish}
+          form={form}
+          initialData={initialData}
+        />
+      )}
     </Drawer>
   );
 };
 
-export default ProductEditDrawer;
+export default ModuleEditDrawer;

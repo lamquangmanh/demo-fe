@@ -1,0 +1,3 @@
+- Read my project structure.
+- Project using NextJS and GraphQL.
+- Project using Clean Architecture

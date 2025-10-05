@@ -91,3 +91,12 @@ export const removeLocalStorage = (key: string): string | null => {
   }
   return null;
 };
+
+// A mock function to mimic making an async request for data
+export const mockFetchAPI = async <T>(data: T, delay = 500): Promise<T> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(data);
+    }, delay);
+  });
+};

@@ -46,7 +46,7 @@ const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
     <Drawer
       title={t('product.create.title', { ns: 'iam' })}
       width={400}
-      onClose={onClose}
+      onClose={handleClose}
       open={open}
       destroyOnHidden
       footer={
