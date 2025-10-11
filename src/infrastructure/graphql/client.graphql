@@ -272,3 +272,98 @@ mutation DeleteProduct($productId: String!) {
     success
   }
 }
+
+query Resources(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  resources(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+    data {
+      createdAt
+      createdUserId
+      createdUser {
+        username
+        email
+      }
+      updatedAt
+      updatedUserId
+      updatedUser {
+        username
+        email
+      }
+      deletedAt
+      deletedUserId
+      deletedUser {
+        username
+        email
+      }
+      resourceId
+      name
+      moduleId
+    }
+  }
+}
+
+query Resource($resourceId: String!) {
+  resource(resourceId: $resourceId) {
+    resourceId
+    name
+    moduleId
+    actions {
+      actionId
+      name
+      description
+      method
+      url
+      requestType
+    }
+  }
+}
+
+mutation CreateResource(
+  $name: String!
+  $moduleId: String!
+  $actions: [ActionInput!]!
+) {
+  createResource(name: $name, moduleId: $moduleId, actions: $actions) {
+    moduleId
+    name
+    actions {
+      name
+      method
+      description
+      requestType
+      url
+    }
+  }
+}
+
+mutation UpdateResource(
+  $name: String!
+  $moduleId: String!
+  $actions: [ActionInput!]!
+  $resourceId: String!
+) {
+  updateResource(
+    name: $name
+    moduleId: $moduleId
+    actions: $actions
+    resourceId: $resourceId
+  ) {
+    success
+  }
+}
+
+mutation DeleteResource($resourceId: String!) {
+  deleteResource(resourceId: $resourceId) {
+    success
+  }
+}

@@ -18,7 +18,6 @@ export interface AutocompleteProps<ValueType> extends SelectProps {
   formItem?: {
     label: string;
     name: NamePath;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rules?: Rule[];
   };
   debounceTimeout?: number; // default is 300ms
@@ -103,7 +102,7 @@ export function Autocomplete<ValueType extends AutocompleteOptionProps>(
         value={selected}
         onChange={(values) => setSelected(values)}
         onOpenChange={(open: boolean) => {
-          if (open && options.length === 0) handleSearch('');
+          if (open) handleSearch('');
         }}
         optionRender={(option) => (
           <div className="flex items-center gap-2">
