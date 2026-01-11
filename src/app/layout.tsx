@@ -39,7 +39,7 @@ function RootLayout({ children }: LayoutProps) {
   const pathname = usePathname();
 
   // ignore layout for health check page
-  const isIgnoreLayout = ['/health'].includes(pathname);
+  const isIgnoreLayout = ['/healthz'].includes(pathname);
 
   // ignore layout for auth pages
   const isAuthPage = ['/auth/login', '/auth/forgot-password'].includes(

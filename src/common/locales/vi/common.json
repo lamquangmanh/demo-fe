@@ -23,5 +23,8 @@
     "deleteButton": "Xoá",
     "deleteYesButton": "Đồng ý",
     "deleteNoButton": "Không"
+  },
+  "form": {
+    "noDataFoundText": "Không tìm thấy dữ liệu"
   }
 }

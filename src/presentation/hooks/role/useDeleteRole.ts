@@ -9,30 +9,38 @@ import { useAbstractMutationHook, useNotify } from '../common';
 
 // import from infrastructure
 import {
-  DeleteModuleDocument,
-  DeleteModuleMutationResult,
-  DeleteModuleMutationVariables,
+  DeleteRoleDocument,
+  DeleteRoleMutationResult,
+  DeleteRoleMutationVariables,
 } from '@/infrastructure/graphql';
 
 // import from common
 import { DEFAULT_ERROR } from '@/common/constants';
 
-export function useDeleteModule() {
+export interface UseDeleteRoleProps {
+  isNotifyError?: boolean; // default true
+  isNotifySuccess?: boolean; // default true
+}
+
+export function useDeleteRole(props?: UseDeleteRoleProps) {
+  const isNotifyError = props?.isNotifyError ?? true;
+  const isNotifySuccess = props?.isNotifySuccess ?? true;
+
   // initialize hooks
   const { safeRunMutation, loading, data, error, called } =
     useAbstractMutationHook<
-      { deleteModule: DeleteModuleMutationResult },
-      DeleteModuleMutationVariables
-    >(DeleteModuleDocument);
+      { deleteRole: DeleteRoleMutationResult },
+      DeleteRoleMutationVariables
+    >(DeleteRoleDocument);
 
   // initialize notify hook
   const [notify] = useNotify();
   const { t } = useTranslation();
 
-  const handleDeleteModuleRequest = useCallback(
+  const handleDeleteRoleRequest = useCallback(
     async (
-      variables?: DeleteModuleMutationVariables
-    ): Promise<DeleteModuleMutationResult | undefined> => {
+      variables?: DeleteRoleMutationVariables
+    ): Promise<DeleteRoleMutationResult | undefined> => {
       try {
         // if loading is true, return early
         if (loading) {
@@ -43,29 +51,31 @@ export function useDeleteModule() {
         // handle error if any
         if (!result || result?.errors) {
           console.log('GraphQL error:', result?.errors);
-          notify.error(DEFAULT_ERROR);
+          if (isNotifyError) notify.error(DEFAULT_ERROR);
           return;
         }
 
         // handle success
-        notify.success({
-          message: t('module.delete.successMessage', { ns: 'iam' }),
-          description: t('module.delete.successDescription', { ns: 'iam' }),
-        });
+        if (isNotifySuccess) {
+          notify.success({
+            message: t('role.delete.successMessage', { ns: 'iam' }),
+            description: t('role.delete.successDescription', { ns: 'iam' }),
+          });
+        }
 
-        return result?.data?.deleteModule;
+        return result?.data?.deleteRole;
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
+        if (isNotifyError) notify.error(DEFAULT_ERROR);
         return;
       }
     },
-    [safeRunMutation, loading, notify, t]
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess]
   );
 
   return {
-    handleDeleteModuleRequest,
+    handleDeleteRoleRequest,
     loading,
     data,
     error,

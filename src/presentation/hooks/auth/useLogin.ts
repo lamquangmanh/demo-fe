@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 
 // import from domain
 import { DASHBOARD_PATH } from '@/common/constants';
-import { setLocalStorage } from '@/common/utils';
 
 // import from presentation/hooks
 import { useAbstractHook } from '../common/useAbtractHook';
@@ -25,7 +24,7 @@ export function useLogin(options?: Record<string, any>) {
   // initialize router
   const router = useRouter();
   const [notify] = useNotify();
-  const { setAccessToken, setRefreshToken } = useAuthStore();
+  const { setAuthenticated } = useAuthStore();
 
   const {
     runQuery: runLoginQuery,
@@ -45,7 +44,7 @@ export function useLogin(options?: Record<string, any>) {
         const result = await runLoginQuery(variables);
 
         // handle error if any
-        if (!result || result?.error) {
+        if (!result || result?.error || !result.data?.login?.success) {
           console.log('GraphQL errors:', result?.error);
           // You can throw or handle errors here
           // show a notification
@@ -57,14 +56,8 @@ export function useLogin(options?: Record<string, any>) {
           return;
         }
 
-        // set cookies with accessToken and refreshToken
-        const accessToken = result?.data?.login?.accessToken ?? '';
-        const refreshToken = result?.data?.login?.refreshToken ?? '';
-        setLocalStorage('accessToken', accessToken);
-        setLocalStorage('refreshToken', refreshToken);
-
-        setAccessToken(accessToken);
-        setRefreshToken(refreshToken);
+        // set isAuthenticated to true
+        setAuthenticated(true);
 
         // handle success
         notify.success({
@@ -84,7 +77,7 @@ export function useLogin(options?: Record<string, any>) {
         });
       }
     },
-    [runLoginQuery, router, notify, setAccessToken, setRefreshToken]
+    [runLoginQuery, router, notify, setAuthenticated]
   );
 
   return {

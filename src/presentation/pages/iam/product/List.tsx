@@ -125,26 +125,26 @@ const ListProduct = () => {
       width: 200,
       render: (text, record) => record.updatedUser?.username || 'N/A',
     },
-    {
-      title: t('product.list.table.deletedAt', { ns: 'iam' }),
-      dataIndex: 'deletedAt',
-      valueType: 'dateTime',
-      search: false,
-      sorter: true,
-      width: 200,
-      render: (_, record) =>
-        record.deletedAt
-          ? dayjs(record.deletedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
-          : 'N/A',
-    },
-    {
-      title: t('product.list.table.deletedUser', { ns: 'iam' }),
-      dataIndex: 'deletedUser.username',
-      valueType: 'text',
-      search: false,
-      width: 200,
-      render: (text, record) => record.deletedUser?.username || 'N/A',
-    },
+    // {
+    //   title: t('product.list.table.deletedAt', { ns: 'iam' }),
+    //   dataIndex: 'deletedAt',
+    //   valueType: 'dateTime',
+    //   search: false,
+    //   sorter: true,
+    //   width: 200,
+    //   render: (_, record) =>
+    //     record.deletedAt
+    //       ? dayjs(record.deletedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
+    //       : 'N/A',
+    // },
+    // {
+    //   title: t('product.list.table.deletedUser', { ns: 'iam' }),
+    //   dataIndex: 'deletedUser.username',
+    //   valueType: 'text',
+    //   search: false,
+    //   width: 200,
+    //   render: (text, record) => record.deletedUser?.username || 'N/A',
+    // },
     {
       title: t('product.list.table.actions', { ns: 'iam' }),
       key: 'action',
@@ -231,13 +231,14 @@ const ListProduct = () => {
           },
         }}
         request={async (params, sorter) => {
+          const { pageSize, current, ...rest } = params;
           return await handleGetProductsRequest({
             pagination: {
-              page: params.current || 1,
-              limit: params.pageSize || 10,
+              page: current || 1,
+              limit: pageSize || 10,
             },
             sorts: buildSortArgs(sorter, DEFAULT_SORT),
-            filters: buildFilterArgs(params),
+            filters: buildFilterArgs(rest),
           });
         }}
         loading={loading}

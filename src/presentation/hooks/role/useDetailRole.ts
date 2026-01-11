@@ -9,57 +9,65 @@ import { useAbstractHook, useNotify } from '../common';
 
 // import from infrastructure
 import {
-  ModuleDocument,
-  ModuleQueryVariables,
-  ModuleEntity as ModuleResponse,
+  RoleDocument,
+  RoleQueryVariables,
+  RoleEntity as RoleResponse,
 } from '@/infrastructure/graphql';
 
 // import from common
 import { DEFAULT_ERROR } from '@/common/constants';
+import { GraphQLError } from '@/common/interfaces';
 
 // import from domain
-import { ModuleEntity } from '@/domain/entities';
+import { RoleEntity } from '@/domain/entities';
 
-type UseListModuleOptions = QueryHookOptions<
-  { module: ModuleResponse },
-  ModuleQueryVariables
+type UseListRoleOptions = QueryHookOptions<
+  { role: RoleResponse },
+  RoleQueryVariables
 >;
 
-export function useDetailModule(options?: UseListModuleOptions) {
+export function useDetailRole(
+  props?: { isNotifyError?: boolean },
+  options?: UseListRoleOptions
+) {
+  const isNotifyError = props?.isNotifyError ?? true;
+
   // initialize hooks
   const { runQuery, loading, data, error, called } = useAbstractHook<
-    { module: ModuleResponse },
-    ModuleQueryVariables
-  >(ModuleDocument, options);
+    { role: RoleResponse },
+    RoleQueryVariables
+  >(RoleDocument, options);
 
   // initialize notify hook
   const [notify] = useNotify();
 
-  const handleGetDetailModuleRequest = useCallback(
-    async (variables?: ModuleQueryVariables): Promise<ModuleEntity | null> => {
+  const handleGetDetailRoleRequest = useCallback(
+    async (
+      variables?: RoleQueryVariables
+    ): Promise<RoleEntity | null | GraphQLError> => {
       try {
         const result = await runQuery(variables);
         // handle error if any
         if (!result || result?.error) {
           console.log('GraphQL error:', result?.error);
-          notify.error(DEFAULT_ERROR);
-          return null;
+          if (isNotifyError) notify.error(DEFAULT_ERROR);
+          return result as GraphQLError;
         }
 
         // handle success
-        return result.data?.module || null;
+        return (result.data?.role as any) || null;
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
-        return null;
+        if (isNotifyError) notify.error(DEFAULT_ERROR);
+        return error as GraphQLError;
       }
     },
-    [runQuery, loading, notify]
+    [runQuery, notify, isNotifyError]
   );
 
   return {
-    handleGetDetailModuleRequest,
+    handleGetDetailRoleRequest,
     loading,
     data,
     error,

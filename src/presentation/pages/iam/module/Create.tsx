@@ -29,13 +29,16 @@ const ModuleCreateDrawer: React.FC<ModuleCreateDrawerProps> = ({
   const { handleCreateModuleRequest, loading: isSubmiting } = useCreateModule();
 
   const handleFinish = async (values: ModuleEntity) => {
-    await handleCreateModuleRequest({
+    const result = await handleCreateModuleRequest({
       ...values,
       productId: values.productId ?? '',
     });
 
-    onCreateSuccess();
-    form.resetFields();
+    // check success
+    if (result?.moduleId) {
+      onCreateSuccess();
+      form.resetFields();
+    }
   };
 
   const handleClose = () => {

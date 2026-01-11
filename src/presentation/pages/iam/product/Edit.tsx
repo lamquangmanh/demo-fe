@@ -33,7 +33,7 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
 
   useEffect(() => {
     // Reset form fields when the drawer opens or initialData changes
-    if (initialData && initialData.productId && form) {
+    if (initialData?.productId && form) {
       if (initialData) {
         form?.setFieldsValue(initialData);
       } else {
@@ -43,14 +43,16 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
   }, [initialData, form]);
 
   const handleFinish = async (values: ProductEntity) => {
-    await handleUpdateProductRequest({
+    const result = await handleUpdateProductRequest({
       ...values,
       productId: initialData?.productId ?? '',
     });
 
-    // Call the success callback and reset the form
-    onUpdateSuccess();
-    form.resetFields();
+    // check success
+    if (result?.productId) {
+      onUpdateSuccess();
+      form.resetFields();
+    }
   };
 
   const handleClose = () => {

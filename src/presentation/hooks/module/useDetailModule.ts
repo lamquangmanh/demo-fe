@@ -55,7 +55,7 @@ export function useDetailModule(options?: UseListModuleOptions) {
         return null;
       }
     },
-    [runQuery, loading, notify]
+    [runQuery, notify]
   );
 
   return {

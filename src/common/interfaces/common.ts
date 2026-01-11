@@ -10,3 +10,20 @@ export interface TableDataResponse<T> {
   total: number;
   success?: boolean;
 }
+
+export interface GraphQLErrorDataField {
+  field: string;
+  error: string;
+  code: number;
+}
+export interface GraphQLErrorData {
+  code: number;
+  message: string;
+  extra?: {
+    fields: GraphQLErrorDataField[];
+  };
+}
+export interface GraphQLError {
+  errors?: GraphQLErrorData[];
+  graphQLErrors?: GraphQLErrorData[];
+}

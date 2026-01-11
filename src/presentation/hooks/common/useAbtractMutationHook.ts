@@ -27,6 +27,7 @@ export function useAbstractMutationHook<
   };
 
   return {
+    runMutation,
     safeRunMutation,
     loading,
     data,

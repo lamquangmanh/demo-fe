@@ -30,10 +30,13 @@ const ProductCreateDrawer: React.FC<ProductCreateDrawerProps> = ({
     useCreateProduct();
 
   const handleFinish = async (values: ProductEntity) => {
-    await handleCreateProductRequest(values);
+    const result = await handleCreateProductRequest(values);
 
-    onCreateSuccess();
-    form.resetFields();
+    // check success
+    if (result?.productId) {
+      onCreateSuccess();
+      form.resetFields();
+    }
   };
 
   const handleClose = () => {

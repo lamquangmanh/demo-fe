@@ -9,33 +9,41 @@ import { useAbstractMutationHook, useNotify } from '../common';
 
 // import from infrastructure
 import {
-  UpdateModuleDocument,
-  UpdateModuleMutationResult,
-  UpdateModuleMutationVariables,
+  UpdateRoleDocument,
+  UpdateRoleMutationResult,
+  UpdateRoleMutationVariables,
 } from '@/infrastructure/graphql';
 
 // import from common
 import { DEFAULT_ERROR } from '@/common/constants';
 
 // import from domain
-import { ModuleEntity } from '@/domain/entities';
+import { RoleEntity } from '@/domain/entities';
 
-export function useUpdateModule() {
+export interface UseUpdateRoleProps {
+  isNotifyError?: boolean;
+  isNotifySuccess?: boolean;
+}
+
+export function useUpdateRole(props?: UseUpdateRoleProps) {
+  const isNotifyError = props?.isNotifyError ?? true;
+  const isNotifySuccess = props?.isNotifySuccess ?? true;
+
   // initialize hooks
   const { safeRunMutation, loading, data, error, called } =
     useAbstractMutationHook<
-      { updateModule: UpdateModuleMutationResult },
-      UpdateModuleMutationVariables
-    >(UpdateModuleDocument);
+      { updateRole: UpdateRoleMutationResult },
+      UpdateRoleMutationVariables
+    >(UpdateRoleDocument);
 
   // initialize notify hook
   const [notify] = useNotify();
   const { t } = useTranslation();
 
-  const handleUpdateModuleRequest = useCallback(
+  const handleUpdateRoleRequest = useCallback(
     async (
-      variables?: UpdateModuleMutationVariables
-    ): Promise<ModuleEntity | undefined> => {
+      variables?: UpdateRoleMutationVariables
+    ): Promise<RoleEntity | undefined> => {
       try {
         // if loading is true, return early
         if (loading) {
@@ -46,30 +54,32 @@ export function useUpdateModule() {
         // handle error if any
         if (!result || result?.errors) {
           console.log('GraphQL error:', result?.errors);
-          notify.error(DEFAULT_ERROR);
+          if (isNotifyError) notify.error(DEFAULT_ERROR);
           return;
         }
 
         // handle success
-        notify.success({
-          message: t('module.edit.successMessage', { ns: 'iam' }),
-          description: t('module.edit.successDescription', { ns: 'iam' }),
-        });
+        if (isNotifySuccess) {
+          notify.success({
+            message: t('role.edit.successMessage', { ns: 'iam' }),
+            description: t('role.edit.successDescription', { ns: 'iam' }),
+          });
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return result?.data?.updateModule as any;
+        return result?.data?.updateRole as any;
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
+        if (isNotifyError) notify.error(DEFAULT_ERROR);
         return;
       }
     },
-    [safeRunMutation, loading, notify, t]
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess]
   );
 
   return {
-    handleUpdateModuleRequest,
+    handleUpdateRoleRequest,
     loading,
     data,
     error,

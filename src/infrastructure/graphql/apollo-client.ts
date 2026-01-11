@@ -3,22 +3,8 @@ import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
 // import from common
 import { CONFIGS } from '@/common/configs';
-import { getLocalStorage } from '@/common/utils';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let client: any = null;
-
-const getHeaders = () => {
-  // Get access token from local storage
-  const accessToken = getLocalStorage('accessToken') ?? '';
-
-  // Get refresh token from local storage
-  // const refreshToken = getLocalStorage('refreshToken') || '';
-  // Return headers with tokens
-  return {
-    Authorization: `Bearer ${accessToken}`,
-  };
-};
+let client: ApolloClient<any> | null = null;
 
 const createApolloClient = () => {
   if (client) return client;
@@ -31,7 +17,6 @@ const createApolloClient = () => {
       fetchOptions: {
         mode: 'cors', // optional; CORS is default
       },
-      headers: getHeaders(),
     }),
     cache: new InMemoryCache(),
   });

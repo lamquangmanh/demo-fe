@@ -30,9 +30,9 @@ export const useLanguageStore = create<LanguageState>()(
         // optional
         return (state, error) => {
           if (error) {
-            console.log('an error happened during hydration', error);
+            // console.log('an error happened during hydration', error);
           } else {
-            console.log('hydration finished');
+            // console.log('hydration finished');
             i18n.changeLanguage(state?.language ?? 'en');
           }
         };

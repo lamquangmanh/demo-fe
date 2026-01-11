@@ -34,7 +34,7 @@ const ModuleEditDrawer: React.FC<ModuleEditDrawerProps> = ({
 
   useEffect(() => {
     // Reset form fields when the drawer opens or initialData changes
-    if (initialData && initialData.moduleId && form) {
+    if (initialData?.moduleId && form) {
       if (initialData) {
         form?.setFieldsValue(initialData);
       } else {
@@ -44,16 +44,18 @@ const ModuleEditDrawer: React.FC<ModuleEditDrawerProps> = ({
   }, [initialData, form]);
 
   const handleFinish = async (values: ModuleEntity) => {
-    if (!initialData || !initialData.moduleId) return;
-    await handleUpdateModuleRequest({
+    if (!initialData?.moduleId) return;
+    const result = await handleUpdateModuleRequest({
       ...values,
       moduleId: initialData.moduleId,
       productId: values.productId ?? '',
     });
 
     // Call the success callback and reset the form
-    onUpdateSuccess();
-    form.resetFields();
+    if (result?.moduleId) {
+      onUpdateSuccess();
+      form.resetFields();
+    }
   };
 
   const handleClose = () => {

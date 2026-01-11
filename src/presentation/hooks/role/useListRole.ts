@@ -9,9 +9,9 @@ import { useAbstractHook, useNotify } from '../common';
 
 // import from infrastructure
 import {
-  GetModulesDocument,
-  GetModulesQueryVariables,
-  GetModulesResponse,
+  GetRolesResponse,
+  RolesQueryVariables,
+  RolesDocument,
 } from '@/infrastructure/graphql';
 
 // import from common
@@ -19,27 +19,32 @@ import { TableDataResponse } from '@/common/interfaces';
 import { NO_DATA, DEFAULT_ERROR } from '@/common/constants';
 
 // import from domain
-import { ModuleEntity } from '@/domain/entities';
+import { RoleEntity } from '@/domain/entities';
 
-type UseListModuleOptions = QueryHookOptions<
-  { modules: GetModulesResponse },
-  GetModulesQueryVariables
+type UseListRoleOptions = QueryHookOptions<
+  { roles: GetRolesResponse },
+  RolesQueryVariables
 >;
 
-export function useListModule(options?: UseListModuleOptions) {
+export function useListRole(
+  props?: { isNotifyError?: boolean },
+  options?: UseListRoleOptions
+) {
+  const isNotifyError = props?.isNotifyError ?? true;
+
   // initialize hooks
   const { runQuery, loading, data, error, called } = useAbstractHook<
-    { modules: GetModulesResponse },
-    GetModulesQueryVariables
-  >(GetModulesDocument, options);
+    { roles: GetRolesResponse },
+    RolesQueryVariables
+  >(RolesDocument, options);
 
   // initialize notify hook
   const [notify] = useNotify();
 
-  const handleGetModulesRequest = useCallback(
+  const handleGetRolesRequest = useCallback(
     async (
-      variables?: GetModulesQueryVariables
-    ): Promise<TableDataResponse<ModuleEntity>> => {
+      variables?: RolesQueryVariables
+    ): Promise<TableDataResponse<RoleEntity>> => {
       try {
         // if loading is true, return early
         if (loading) {
@@ -50,28 +55,28 @@ export function useListModule(options?: UseListModuleOptions) {
         // handle error if any
         if (!result || result?.error) {
           console.log('GraphQL error:', result?.error);
-          notify.error(DEFAULT_ERROR);
+          if (isNotifyError) notify.error(DEFAULT_ERROR);
           return NO_DATA;
         }
 
         // handle success
         return {
-          data: result.data?.modules?.data || [],
-          total: result.data?.modules?.pagination?.totalItems || 0,
+          data: (result.data?.roles?.data as any) || [],
+          total: result.data?.roles?.pagination?.totalItems || 0,
           success: true,
         };
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
+        if (isNotifyError) notify.error(DEFAULT_ERROR);
         return NO_DATA;
       }
     },
-    [runQuery, loading, notify]
+    [runQuery, loading, notify, isNotifyError]
   );
 
   return {
-    handleGetModulesRequest,
+    handleGetRolesRequest,
     loading,
     data,
     error,

@@ -57,7 +57,6 @@ const ModuleForm: React.FC<ModuleFormProps> = ({
           ],
         }}
         onSearchAPI={handleSearchProduct}
-        hasCheckbox={true}
         selectedOptions={
           initialData?.product
             ? [

@@ -20,13 +20,17 @@ import {
   useListModule,
   useDeleteModule,
   useDetailModule,
+  useListProduct,
 } from '@/presentation/hooks';
+import { Autocomplete } from '@/presentation/components/atoms';
 
 // import create Module drawer
 import ModuleCreateDrawer from './Create';
 import ModuleEditDrawer from './Edit';
 
 const ListModule = () => {
+  const { handleGetProductsRequest } = useListProduct();
+
   const { t } = useTranslation('iam');
   const actionRef = useRef<ActionType | null>(null);
   const formRef = useRef<FormInstance | undefined>(undefined);
@@ -56,7 +60,6 @@ const ListModule = () => {
 
   const handleEdit = async (module: ModuleEntity) => {
     setOpenEditPopup(true);
-    // setSelectedModule(module);
     const detail = await handleGetDetailModuleRequest({
       moduleId: module.moduleId,
     });
@@ -81,6 +84,26 @@ const ListModule = () => {
     actionRef.current?.reloadAndRest?.();
   };
 
+  const handleSearchProduct = async (value: string) => {
+    const result = await handleGetProductsRequest({
+      filters: { field: 'name', value },
+      pagination: {
+        page: 1,
+        limit: 50,
+      },
+      sorts: [],
+    });
+    if (result && result.data) {
+      const options = result.data.map((item) => ({
+        key: item.productId,
+        label: item.name,
+        value: item.productId,
+      }));
+      return options;
+    }
+    return [];
+  };
+
   const columns: ProColumns<ModuleEntity>[] = [
     {
       title: t('module.list.table.name', { ns: 'iam' }),
@@ -89,13 +112,30 @@ const ListModule = () => {
       sorter: true,
     },
     {
+      title: t('module.list.table.product', { ns: 'iam' }),
+      dataIndex: 'product.name',
+      valueType: 'text',
+      sorter: true,
+      search: {
+        transform: (value) => {
+          return {
+            productId: value,
+          };
+        },
+      },
+      render: (text, record) => record.product?.name || 'N/A',
+      renderFormItem: () => {
+        return <Autocomplete onSearchAPI={handleSearchProduct} />;
+      },
+    },
+    {
       title: t('module.list.table.description', { ns: 'iam' }),
       dataIndex: 'description',
       valueType: 'text',
       search: false,
     },
     {
-      title: t('product.list.table.createdAt', { ns: 'iam' }),
+      title: t('module.list.table.createdAt', { ns: 'iam' }),
       dataIndex: 'createdAt',
       valueType: 'dateTime',
       search: false,
@@ -107,7 +147,7 @@ const ListModule = () => {
           : 'N/A',
     },
     {
-      title: t('product.list.table.createdUser', { ns: 'iam' }),
+      title: t('module.list.table.createdUser', { ns: 'iam' }),
       dataIndex: 'createdUser.username',
       valueType: 'text',
       search: false,
@@ -115,7 +155,7 @@ const ListModule = () => {
       render: (text, record) => record.createdUser?.username || 'N/A',
     },
     {
-      title: t('product.list.table.updatedAt', { ns: 'iam' }),
+      title: t('module.list.table.updatedAt', { ns: 'iam' }),
       dataIndex: 'updatedAt',
       valueType: 'dateTime',
       search: false,
@@ -127,33 +167,33 @@ const ListModule = () => {
           : 'N/A',
     },
     {
-      title: t('product.list.table.updatedUser', { ns: 'iam' }),
+      title: t('module.list.table.updatedUser', { ns: 'iam' }),
       dataIndex: 'updatedUser.username',
       valueType: 'text',
       search: false,
       width: 200,
       render: (text, record) => record.updatedUser?.username || 'N/A',
     },
-    {
-      title: t('product.list.table.deletedAt', { ns: 'iam' }),
-      dataIndex: 'deletedAt',
-      valueType: 'dateTime',
-      search: false,
-      sorter: true,
-      width: 200,
-      render: (_, record) =>
-        record.deletedAt
-          ? dayjs(record.deletedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
-          : 'N/A',
-    },
-    {
-      title: t('product.list.table.deletedUser', { ns: 'iam' }),
-      dataIndex: 'deletedUser.username',
-      valueType: 'text',
-      search: false,
-      width: 200,
-      render: (text, record) => record.deletedUser?.username || 'N/A',
-    },
+    // {
+    //   title: t('module.list.table.deletedAt', { ns: 'iam' }),
+    //   dataIndex: 'deletedAt',
+    //   valueType: 'dateTime',
+    //   search: false,
+    //   sorter: true,
+    //   width: 200,
+    //   render: (_, record) =>
+    //     record.deletedAt
+    //       ? dayjs(record.deletedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
+    //       : 'N/A',
+    // },
+    // {
+    //   title: t('module.list.table.deletedUser', { ns: 'iam' }),
+    //   dataIndex: 'deletedUser.username',
+    //   valueType: 'text',
+    //   search: false,
+    //   width: 200,
+    //   render: (text, record) => record.deletedUser?.username || 'N/A',
+    // },
     {
       title: t('module.list.table.actions', { ns: 'iam' }),
       key: 'action',
@@ -239,13 +279,14 @@ const ListModule = () => {
           },
         }}
         request={async (params, sorter) => {
+          const { pageSize, current, ...rest } = params;
           return await handleGetModulesRequest({
             pagination: {
-              page: params.current || 1,
-              limit: params.pageSize || 10,
+              page: current || 1,
+              limit: pageSize || 10,
             },
             sorts: buildSortArgs(sorter, DEFAULT_SORT),
-            filters: buildFilterArgs(params),
+            filters: buildFilterArgs(rest),
           });
         }}
         loading={loading}
