@@ -34,6 +34,9 @@ import {
   useLanguageStore,
 } from '@/domain/stores';
 
+// import infrastructure
+import { initializeSocket, disconnectSocket } from '@/infrastructure/websocket';
+
 type LayoutProps = {
   children: ReactNode;
 };
@@ -61,19 +64,19 @@ const AuthorizedLayout = ({ children }: LayoutProps) => {
   useEffect(() => {
     // Note: This is just in case you want to take into account manual rehydration.
     // You can remove the following line if you don't need it.
-    const unsubHydrate = useAuthStore.persist.onHydrate(() =>
+    const unSubscribeHydrate = useAuthStore.persist.onHydrate(() =>
       setHydrated(false)
     );
 
-    const unsubFinishHydration = useAuthStore.persist.onFinishHydration(() =>
-      setHydrated(true)
+    const unSubscribeFinishHydration = useAuthStore.persist.onFinishHydration(
+      () => setHydrated(true)
     );
 
     setHydrated(useAuthStore.persist.hasHydrated());
 
     return () => {
-      unsubHydrate();
-      unsubFinishHydration();
+      unSubscribeHydrate();
+      unSubscribeFinishHydration();
     };
   }, []);
 
@@ -84,6 +87,19 @@ const AuthorizedLayout = ({ children }: LayoutProps) => {
     if (!hydrated) return;
     if (!isAuthenticated) {
       router.push(LOGIN_PATH);
+    } else {
+      // User is authenticated, initialize websocket connection
+      const socket = initializeSocket();
+
+      setTimeout(() => {
+        // Emit an event to notify the server of the new connection
+        socket.emit('hello', { socketId: socket.id });
+      }, 10000);
+
+      return () => {
+        // Clean up the socket connection when the component unmounts
+        disconnectSocket();
+      };
     }
   }, [isAuthenticated, router, hydrated]);
 
