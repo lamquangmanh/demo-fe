@@ -41,7 +41,9 @@ const RoleEditDrawer: React.FC<RoleEditDrawerProps> = ({
       if (initialData) {
         form?.setFieldsValue({
           name: initialData.name,
+          description: initialData.description,
           moduleId: initialData.moduleId,
+          permissions: initialData.permissions || [],
         });
       } else {
         form?.resetFields();
@@ -52,8 +54,11 @@ const RoleEditDrawer: React.FC<RoleEditDrawerProps> = ({
   const handleFinish = async (formValues: RoleEntity) => {
     if (!initialData?.roleId) return;
     const result: any = await handleUpdateRoleRequest({
-      ...formValues,
       roleId: initialData.roleId,
+      name: formValues.name,
+      description: formValues.description,
+      moduleId: formValues.moduleId,
+      permissions: formValues.permissions || [],
     });
 
     // map error to form if any

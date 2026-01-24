@@ -36,12 +36,10 @@ const RoleCreateDrawer: React.FC<RoleCreateDrawerProps> = ({
 
   const handleFinish = async (formValues: RoleEntity) => {
     const result: any = await handleCreateRoleRequest({
-      ...formValues,
-      actions:
-        formValues.actions?.map((action) => ({
-          ...action,
-          description: action.description || '',
-        })) || [],
+      name: formValues.name,
+      description: formValues.description,
+      moduleId: formValues.moduleId,
+      permissions: formValues.permissions || [],
     });
 
     // map error to form if any
@@ -49,7 +47,7 @@ const RoleCreateDrawer: React.FC<RoleCreateDrawerProps> = ({
     if (hasError) return;
 
     // if success, reset form and close drawer
-    if (result?.RoleId) {
+    if (result?.roleId) {
       form.resetFields();
       onCreateSuccess();
     }

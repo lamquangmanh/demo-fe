@@ -199,6 +199,7 @@
       "description": "Mô tả",
       "permission": {
         "resourceId": "Tài nguyên",
+        "actionId": "Hành động",
         "actionIds": "Hành động"
       },
       "error": {
@@ -207,6 +208,7 @@
         "description": "Vui lòng nhập mô tả",
         "permission": {
           "resourceId": "Vui lòng chọn tài nguyên",
+          "actionId": "Vui lòng chọn hành động",
           "actionIds": "Vui lòng chọn danh sách hành động"
         }
       },
