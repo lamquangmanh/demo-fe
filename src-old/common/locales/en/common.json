@@ -1,0 +1,30 @@
+{
+  "header": {
+    "appName": "Admin Panel",
+    "user": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "language": {
+      "en": "English",
+      "vi": "Việt Nam"
+    }
+  },
+  "table": {
+    "filter": {
+      "search": "Search",
+      "reset": "Reset",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "add": "Add"
+    },
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "deleteYesButton": "Yes",
+    "deleteNoButton": "No"
+  },
+  "form": {
+    "noDataFoundText": "No data found"
+  }
+}

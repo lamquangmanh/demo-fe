@@ -1,3 +1,5 @@
+'use client';
+
 import { Form, Select, SelectProps, Spin } from 'antd';
 import React, { useState, useEffect, useCallback } from 'react';
 import { debounce } from 'lodash';
@@ -28,7 +30,7 @@ export interface AutocompleteProps<ValueType> extends SelectProps {
 }
 
 export function Autocomplete<ValueType extends AutocompleteOptionProps>(
-  props: AutocompleteProps<ValueType>
+  props: AutocompleteProps<ValueType>,
 ) {
   const {
     formItem,
@@ -71,7 +73,7 @@ export function Autocomplete<ValueType extends AutocompleteOptionProps>(
               key: index,
               label: `${searchText} Option ${index + 1}`,
               value: `${searchText.toLowerCase()}_option_${index + 1}`,
-            })
+            }),
           ) as ValueType[];
 
           const result = await mockFetchAPI<ValueType[]>(mockData, 1000);
@@ -83,7 +85,7 @@ export function Autocomplete<ValueType extends AutocompleteOptionProps>(
         setFetching(false);
       }
     },
-    [onSearchAPI, useMockAPI]
+    [onSearchAPI, useMockAPI],
   );
 
   const handleSearchDebounced = debounce((searchText: string) => {

@@ -1,0 +1,608 @@
+query Login($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
+    accessToken
+    refreshToken
+    success
+  }
+}
+
+query GetMe {
+  getMe {
+    userId
+    username
+    email
+    status
+    avatar
+    phone
+  }
+}
+
+query GetSuperMenus {
+  getSuperMenus {
+    superMenus {
+      name
+      description
+      url
+      icon
+      menus {
+        name
+        url
+        icon
+        subMenus {
+          name
+          url
+        }
+      }
+    }
+  }
+}
+
+query Module($moduleId: String!) {
+  module(moduleId: $moduleId) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    moduleId
+    productId
+    name
+    description
+    icon
+    url
+    product {
+      productId
+      name
+    }
+  }
+}
+
+query GetModules(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  modules(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    data {
+      createdAt
+      createdUserId
+      updatedAt
+      updatedUserId
+      deletedAt
+      deletedUserId
+      moduleId
+      productId
+      product {
+        name
+      }
+      name
+      description
+      icon
+      url
+      createdUser {
+        username
+        email
+      }
+      updatedUser {
+        username
+        email
+      }
+      deletedUser {
+        username
+        email
+      }
+    }
+
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+  }
+}
+
+mutation CreateModule(
+  $name: String!
+  $description: String
+  $productId: String!
+  $icon: String
+  $url: String
+) {
+  createModule(
+    name: $name
+    description: $description
+    productId: $productId
+    icon: $icon
+    url: $url
+  ) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    moduleId
+    productId
+    name
+    description
+    icon
+    url
+  }
+}
+
+mutation UpdateModule(
+  $moduleId: String!
+  $productId: String!
+  $name: String!
+  $description: String
+  $icon: String
+  $url: String
+) {
+  updateModule(
+    moduleId: $moduleId
+    productId: $productId
+    name: $name
+    description: $description
+    icon: $icon
+    url: $url
+  ) {
+    success
+  }
+}
+
+mutation DeleteModule($moduleId: String!) {
+  deleteModule(moduleId: $moduleId) {
+    success
+  }
+}
+
+query GetPermissionsByUser {
+  getPermissionsByUser {
+    permissions {
+      name
+      url
+      method
+      requestType
+    }
+  }
+}
+
+query Product($productId: String!) {
+  product(productId: $productId) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    productId
+    name
+    url
+    icon
+    description
+  }
+}
+
+query Products(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  products(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+    data {
+      createdAt
+      createdUserId
+      updatedAt
+      updatedUserId
+      deletedAt
+      deletedUserId
+      productId
+      name
+      url
+      icon
+      description
+      createdUser {
+        username
+        email
+      }
+      updatedUser {
+        username
+        email
+      }
+      deletedUser {
+        username
+        email
+      }
+    }
+  }
+}
+
+mutation CreateProduct(
+  $name: String!
+  $url: String!
+  $description: String
+  $icon: String
+) {
+  createProduct(
+    name: $name
+    url: $url
+    description: $description
+    icon: $icon
+  ) {
+    createdAt
+    createdUserId
+    updatedAt
+    updatedUserId
+    deletedAt
+    deletedUserId
+    productId
+    name
+    url
+    icon
+    description
+  }
+}
+
+mutation UpdateProduct(
+  $name: String!
+  $url: String!
+  $productId: String!
+  $description: String
+  $icon: String
+) {
+  updateProduct(
+    name: $name
+    url: $url
+    productId: $productId
+    description: $description
+    icon: $icon
+  ) {
+    success
+  }
+}
+
+mutation DeleteProduct($productId: String!) {
+  deleteProduct(productId: $productId) {
+    success
+  }
+}
+
+query Resources(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  resources(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+    data {
+      createdAt
+      createdUserId
+      createdUser {
+        username
+        email
+      }
+      updatedAt
+      updatedUserId
+      updatedUser {
+        username
+        email
+      }
+      deletedAt
+      deletedUserId
+      deletedUser {
+        username
+        email
+      }
+      resourceId
+      name
+      moduleId
+      module {
+        name
+      }
+    }
+  }
+}
+
+query Resource($resourceId: String!) {
+  resource(resourceId: $resourceId) {
+    resourceId
+    name
+    moduleId
+    module {
+      moduleId
+      name
+    }
+    actions {
+      actionId
+      name
+      description
+      method
+      url
+      requestType
+    }
+  }
+}
+
+mutation CreateResource(
+  $name: String!
+  $moduleId: String!
+  $actions: [ActionInput!]!
+) {
+  createResource(name: $name, moduleId: $moduleId, actions: $actions) {
+    moduleId
+    resourceId
+    name
+  }
+}
+
+mutation UpdateResource(
+  $name: String!
+  $moduleId: String!
+  $actions: [ActionInput!]!
+  $resourceId: String!
+) {
+  updateResource(
+    name: $name
+    moduleId: $moduleId
+    actions: $actions
+    resourceId: $resourceId
+  ) {
+    success
+  }
+}
+
+mutation DeleteResource($resourceId: String!) {
+  deleteResource(resourceId: $resourceId) {
+    success
+  }
+}
+
+query SearchResources(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  resources(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+    data {
+      resourceId
+      name
+      actions {
+        actionId
+        name
+      }
+    }
+  }
+}
+
+query Roles(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  roles(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    data {
+      createdAt
+      createdUserId
+      createdUser {
+        username
+      }
+      updatedAt
+      updatedUserId
+      updatedUser {
+        username
+      }
+      deletedAt
+      deletedUserId
+      deletedUser {
+        username
+      }
+      roleId
+      name
+      description
+      moduleId
+      module {
+        name
+      }
+    }
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+  }
+}
+
+query Role($roleId: String!) {
+  role(roleId: $roleId) {
+    roleId
+    name
+    description
+    moduleId
+    module {
+      name
+    }
+    permissions {
+      permissionId
+      actionId
+      action {
+        name
+      }
+      resourceId
+      resource {
+        name
+      }
+    }
+  }
+}
+
+mutation CreateRole(
+  $name: String!
+  $moduleId: String!
+  $permissions: [PermissionInput!]!
+  $description: String
+) {
+  createRole(
+    name: $name
+    moduleId: $moduleId
+    permissions: $permissions
+    description: $description
+  ) {
+    roleId
+    name
+    description
+    moduleId
+    permissions {
+      permissionId
+      resourceId
+      actionId
+    }
+  }
+}
+
+mutation UpdateRole(
+  $name: String!
+  $moduleId: String!
+  $permissions: [PermissionInput!]!
+  $roleId: String!
+  $description: String
+) {
+  updateRole(
+    name: $name
+    moduleId: $moduleId
+    permissions: $permissions
+    roleId: $roleId
+    description: $description
+  ) {
+    success
+  }
+}
+
+mutation DeleteRole($roleId: String!) {
+  deleteRole(roleId: $roleId) {
+    success
+  }
+}
+
+query Users(
+  $pagination: PaginationArgs!
+  $sorts: [SortArgs!]!
+  $filters: [FilterArgs!]!
+) {
+  users(pagination: $pagination, sorts: $sorts, filters: $filters) {
+    data {
+      createdAt
+      createdUserId
+      createdUser {
+        username
+      }
+      updatedAt
+      updatedUserId
+      updatedUser {
+        username
+      }
+      deletedAt
+      deletedUserId
+      deletedUser {
+        username
+      }
+      userId
+      username
+      email
+      password
+      phone
+      avatar
+      status
+    }
+    pagination {
+      page
+      limit
+      totalItems
+      totalPages
+      itemCount
+    }
+  }
+}
+
+query User($userId: String!) {
+  user(userId: $userId) {
+    userId
+    username
+    email
+    password
+    phone
+    avatar
+    status
+    userRoles {
+      roleId
+      role {
+        name
+      }
+      userId
+      userRoleId
+    }
+  }
+}
+
+mutation CreateUser(
+  $username: String!
+  $email: String!
+  $password: String!
+  $status: String!
+  $roleIds: [String!]!
+  $phone: String
+  $avatar: String
+) {
+  createUser(
+    username: $username
+    email: $email
+    password: $password
+    status: $status
+    roleIds: $roleIds
+    phone: $phone
+    avatar: $avatar
+  ) {
+    userId
+    username
+    email
+    password
+    phone
+    avatar
+    status
+    userRoles {
+      roleId
+      userId
+      userRoleId
+    }
+  }
+}
+
+mutation DeleteUser($userId: String!) {
+  deleteUser(userId: $userId) {
+    success
+  }
+}

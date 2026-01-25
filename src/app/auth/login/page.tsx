@@ -1,10 +1,10 @@
 // import from presentation
 import { LoginPage } from '@/presentation/pages/auth';
 
-export default function Login() {
-  return (
-    <>
-      <LoginPage />
-    </>
-  );
+// Server Action Imports
+import { getServerMode } from '@ui/core/utils/serverHelpers';
+
+export default async function Login() {
+  const mode = await getServerMode();
+  return <LoginPage mode={mode} />;
 }

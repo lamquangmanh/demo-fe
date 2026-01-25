@@ -1,0 +1,239 @@
+{
+  "product": {
+    "list": {
+      "title": "Product Management",
+      "table": {
+        "name": "Name",
+        "description": "Description",
+        "createdAt": "Created at",
+        "createdUser": "Created User",
+        "updatedAt": "Updated at",
+        "updatedUser": "Updated User",
+        "deletedAt": "Deleted at",
+        "deletedUser": "Deleted User",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No Products Found",
+        "description": "You can create a new product by clicking the button below."
+      }
+    },
+    "form": {
+      "name": "Name",
+      "description": "Description",
+      "url": "Url",
+      "icon": "Icon",
+      "error": {
+        "name": "Please enter the product name",
+        "description": "Please enter a description",
+        "url": "Please enter a url",
+        "icon": "Please enter icon link or text"
+      }
+    },
+    "create": {
+      "title": "Create a new Product",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Product created successfully"
+    },
+    "edit": {
+      "title": "Edit Product",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Product updated successfully"
+    },
+    "delete": {
+      "confirmTitle": "Delete Product",
+      "confirmMessage": "Are you sure you want to delete this product?",
+      "successMessage": "Successfully",
+      "successDescription": "Product deleted successfully"
+    }
+  },
+  "module": {
+    "list": {
+      "title": "Module Management",
+      "table": {
+        "name": "Name",
+        "product": "Product",
+        "description": "Description",
+        "createdAt": "Created at",
+        "createdUser": "Created User",
+        "updatedAt": "Updated at",
+        "updatedUser": "Updated User",
+        "deletedAt": "Deleted at",
+        "deletedUser": "Deleted User",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No Modules Found",
+        "description": "You can create a new module by clicking the button below."
+      }
+    },
+    "form": {
+      "productId": "Product",
+      "name": "Name",
+      "description": "Description",
+      "url": "Url",
+      "icon": "Icon",
+      "error": {
+        "productId": "Please select the product",
+        "name": "Please enter the module name",
+        "description": "Please enter a description",
+        "url": "Please enter a url",
+        "icon": "Please enter icon link or text"
+      }
+    },
+    "create": {
+      "title": "Create a new Module",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Module created successfully"
+    },
+    "edit": {
+      "title": "Edit Module",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Module updated successfully"
+    },
+    "delete": {
+      "confirmTitle": "Delete Module",
+      "confirmMessage": "Are you sure you want to delete this module?",
+      "successMessage": "Successfully",
+      "successDescription": "Module deleted successfully"
+    }
+  },
+  "resource": {
+    "list": {
+      "title": "Resource Management",
+      "table": {
+        "name": "Name",
+        "module": "Module",
+        "description": "Description",
+        "createdAt": "Created at",
+        "createdUser": "Created User",
+        "updatedAt": "Updated at",
+        "updatedUser": "Updated User",
+        "deletedAt": "Deleted at",
+        "deletedUser": "Deleted User",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No Resources Found",
+        "description": "You can create a new resource by clicking the button below."
+      }
+    },
+    "form": {
+      "moduleId": "Module",
+      "name": "Name",
+      "description": "Description",
+      "action": {
+        "name": "Name",
+        "description": "Description",
+        "url": "Url",
+        "method": "Method",
+        "requestType": "Request Type"
+      },
+      "error": {
+        "moduleId": "Please select the module",
+        "name": "Please enter the name",
+        "description": "Please enter a description",
+        "action": {
+          "name": "Please enter action name",
+          "description": "Please enter a description",
+          "url": "Please enter url",
+          "method": "Please select method",
+          "requestType": "Please select request type"
+        }
+      },
+      "addActionButton": "Add Action",
+      "listActions": "Actions"
+    },
+    "create": {
+      "title": "Create a new Resource",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Resource created successfully"
+    },
+    "edit": {
+      "title": "Edit Resource",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Resource updated successfully"
+    },
+    "delete": {
+      "confirmTitle": "Delete Resource",
+      "confirmMessage": "Are you sure you want to delete this resource?",
+      "successMessage": "Successfully",
+      "successDescription": "Resource deleted successfully"
+    }
+  },
+  "role": {
+    "list": {
+      "title": "Role Management",
+      "table": {
+        "name": "Name",
+        "module": "Module",
+        "description": "Description",
+        "createdAt": "Created at",
+        "createdUser": "Created User",
+        "updatedAt": "Updated at",
+        "updatedUser": "Updated User",
+        "deletedAt": "Deleted at",
+        "deletedUser": "Deleted User",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No Roles Found",
+        "description": "You can create a new role by clicking the button below."
+      }
+    },
+    "form": {
+      "moduleId": "Module",
+      "name": "Name",
+      "description": "Description",
+      "permission": {
+        "resourceId": "Resource",
+        "actionId": "Action",
+        "actionIds": "Actions"
+      },
+      "error": {
+        "moduleId": "Please select the module",
+        "name": "Please enter the name",
+        "description": "Please enter a description",
+        "permission": {
+          "resourceId": "Please select resource",
+          "actionId": "Please select an action",
+          "actionIds": "Please select list of actions"
+        }
+      },
+      "addPermissionButton": "Add Permission",
+      "listPermissions": "Permissions"
+    },
+    "create": {
+      "title": "Create a new Role",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Role created successfully"
+    },
+    "edit": {
+      "title": "Edit Role",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "successMessage": "Successfully",
+      "successDescription": "Role updated successfully"
+    },
+    "delete": {
+      "confirmTitle": "Delete Role",
+      "confirmMessage": "Are you sure you want to delete this role?",
+      "successMessage": "Successfully",
+      "successDescription": "Role deleted successfully"
+    }
+  }
+}
