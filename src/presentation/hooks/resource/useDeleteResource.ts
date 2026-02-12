@@ -15,7 +15,7 @@ import {
 } from '@/infrastructure/graphql';
 
 // import from common
-import { DEFAULT_ERROR } from '@/common/constants';
+import { mappingErrorToReactHookForm } from '@/common/utils';
 
 export interface UseDeleteResourceProps {
   isNotifyError?: boolean; // default true
@@ -34,12 +34,12 @@ export function useDeleteResource(props?: UseDeleteResourceProps) {
     >(DeleteResourceDocument);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
   const { t } = useTranslation();
 
   const handleDeleteResourceRequest = useCallback(
     async (
-      variables?: DeleteResourceMutationVariables
+      variables?: DeleteResourceMutationVariables,
     ): Promise<DeleteResourceMutationResult | undefined> => {
       try {
         // if loading is true, return early
@@ -48,10 +48,14 @@ export function useDeleteResource(props?: UseDeleteResourceProps) {
         }
 
         const result = await safeRunMutation(variables);
+
         // handle error if any
-        if (!result || result?.errors) {
-          console.log('GraphQL error:', result?.errors);
-          if (isNotifyError) notify.error(DEFAULT_ERROR);
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(undefined, result as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0 && isNotifyError) {
+            notify.error(errorOutOffFormMessage);
+          }
           return;
         }
 
@@ -64,14 +68,19 @@ export function useDeleteResource(props?: UseDeleteResourceProps) {
         }
 
         return result?.data?.deleteResource;
-      } catch (error) {
-        console.log('Network or unexpected error:', error);
-        // Handle error appropriately, e.g., show a notification
-        if (isNotifyError) notify.error(DEFAULT_ERROR);
-        return;
+      } catch (error: any) {
+        // handle error if any
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(undefined, error as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0 && isNotifyError) {
+            notify.error(errorOutOffFormMessage);
+          }
+          return;
+        }
       }
     },
-    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess]
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess],
   );
 
   return {

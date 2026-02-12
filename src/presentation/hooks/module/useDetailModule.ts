@@ -33,7 +33,7 @@ export function useDetailModule(options?: UseListModuleOptions) {
   >(ModuleDocument, options);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
 
   const handleGetDetailModuleRequest = useCallback(
     async (variables?: ModuleQueryVariables): Promise<ModuleEntity | null> => {
@@ -42,7 +42,7 @@ export function useDetailModule(options?: UseListModuleOptions) {
         // handle error if any
         if (!result || result?.error) {
           console.log('GraphQL error:', result?.error);
-          notify.error(DEFAULT_ERROR);
+          notify.error(DEFAULT_ERROR.message);
           return null;
         }
 
@@ -51,7 +51,7 @@ export function useDetailModule(options?: UseListModuleOptions) {
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
+        notify.error(DEFAULT_ERROR.message);
         return null;
       }
     },

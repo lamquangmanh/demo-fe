@@ -3,6 +3,7 @@
 // import from libraries
 import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
+import { UseFormSetError } from 'react-hook-form';
 
 // import from presentation/hooks
 import { useAbstractMutationHook, useNotify } from '../common';
@@ -15,7 +16,7 @@ import {
 } from '@/infrastructure/graphql';
 
 // import from common
-import { DEFAULT_ERROR } from '@/common/constants';
+import { mappingErrorToReactHookForm } from '@/common/utils';
 
 // import from domain
 import { ModuleEntity } from '@/domain/entities';
@@ -29,12 +30,13 @@ export function useUpdateModule() {
     >(UpdateModuleDocument);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
   const { t } = useTranslation();
 
   const handleUpdateModuleRequest = useCallback(
     async (
-      variables?: UpdateModuleMutationVariables
+      variables?: UpdateModuleMutationVariables,
+      setError?: UseFormSetError<ModuleEntity>,
     ): Promise<ModuleEntity | undefined> => {
       try {
         // if loading is true, return early
@@ -43,10 +45,14 @@ export function useUpdateModule() {
         }
 
         const result = await safeRunMutation(variables);
+
         // handle error if any
-        if (!result || result?.errors) {
-          console.log('GraphQL error:', result?.errors);
-          notify.error(DEFAULT_ERROR);
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(setError as any, result as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0) {
+            notify.error(errorOutOffFormMessage);
+          }
           return;
         }
 
@@ -58,14 +64,23 @@ export function useUpdateModule() {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return result?.data?.updateModule as any;
-      } catch (error) {
-        console.log('Network or unexpected error:', error);
-        // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
+      } catch (error: any) {
+        console.log('UpdateModule error: ', error);
+
+        // handle error if any
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(setError as any, error as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0) {
+            notify.error(errorOutOffFormMessage);
+          }
+          return;
+        }
+
         return;
       }
     },
-    [safeRunMutation, loading, notify, t]
+    [safeRunMutation, loading, notify, t],
   );
 
   return {

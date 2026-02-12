@@ -21,6 +21,9 @@ import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 
+// import common
+import { LOGIN_PATH } from '@/common/constants';
+
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
   width: 8,
@@ -151,7 +154,7 @@ const UserDropdown = () => {
                       color="error"
                       size="small"
                       endIcon={<i className="ri-logout-box-r-line" />}
-                      onClick={(e) => handleDropdownClose(e, '/login')}
+                      onClick={(e) => handleDropdownClose(e, LOGIN_PATH)}
                       sx={{
                         '& .MuiButton-endIcon': { marginInlineStart: 1.5 },
                       }}

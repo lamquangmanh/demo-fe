@@ -3,6 +3,7 @@
 // import from libraries
 import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
+import { UseFormSetError } from 'react-hook-form';
 
 // import from presentation/hooks
 import { useAbstractMutationHook, useNotify } from '../common';
@@ -15,7 +16,7 @@ import {
 } from '@/infrastructure/graphql';
 
 // import from common
-import { DEFAULT_ERROR } from '@/common/constants';
+import { mappingErrorToReactHookForm } from '@/common/utils';
 
 // import from domain
 import { RoleEntity } from '@/domain/entities';
@@ -37,12 +38,13 @@ export function useUpdateRole(props?: UseUpdateRoleProps) {
     >(UpdateRoleDocument);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
   const { t } = useTranslation();
 
   const handleUpdateRoleRequest = useCallback(
     async (
-      variables?: UpdateRoleMutationVariables
+      variables?: UpdateRoleMutationVariables,
+      setError?: UseFormSetError<RoleEntity>,
     ): Promise<RoleEntity | undefined> => {
       try {
         // if loading is true, return early
@@ -51,10 +53,14 @@ export function useUpdateRole(props?: UseUpdateRoleProps) {
         }
 
         const result = await safeRunMutation(variables);
+
         // handle error if any
-        if (!result || result?.errors) {
-          console.log('GraphQL error:', result?.errors);
-          if (isNotifyError) notify.error(DEFAULT_ERROR);
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(setError as any, result as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0 && isNotifyError) {
+            notify.error(errorOutOffFormMessage);
+          }
           return;
         }
 
@@ -68,14 +74,23 @@ export function useUpdateRole(props?: UseUpdateRoleProps) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return result?.data?.updateRole as any;
-      } catch (error) {
-        console.log('Network or unexpected error:', error);
-        // Handle error appropriately, e.g., show a notification
-        if (isNotifyError) notify.error(DEFAULT_ERROR);
+      } catch (error: any) {
+        console.log('UpdateRole error: ', error);
+
+        // handle error if any
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(setError as any, error as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0 && isNotifyError) {
+            notify.error(errorOutOffFormMessage);
+          }
+          return;
+        }
+
         return;
       }
     },
-    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess]
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess],
   );
 
   return {

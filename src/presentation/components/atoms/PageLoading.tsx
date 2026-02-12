@@ -1,42 +1,33 @@
 'use client';
 
-// React Imports
 import React from 'react';
-import { Spin } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import styles from './PageLoading.module.css';
 
-const antIcon = <LoadingOutlined style={{ fontSize: 64 }} spin />;
+// MUI Imports
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
-interface LoadingScreenProps {
-  text?: string;
-  backgroundColor?: string;
-  color?: string;
-}
-
-const PageLoading: React.FC<LoadingScreenProps> = ({
-  text = 'Loading...',
-  backgroundColor = 'gray',
-  color = 'white',
-}) => {
+const PageLoading = () => {
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor,
-        zIndex: 9999,
+    <Box
+      className={styles['page-loading-bg']}
+      sx={{
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'column',
-        color,
-        opacity: 0.7,
+        alignItems: 'center',
+        height: '100vh',
+        width: '100%',
       }}
     >
-      <Spin indicator={antIcon} size="large" />
-      <div style={{ marginTop: 16, fontSize: 16 }}>{text}</div>
-    </div>
+      <CircularProgress
+        size={60}
+        sx={{
+          color: '#9155FD', // Materio UI primary purple color
+        }}
+      />
+    </Box>
   );
 };
+
 export { PageLoading };
 export default PageLoading;

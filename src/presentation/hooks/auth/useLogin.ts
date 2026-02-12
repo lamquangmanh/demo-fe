@@ -23,7 +23,7 @@ import {
 export function useLogin(options?: Record<string, any>) {
   // initialize router
   const router = useRouter();
-  const [notify] = useNotify();
+  const notify = useNotify();
   const { setAuthenticated } = useAuthStore();
 
   const {

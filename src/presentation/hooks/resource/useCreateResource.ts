@@ -3,6 +3,7 @@
 // import from libraries
 import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
+import { UseFormSetError } from 'react-hook-form';
 
 // import from presentation/hooks
 import { useAbstractMutationHook, useNotify } from '../common';
@@ -15,7 +16,7 @@ import {
 } from '@/infrastructure/graphql';
 
 // import from common
-import { DEFAULT_ERROR } from '@/common/constants';
+import { mappingErrorToReactHookForm } from '@/common/utils';
 import { GraphQLError } from '@/common/interfaces';
 
 // import from domain
@@ -38,12 +39,13 @@ export function useCreateResource(props?: UseCreateResourceProps) {
     >(CreateResourceDocument);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
   const { t } = useTranslation();
 
   const handleCreateResourceRequest = useCallback(
     async (
-      variables?: CreateResourceMutationVariables
+      variables?: CreateResourceMutationVariables,
+      setError?: UseFormSetError<ResourceEntity>,
     ): Promise<ResourceEntity | undefined | GraphQLError> => {
       try {
         // if loading is true, return early
@@ -52,31 +54,41 @@ export function useCreateResource(props?: UseCreateResourceProps) {
         }
 
         const result = await safeRunMutation(variables);
+
         // handle error if any
-        if (!result || result?.errors) {
-          console.log('GraphQL error:', result?.errors);
-          if (isNotifyError) notify.error(DEFAULT_ERROR);
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(setError as any, result as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0 && isNotifyError) {
+            notify.error(errorOutOffFormMessage);
+          }
           return result as GraphQLError;
         }
 
         // handle success
         if (isNotifySuccess) {
-          notify.success({
-            message: t('resource.create.successMessage', { ns: 'iam' }),
-            description: t('resource.create.successDescription', { ns: 'iam' }),
-          });
+          notify.success(t('resource.create.successMessage', { ns: 'iam' }));
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return result?.data?.createResource as any;
-      } catch (error) {
-        console.log('Network or unexpected error:', error);
-        // Handle error appropriately, e.g., show a notification
-        if (isNotifyError) notify.error(DEFAULT_ERROR);
+      } catch (error: any) {
+        console.log('CreateResource error: ', error);
+
+        // handle error if any
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(setError as any, error as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0 && isNotifyError) {
+            notify.error(errorOutOffFormMessage);
+          }
+          return error as GraphQLError;
+        }
+
         return error as GraphQLError;
       }
     },
-    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess]
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess],
   );
 
   return {

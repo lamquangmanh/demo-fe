@@ -21,6 +21,16 @@ import StyledVerticalNavExpandIcon from '@ui/menu/styles/vertical/StyledVertical
 import menuItemStyles from '@ui/core/styles/vertical/menuItemStyles';
 import menuSectionStyles from '@ui/core/styles/vertical/menuSectionStyles';
 
+// import dashboard
+import {
+  DASHBOARD_PATH,
+  IAM_PRODUCTS_PATH,
+  IAM_MODULES_PATH,
+  IAM_RESOURCES_PATH,
+  IAM_ROLES_PATH,
+  IAM_USERS_PATH,
+} from '@/common/constants';
+
 type RenderExpandIconProps = {
   open?: boolean;
   transitionDuration?: VerticalMenuContextProps['transitionDuration'];
@@ -62,7 +72,7 @@ const VerticalMenu = ({
             onScrollY: (container: any) => scrollMenu(container, true),
           })}
     >
-      {/* Incase you also want to scroll NavHeader to scroll with Vertical Menu, remove NavHeader from above and paste it below this comment */}
+      {/* In-case you also want to scroll NavHeader to scroll with Vertical Menu, remove NavHeader from above and paste it below this comment */}
       {/* Vertical Menu */}
       <Menu
         menuItemStyles={menuItemStyles(theme)}
@@ -75,7 +85,50 @@ const VerticalMenu = ({
         renderExpandedMenuItemIcon={{ icon: <i className="ri-circle-line" /> }}
         menuSectionStyles={menuSectionStyles(theme)}
       >
-        <SubMenu
+        <MenuItem
+          href={DASHBOARD_PATH}
+          icon={<i className="ri-home-smile-line" />}
+          suffix={<Chip label="5" size="small" color="error" />}
+        >
+          Dashboard
+        </MenuItem>
+
+        <MenuSection label="Admin">
+          <SubMenu label="IAM" icon={<i className="ri-admin-line" />}>
+            <MenuItem
+              href={IAM_PRODUCTS_PATH}
+              icon={<i className="ri-product-hunt-line" />}
+            >
+              Products
+            </MenuItem>
+            <MenuItem
+              href={IAM_MODULES_PATH}
+              icon={<i className="ri-function-line" />}
+            >
+              Modules
+            </MenuItem>
+            <MenuItem
+              href={IAM_RESOURCES_PATH}
+              icon={<i className="ri-database-line" />}
+            >
+              Resources
+            </MenuItem>
+            <MenuItem
+              href={IAM_USERS_PATH}
+              icon={<i className="ri-user-settings-line" />}
+            >
+              Users
+            </MenuItem>
+            <MenuItem
+              href={IAM_ROLES_PATH}
+              icon={<i className="ri-lock-line" />}
+            >
+              Roles
+            </MenuItem>
+          </SubMenu>
+        </MenuSection>
+
+        {/* <SubMenu
           label="Dashboards"
           icon={<i className="ri-home-smile-line" />}
           suffix={<Chip label="5" size="small" color="error" />}
@@ -155,8 +208,9 @@ const VerticalMenu = ({
           >
             Help Center
           </MenuItem>
-        </SubMenu>
-        <MenuSection label="Apps & Pages">
+        </SubMenu> */}
+
+        {/* <MenuSection label="Apps & Pages">
           <MenuItem
             href={`${process.env.NEXT_PUBLIC_PRO_URL}/apps/email`}
             icon={<i className="ri-mail-open-line" />}
@@ -197,6 +251,7 @@ const VerticalMenu = ({
           >
             Kanban
           </MenuItem>
+
           <MenuItem
             href="/account-settings"
             icon={<i className="ri-user-settings-line" />}
@@ -235,6 +290,7 @@ const VerticalMenu = ({
             Cards
           </MenuItem>
         </MenuSection>
+
         <MenuSection label="Forms & Tables">
           <MenuItem
             href="/form-layouts"
@@ -289,6 +345,7 @@ const VerticalMenu = ({
             MUI Tables
           </MenuItem>
         </MenuSection>
+
         <MenuSection label="Misc">
           <MenuItem
             href={`${process.env.NEXT_PUBLIC_DOCS_URL}/docs/user-interface/foundation`}
@@ -350,7 +407,7 @@ const VerticalMenu = ({
             </SubMenu>
             <MenuItem disabled>Disabled Menu</MenuItem>
           </SubMenu>
-        </MenuSection>
+        </MenuSection> */}
       </Menu>
     </ScrollWrapper>
   );

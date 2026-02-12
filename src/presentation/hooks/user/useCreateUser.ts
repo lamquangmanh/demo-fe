@@ -38,7 +38,7 @@ export function useCreateUser(props?: UseCreateUserProps) {
     >(CreateUserDocument);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
   const { t } = useTranslation();
 
   const handleCreateUserRequest = useCallback(
@@ -55,7 +55,7 @@ export function useCreateUser(props?: UseCreateUserProps) {
         // handle error if any
         if (!result || result?.errors) {
           console.log('GraphQL error:', result?.errors);
-          if (isNotifyError) notify.error(DEFAULT_ERROR);
+          if (isNotifyError) notify.error(DEFAULT_ERROR.message);
           return result as GraphQLError;
         }
 
@@ -72,7 +72,7 @@ export function useCreateUser(props?: UseCreateUserProps) {
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        if (isNotifyError) notify.error(DEFAULT_ERROR);
+        if (isNotifyError) notify.error(DEFAULT_ERROR.message);
         return error as GraphQLError;
       }
     },

@@ -34,7 +34,7 @@ export function useListModule(options?: UseListModuleOptions) {
   >(GetModulesDocument, options);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
 
   const handleGetModulesRequest = useCallback(
     async (
@@ -50,7 +50,7 @@ export function useListModule(options?: UseListModuleOptions) {
         // handle error if any
         if (!result || result?.error) {
           console.log('GraphQL error:', result?.error);
-          notify.error(DEFAULT_ERROR);
+          notify.error(DEFAULT_ERROR.message);
           return NO_DATA;
         }
 
@@ -63,7 +63,7 @@ export function useListModule(options?: UseListModuleOptions) {
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
+        notify.error(DEFAULT_ERROR.message);
         return NO_DATA;
       }
     },

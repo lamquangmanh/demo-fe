@@ -1,16 +1,24 @@
-import React from 'react';
-import {
-  Form,
-  FormInstance,
-  Input,
-  Button,
-  Card,
-  Select,
-  Row,
-  Col,
-} from 'antd';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { UseFormReturn, Controller, useFieldArray } from 'react-hook-form';
+
+// MUI Imports
+import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Box from '@mui/material/Box';
+import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // import from common
 import { REQUEST_TYPE_LIST, METHOD_LIST } from '@/common/constants';
@@ -19,24 +27,57 @@ import { REQUEST_TYPE_LIST, METHOD_LIST } from '@/common/constants';
 import { ResourceEntity } from '@/domain/entities';
 
 // import from presentation
-import { Autocomplete } from '@/presentation/components/atoms';
 import { useListModule } from '@/presentation/hooks';
 
 interface ResourceFormProps {
-  form: FormInstance<ResourceEntity>;
-  onFinish: (values: ResourceEntity) => void;
+  form: UseFormReturn<ResourceEntity>;
+  onSubmit: (values: ResourceEntity) => void;
   initialData?: ResourceEntity;
+}
+
+interface ModuleOption {
+  label: string;
+  value: string;
 }
 
 const ResourceForm: React.FC<ResourceFormProps> = ({
   form,
-  onFinish,
+  onSubmit,
   initialData,
 }) => {
   const { t } = useTranslation();
   const { handleGetModulesRequest } = useListModule();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = form;
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'actions',
+  });
+
+  const [moduleOptions, setModuleOptions] = useState<ModuleOption[]>([]);
+  const [moduleLoading, setModuleLoading] = useState(false);
+  const [moduleInputValue, setModuleInputValue] = useState('');
+
+  useEffect(() => {
+    if (initialData?.module) {
+      setModuleOptions([
+        {
+          label: initialData.module.name,
+          value: initialData.module.moduleId,
+        },
+      ]);
+    }
+  }, [initialData]);
 
   const handleSearchModule = async (value: string) => {
+    if (!value || value.length < 2) return;
+
+    setModuleLoading(true);
     const result = await handleGetModulesRequest({
       filters: { field: 'name', value },
       pagination: {
@@ -45,226 +86,260 @@ const ResourceForm: React.FC<ResourceFormProps> = ({
       },
       sorts: [],
     });
-    if (result?.data) {
+    setModuleLoading(false);
+
+    if (result && result.data) {
       const options = result.data.map((item) => ({
-        key: item.moduleId,
         label: item.name,
         value: item.moduleId,
       }));
-      return options;
+      setModuleOptions(options);
     }
-    return [];
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (moduleInputValue) {
+        handleSearchModule(moduleInputValue);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moduleInputValue]);
+
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} autoComplete="off">
-      <Row justify="start">
-        <Col span={12} style={{ paddingRight: 8 }}>
-          <Form.Item
-            name="name"
+    <form onSubmit={handleSubmit(onSubmit)} id="resource-form">
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Box sx={{ flex: 1 }}>
+          <TextField
             label={t('resource.form.name', { ns: 'iam' })}
-            rules={[
-              {
-                required: true,
-                message: t('resource.form.error.name', { ns: 'iam' }),
-              },
-            ]}
-          >
-            <Input placeholder={t('resource.form.name', { ns: 'iam' })} />
-          </Form.Item>
-        </Col>
-
-        <Col span={12} style={{ paddingLeft: 8 }}>
-          <Autocomplete
-            formItem={{
-              name: 'moduleId',
-              label: t('resource.form.moduleId', { ns: 'iam' }),
-              rules: [
-                {
-                  required: true,
-                  message: t('resource.form.error.moduleId', { ns: 'iam' }),
-                },
-              ],
-            }}
-            onSearchAPI={handleSearchModule}
-            selectedOptions={
-              initialData?.module
-                ? [
-                    {
-                      key: initialData.module.moduleId,
-                      label: initialData.module.name,
-                      value: initialData.module.moduleId,
-                    },
-                  ]
-                : []
-            }
+            placeholder={t('resource.form.name', { ns: 'iam' })}
+            fullWidth
+            {...register('name', {
+              required: t('resource.form.error.name', { ns: 'iam' }),
+            })}
+            error={!!errors.name}
+            helperText={errors.name?.message}
           />
-        </Col>
-      </Row>
+        </Box>
 
-      <Card
-        title={t('resource.form.listActions', { ns: 'iam' })}
-        style={{ marginTop: 20 }}
-      >
-        <Form.List name="actions">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name, ...restField }) => (
-                <div
-                  key={key}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    // marginBottom: '12px',
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'name']}
-                      label={t('resource.form.action.name', { ns: 'iam' })}
-                      rules={[
-                        {
-                          required: true,
-                          message: t('resource.form.error.action.name', {
-                            ns: 'iam',
-                          }),
-                        },
-                      ]}
-                    >
-                      <Input
-                        placeholder={t('resource.form.action.name', {
-                          ns: 'iam',
-                        })}
-                      />
-                    </Form.Item>
-                  </div>
+        <Box sx={{ flex: 1 }}>
+          <Controller
+            name="moduleId"
+            control={control}
+            rules={{
+              required: t('resource.form.error.moduleId', { ns: 'iam' }),
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Autocomplete
+                options={moduleOptions}
+                loading={moduleLoading}
+                value={moduleOptions.find((opt) => opt.value === value) || null}
+                onChange={(_, newValue) => {
+                  onChange(newValue?.value || '');
+                }}
+                onInputChange={(_, newInputValue) => {
+                  setModuleInputValue(newInputValue);
+                }}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('resource.form.moduleId', { ns: 'iam' })}
+                    error={!!errors.moduleId}
+                    helperText={errors.moduleId?.message}
+                    slotProps={{
+                      input: {
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {moduleLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      },
+                    }}
+                  />
+                )}
+              />
+            )}
+          />
+        </Box>
+      </Box>
 
-                  <div style={{ flex: 1 }}>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'description']}
-                      label={t('resource.form.action.description', {
-                        ns: 'iam',
-                      })}
-                    >
-                      <Input
-                        placeholder={t('resource.form.action.description', {
-                          ns: 'iam',
-                        })}
-                      />
-                    </Form.Item>
-                  </div>
+      <Card sx={{ mt: 3 }}>
+        <CardHeader title={t('resource.form.listActions', { ns: 'iam' })} />
+        <CardContent>
+          {fields.map((field, index) => (
+            <Box
+              key={field.id}
+              sx={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 1.5,
+                mb: 2,
+              }}
+            >
+              <Box sx={{ flex: 1 }}>
+                <TextField
+                  label={t('resource.form.action.name', { ns: 'iam' })}
+                  placeholder={t('resource.form.action.name', { ns: 'iam' })}
+                  fullWidth
+                  size="small"
+                  {...register(`actions.${index}.name`, {
+                    required: t('resource.form.error.action.name', {
+                      ns: 'iam',
+                    }),
+                  })}
+                  error={!!errors.actions?.[index]?.name}
+                  helperText={errors.actions?.[index]?.name?.message}
+                />
+              </Box>
 
-                  <div style={{ flex: 1 }}>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'url']}
-                      label={t('resource.form.action.url', { ns: 'iam' })}
-                      rules={[
-                        {
-                          required: true,
-                          message: t('resource.form.error.action.url', {
-                            ns: 'iam',
-                          }),
-                        },
-                      ]}
-                    >
-                      <Input
-                        placeholder={t('resource.form.action.url', {
-                          ns: 'iam',
-                        })}
-                      />
-                    </Form.Item>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'method']}
-                      label={t('resource.form.action.method', {
-                        ns: 'iam',
-                      })}
-                      rules={[
-                        {
-                          required: true,
-                          message: t('resource.form.error.action.method', {
-                            ns: 'iam',
-                          }),
-                        },
-                      ]}
-                    >
-                      <Select
-                        options={METHOD_LIST}
-                        placeholder={t('resource.form.action.method', {
-                          ns: 'iam',
-                        })}
-                      />
-                    </Form.Item>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'requestType']}
-                      label={t('resource.form.action.requestType', {
-                        ns: 'iam',
-                      })}
-                      rules={[
-                        {
-                          required: true,
-                          message: t('resource.form.error.action.requestType', {
-                            ns: 'iam',
-                          }),
-                        },
-                      ]}
-                    >
-                      <Select
-                        options={REQUEST_TYPE_LIST}
-                        placeholder={t('resource.form.action.requestType', {
-                          ns: 'iam',
-                        })}
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div>
-                    <Button
-                      type="text"
-                      danger
-                      size="small"
-                      icon={<MinusCircleOutlined />}
-                      onClick={() => remove(name)}
-                      style={{
-                        flex: 'none',
-                        width: 30,
-                        height: 30,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        // marginTop: 4,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-
-              <Form.Item>
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  block
-                  icon={<PlusOutlined />}
-                >
-                  {t('resource.form.addActionButton', {
+              <Box sx={{ flex: 1 }}>
+                <TextField
+                  label={t('resource.form.action.description', { ns: 'iam' })}
+                  placeholder={t('resource.form.action.description', {
                     ns: 'iam',
                   })}
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
+                  fullWidth
+                  size="small"
+                  {...register(`actions.${index}.description`)}
+                />
+              </Box>
+
+              <Box sx={{ flex: 1 }}>
+                <TextField
+                  label={t('resource.form.action.url', { ns: 'iam' })}
+                  placeholder={t('resource.form.action.url', { ns: 'iam' })}
+                  fullWidth
+                  size="small"
+                  {...register(`actions.${index}.url`, {
+                    required: t('resource.form.error.action.url', {
+                      ns: 'iam',
+                    }),
+                  })}
+                  error={!!errors.actions?.[index]?.url}
+                  helperText={errors.actions?.[index]?.url?.message}
+                />
+              </Box>
+
+              <Box sx={{ flex: 1 }}>
+                <Controller
+                  name={`actions.${index}.method`}
+                  control={control}
+                  rules={{
+                    required: t('resource.form.error.action.method', {
+                      ns: 'iam',
+                    }),
+                  }}
+                  render={({ field }) => (
+                    <FormControl
+                      fullWidth
+                      size="small"
+                      error={!!errors.actions?.[index]?.method}
+                    >
+                      <InputLabel>
+                        {t('resource.form.action.method', { ns: 'iam' })}
+                      </InputLabel>
+                      <Select
+                        {...field}
+                        label={t('resource.form.action.method', { ns: 'iam' })}
+                      >
+                        {METHOD_LIST.map((method) => (
+                          <MenuItem key={method.value} value={method.value}>
+                            {method.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors.actions?.[index]?.method && (
+                        <FormHelperText>
+                          {errors.actions[index]?.method?.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                />
+              </Box>
+
+              <Box sx={{ flex: 1 }}>
+                <Controller
+                  name={`actions.${index}.requestType`}
+                  control={control}
+                  rules={{
+                    required: t('resource.form.error.action.requestType', {
+                      ns: 'iam',
+                    }),
+                  }}
+                  render={({ field }) => (
+                    <FormControl
+                      fullWidth
+                      size="small"
+                      error={!!errors.actions?.[index]?.requestType}
+                    >
+                      <InputLabel>
+                        {t('resource.form.action.requestType', { ns: 'iam' })}
+                      </InputLabel>
+                      <Select
+                        {...field}
+                        label={t('resource.form.action.requestType', {
+                          ns: 'iam',
+                        })}
+                      >
+                        {REQUEST_TYPE_LIST.map((type) => (
+                          <MenuItem key={type.value} value={type.value}>
+                            {type.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors.actions?.[index]?.requestType && (
+                        <FormHelperText>
+                          {errors.actions[index]?.requestType?.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
+                />
+              </Box>
+
+              <Box sx={{ pt: 0.5 }}>
+                <IconButton
+                  color="error"
+                  size="small"
+                  onClick={() => remove(index)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            </Box>
+          ))}
+
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<AddIcon />}
+            onClick={() =>
+              append({
+                actionId: '',
+                resourceId: '',
+                name: '',
+                description: '',
+                url: '',
+                method: '' as any,
+                requestType: '' as any,
+              })
+            }
+            sx={{ mt: 2 }}
+          >
+            {t('resource.form.addActionButton', { ns: 'iam' })}
+          </Button>
+        </CardContent>
       </Card>
-    </Form>
+    </form>
   );
 };
 

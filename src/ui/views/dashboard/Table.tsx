@@ -1,27 +1,27 @@
 // MUI Imports
-import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
-import Chip from '@mui/material/Chip'
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 
 // Third-party Imports
-import classnames from 'classnames'
+import classnames from 'classnames';
 
 // Components Imports
-import CustomAvatar from '@core/components/mui/Avatar'
+import CustomAvatar from '@ui/core/components/mui/Avatar';
 
 // Styles Imports
-import tableStyles from '@core/styles/table.module.css'
+import tableStyles from '@ui/core/styles/table.module.css';
 
 type TableBodyRowType = {
-  avatarSrc?: string
-  name: string
-  username: string
-  email: string
-  iconClass: string
-  roleIcon?: string
-  role: string
-  status: string
-}
+  avatarSrc?: string;
+  name: string;
+  username: string;
+  email: string;
+  iconClass: string;
+  roleIcon?: string;
+  role: string;
+  status: string;
+};
 
 // Vars
 const rowsData: TableBodyRowType[] = [
@@ -33,7 +33,7 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-primary',
     roleIcon: 'ri-vip-crown-line',
     role: 'Admin',
-    status: 'pending'
+    status: 'pending',
   },
   {
     avatarSrc: '/images/avatars/2.png',
@@ -43,7 +43,7 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-warning',
     roleIcon: 'ri-edit-box-line',
     role: 'Editor',
-    status: 'active'
+    status: 'active',
   },
   {
     avatarSrc: '/images/avatars/3.png',
@@ -53,7 +53,7 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-error',
     roleIcon: 'ri-computer-line',
     role: 'Author',
-    status: 'active'
+    status: 'active',
   },
   {
     avatarSrc: '/images/avatars/4.png',
@@ -63,7 +63,7 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-warning',
     roleIcon: 'ri-edit-box-line',
     role: 'Editor',
-    status: 'pending'
+    status: 'pending',
   },
   {
     avatarSrc: '/images/avatars/5.png',
@@ -73,7 +73,7 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-info',
     roleIcon: 'ri-pie-chart-2-line',
     role: 'Maintainer',
-    status: 'active'
+    status: 'active',
   },
   {
     avatarSrc: '/images/avatars/6.png',
@@ -83,7 +83,7 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-warning',
     roleIcon: 'ri-edit-box-line',
     role: 'Editor',
-    status: 'pending'
+    status: 'pending',
   },
   {
     avatarSrc: '/images/avatars/7.png',
@@ -93,7 +93,7 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-info',
     roleIcon: 'ri-pie-chart-2-line',
     role: 'Maintainer',
-    status: 'inactive'
+    status: 'inactive',
   },
   {
     avatarSrc: '/images/avatars/8.png',
@@ -103,14 +103,14 @@ const rowsData: TableBodyRowType[] = [
     iconClass: 'text-success',
     roleIcon: 'ri-user-3-line',
     role: 'Subscriber',
-    status: 'active'
-  }
-]
+    status: 'active',
+  },
+];
 
 const Table = () => {
   return (
     <Card>
-      <div className='overflow-x-auto'>
+      <div className="overflow-x-auto">
         <table className={tableStyles.table}>
           <thead>
             <tr>
@@ -123,33 +123,45 @@ const Table = () => {
           <tbody>
             {rowsData.map((row, index) => (
               <tr key={index}>
-                <td className='!plb-1'>
-                  <div className='flex items-center gap-3'>
+                <td className="!plb-1">
+                  <div className="flex items-center gap-3">
                     <CustomAvatar src={row.avatarSrc} size={34} />
-                    <div className='flex flex-col'>
-                      <Typography color='text.primary' className='font-medium'>
+                    <div className="flex flex-col">
+                      <Typography color="text.primary" className="font-medium">
                         {row.name}
                       </Typography>
-                      <Typography variant='body2'>{row.username}</Typography>
+                      <Typography variant="body2">{row.username}</Typography>
                     </div>
                   </div>
                 </td>
-                <td className='!plb-1'>
+                <td className="!plb-1">
                   <Typography>{row.email}</Typography>
                 </td>
-                <td className='!plb-1'>
-                  <div className='flex gap-2'>
-                    <i className={classnames(row.roleIcon, row.iconClass, 'text-[22px]')} />
-                    <Typography color='text.primary'>{row.role}</Typography>
+                <td className="!plb-1">
+                  <div className="flex gap-2">
+                    <i
+                      className={classnames(
+                        row.roleIcon,
+                        row.iconClass,
+                        'text-[22px]',
+                      )}
+                    />
+                    <Typography color="text.primary">{row.role}</Typography>
                   </div>
                 </td>
-                <td className='!pb-1'>
+                <td className="!pb-1">
                   <Chip
-                    className='capitalize'
-                    variant='tonal'
-                    color={row.status === 'pending' ? 'warning' : row.status === 'inactive' ? 'secondary' : 'success'}
+                    className="capitalize"
+                    variant="tonal"
+                    color={
+                      row.status === 'pending'
+                        ? 'warning'
+                        : row.status === 'inactive'
+                          ? 'secondary'
+                          : 'success'
+                    }
                     label={row.status}
-                    size='small'
+                    size="small"
                   />
                 </td>
               </tr>
@@ -158,7 +170,7 @@ const Table = () => {
         </table>
       </div>
     </Card>
-  )
-}
+  );
+};
 
-export default Table
+export default Table;

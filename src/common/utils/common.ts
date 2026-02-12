@@ -1,19 +1,11 @@
 // import form libs
-import { FormInstance } from 'antd';
 
 // import from infrastructure
 import { SuperMenu } from '@/infrastructure/graphql/generated';
 import { FilterArgs, SortArgs, SortOrder } from '@/infrastructure/graphql';
-import i18n from '@/infrastructure/i18n/i18n';
 
 // import from common
-import {
-  IAppList,
-  GraphQLError,
-  GraphQLErrorData,
-  GraphQLErrorDataField,
-} from '@/common/interfaces';
-import { ERROR_LIST } from '@/common/constants';
+import { IAppList } from '@/common/interfaces';
 
 export const getAppListFromSuperMenus = (superMenus: SuperMenu[]) => {
   const appList: IAppList[] = [];
@@ -112,61 +104,13 @@ export const mockFetchAPI = async <T>(data: T, delay = 500): Promise<T> => {
   });
 };
 
-const parseIntByList = (list: (string | number)[]): (string | number)[] => {
+export const parseIntByList = (
+  list: (string | number)[],
+): (string | number)[] => {
   return list.map((item) => {
     if (typeof item === 'string' && !isNaN(parseInt(item))) {
       return parseInt(item);
     }
     return item;
   });
-};
-
-/**
- * Mapping error to form. return true if error and else return false
- * @param form
- * @param error
- * @returns
- */
-export const mappingErrorToForm = (
-  form: FormInstance,
-  error: GraphQLError
-): { hasError: boolean; errorsOutOfForm: GraphQLErrorDataField[] } => {
-  const errors: GraphQLErrorData[] =
-    error?.errors || error?.graphQLErrors || [];
-
-  const errorsOutOfForm: GraphQLErrorDataField[] = [];
-
-  // handle errors
-  if (errors.length > 0) {
-    for (const err of errors) {
-      if (!err.extra?.fields) continue;
-
-      for (const fieldItem of err.extra.fields) {
-        const key = parseIntByList(fieldItem.field.split('.'));
-        const formValue = form.getFieldValue(key);
-        if (formValue) {
-          // set error to form field
-          form.setFields([
-            { name: key, errors: [getErrorMessageByCode(fieldItem.code)] },
-          ]);
-        } else errorsOutOfForm.push(fieldItem);
-      }
-    }
-    return { hasError: true, errorsOutOfForm };
-  }
-
-  return { hasError: false, errorsOutOfForm };
-};
-
-/**
- * Get error message by code
- * @param code
- * @returns
- */
-export const getErrorMessageByCode = (code: number): string => {
-  const error = ERROR_LIST.find((err) => err.code === code);
-  if (error) {
-    return i18n.t(error.error, { ns: 'error' });
-  }
-  return i18n.t('unknown', { ns: 'error' });
 };

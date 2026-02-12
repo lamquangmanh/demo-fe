@@ -15,7 +15,7 @@ import {
 } from '@/infrastructure/graphql';
 
 // import from common
-import { DEFAULT_ERROR } from '@/common/constants';
+import { mappingErrorToReactHookForm } from '@/common/utils';
 
 export function useDeleteProduct() {
   // initialize hooks
@@ -26,12 +26,12 @@ export function useDeleteProduct() {
     >(DeleteProductDocument);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
   const { t } = useTranslation();
 
   const handleDeleteProductRequest = useCallback(
     async (
-      variables?: DeleteProductMutationVariables
+      variables?: DeleteProductMutationVariables,
     ): Promise<DeleteProductMutationResult | undefined> => {
       try {
         // if loading is true, return early
@@ -40,28 +40,34 @@ export function useDeleteProduct() {
         }
 
         const result = await safeRunMutation(variables);
+
         // handle error if any
-        if (!result || result?.errors) {
-          console.log('GraphQL error:', result?.errors);
-          notify.error(DEFAULT_ERROR);
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(undefined, result as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0) {
+            notify.error(errorOutOffFormMessage);
+          }
           return;
         }
 
         // handle success
-        notify.success({
-          message: t('product.delete.successMessage', { ns: 'iam' }),
-          description: t('product.delete.successDescription', { ns: 'iam' }),
-        });
+        notify.success(t('product.delete.successMessage', { ns: 'iam' }));
 
         return result?.data?.deleteProduct;
-      } catch (error) {
-        console.log('Network or unexpected error:', error);
-        // Handle error appropriately, e.g., show a notification
-        notify.error(DEFAULT_ERROR);
-        return;
+      } catch (error: any) {
+        // handle error if any
+        const { hasError, errorOutOffFormMessage } =
+          mappingErrorToReactHookForm(undefined, error as any);
+        if (hasError) {
+          if (errorOutOffFormMessage.length > 0) {
+            notify.error(errorOutOffFormMessage);
+          }
+          return;
+        }
       }
     },
-    [safeRunMutation, loading, notify, t]
+    [loading, safeRunMutation, notify, t],
   );
 
   return {

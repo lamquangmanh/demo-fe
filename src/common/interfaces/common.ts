@@ -24,6 +24,16 @@ export interface GraphQLErrorData {
   };
 }
 export interface GraphQLError {
-  errors?: GraphQLErrorData[];
+  data?: any;
+  error?: GraphQLErrorData[];
+  errors?: any[];
   graphQLErrors?: GraphQLErrorData[];
 }
+
+export type MetaRowSpanType = {
+  rowSpan?: number;
+};
+
+export type MetaDividerType = {
+  divider?: 'none' | 'full' | 'haft' | undefined;
+};

@@ -39,7 +39,7 @@ export function useDetailRole(
   >(RoleDocument, options);
 
   // initialize notify hook
-  const [notify] = useNotify();
+  const notify = useNotify();
 
   const handleGetDetailRoleRequest = useCallback(
     async (
@@ -50,7 +50,7 @@ export function useDetailRole(
         // handle error if any
         if (!result || result?.error) {
           console.log('GraphQL error:', result?.error);
-          if (isNotifyError) notify.error(DEFAULT_ERROR);
+          if (isNotifyError) notify.error(DEFAULT_ERROR.message);
           return result as GraphQLError;
         }
 
@@ -59,7 +59,7 @@ export function useDetailRole(
       } catch (error) {
         console.log('Network or unexpected error:', error);
         // Handle error appropriately, e.g., show a notification
-        if (isNotifyError) notify.error(DEFAULT_ERROR);
+        if (isNotifyError) notify.error(DEFAULT_ERROR.message);
         return error as GraphQLError;
       }
     },

@@ -1,75 +1,54 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
-import ProLayout from '@ant-design/pro-layout';
-import Link from 'next/link';
-import { useTranslation } from 'next-i18next';
-import { usePathname, useRouter } from 'next/navigation';
-import { Layout as AntLayout, Avatar, Dropdown, MenuProps } from 'antd';
-import {
-  GlobalOutlined,
-  UserOutlined,
-  SmileOutlined,
-  KubernetesOutlined,
-  LogoutOutlined,
-} from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // import from constants
-import { ROUTES, USER_PROFILE_PATH, LOGIN_PATH } from '@/common/constants';
+import { LOGIN_PATH } from '@/common/constants';
 
 // import from presentation
-import {
-  useComponentMounted,
-  useLogout,
-  useSuperMenus,
-} from '@/presentation/hooks';
+import { useComponentMounted, useSuperMenus } from '@/presentation/hooks';
 // import from presentation/components
 import { PageLoading } from '@/presentation/components/atoms';
 
 // import from domain
-import {
-  useAuthStore,
-  AuthState,
-  useMenuStore,
-  useLanguageStore,
-} from '@/domain/stores';
+import { useAuthStore, AuthState, useMenuStore } from '@/domain/stores';
+
+// Type Imports
+import type { ChildrenType } from '@ui/core/types';
+
+// Layout Imports
+// import LayoutWrapper from '@ui/layouts/LayoutWrapper';
+
+// Component Imports
+// import Providers from '@ui/components/Providers';
 
 // import infrastructure
 import { initializeSocket, disconnectSocket } from '@/infrastructure/websocket';
 
-type LayoutProps = {
-  children: ReactNode;
-};
-
-const AuthorizedLayout = ({ children }: LayoutProps) => {
-  const { t } = useTranslation('common');
-  const pathname = usePathname();
+const AuthorizedLayout = ({ children }: ChildrenType) => {
   const router = useRouter();
-  const { handleLogout } = useLogout();
   const isAuthenticated = useAuthStore(
-    (state: AuthState) => state.isAuthenticated
+    (state: AuthState) => state.isAuthenticated,
   );
 
   const [hydrated, setHydrated] = useState(false);
 
-  // initialize language store
-  const { setLanguage } = useLanguageStore();
-
   // initialize super menus from menu store
   // and fetch super menus from server if not already fetched
   // This is to ensure that the super menus are available for the layout
-  const { superMenus, appList, isLoaded, setIsLoaded } = useMenuStore();
+  const { superMenus, isLoaded, setIsLoaded } = useMenuStore();
   const { getSuperMenuRequest } = useSuperMenus();
 
   useEffect(() => {
     // Note: This is just in case you want to take into account manual rehydration.
     // You can remove the following line if you don't need it.
     const unSubscribeHydrate = useAuthStore.persist.onHydrate(() =>
-      setHydrated(false)
+      setHydrated(false),
     );
 
     const unSubscribeFinishHydration = useAuthStore.persist.onFinishHydration(
-      () => setHydrated(true)
+      () => setHydrated(true),
     );
 
     setHydrated(useAuthStore.persist.hasHydrated());
@@ -121,93 +100,13 @@ const AuthorizedLayout = ({ children }: LayoutProps) => {
     return <PageLoading />;
   }
 
-  // define dropdown menu items of avatar and language
-  const userDropdownMenu: MenuProps['items'] = [
-    {
-      key: '1',
-      label: t('header.user.profile'),
-      icon: <UserOutlined />,
-      onClick: () => {
-        // navigate to profile page
-        router.push(USER_PROFILE_PATH);
-      },
-    },
-    {
-      key: '2',
-      label: t('header.user.logout'),
-      icon: <LogoutOutlined />,
-      onClick: () => {
-        // handle logout click
-        handleLogout();
-      },
-    },
-  ];
+  // return (
+  //   <Providers direction={'ltr'}>
+  //     <LayoutWrapper>{children}</LayoutWrapper>
+  //   </Providers>
+  // );
 
-  const languageDropdownMenu: MenuProps['items'] = [
-    {
-      key: '1',
-      label: t('header.language.en'),
-      icon: <GlobalOutlined />,
-      onClick: () => {
-        // handle language change to English
-        setLanguage('en');
-      },
-    },
-    {
-      key: '2',
-      label: t('header.language.vi'),
-      icon: <SmileOutlined />,
-      onClick: () => {
-        // handle language change to Vietnamese
-        setLanguage('vi');
-      },
-    },
-  ];
-
-  return (
-    <ProLayout
-      title="Admin Panel"
-      route={{ routes: ROUTES }}
-      location={{ pathname }}
-      logo={<KubernetesOutlined />}
-      layout="mix"
-      // splitMenus={false}
-      menuItemRender={(item, dom) => <Link href={item.path || '#'}>{dom}</Link>}
-      headerContentRender={() => (
-        <div className="grid justify-items-end">
-          <div>
-            <Dropdown
-              menu={{ items: languageDropdownMenu }}
-              placement="bottomRight"
-            >
-              <GlobalOutlined
-                size={24}
-                style={{
-                  fontSize: 24,
-                  cursor: 'pointer',
-                  marginRight: 15,
-                }}
-              />
-            </Dropdown>
-
-            <Dropdown
-              menu={{ items: userDropdownMenu }}
-              placement="bottomRight"
-            >
-              <Avatar
-                size={28}
-                icon={<UserOutlined />}
-                style={{ cursor: 'pointer', marginRight: 10, marginTop: -10 }}
-              />
-            </Dropdown>
-          </div>
-        </div>
-      )}
-      appList={appList}
-    >
-      <AntLayout.Content>{children}</AntLayout.Content>
-    </ProLayout>
-  );
+  return <>{children}</>;
 };
 
 export default AuthorizedLayout;

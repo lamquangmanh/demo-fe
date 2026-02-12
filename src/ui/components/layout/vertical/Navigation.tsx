@@ -20,6 +20,9 @@ import useVerticalNav from '@ui/menu/hooks/useVerticalNav';
 // Style Imports
 import navigationCustomStyles from '@ui/core/styles/vertical/navigationCustomStyles';
 
+// import from common
+import { DASHBOARD_PATH } from '@/common/constants';
+
 const StyledBoxForShadow = styled('div')(({ theme }) => ({
   top: 60,
   left: -8,
@@ -68,7 +71,7 @@ const Navigation = () => {
     <VerticalNav customStyles={navigationCustomStyles(theme)}>
       {/* Nav Header including Logo & nav toggle icons  */}
       <NavHeader>
-        <Link href="/">
+        <Link href={DASHBOARD_PATH}>
           <Logo />
         </Link>
         {isBreakpointReached && (

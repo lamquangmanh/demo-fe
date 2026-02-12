@@ -1,18 +1,29 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import { Typography, Button, Flex, Popconfirm } from 'antd';
-import type { FormInstance } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 import dayjs from 'dayjs';
+
+// MUI Imports
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 // import from domain
 import { ModuleEntity } from '@/domain/entities';
 
 // import from common
-import { PAGE_SIZE_OPTIONS, DEFAULT_SORT } from '@/common/constants';
+import { DEFAULT_SORT, PAGE_SIZE_OPTIONS } from '@/common/constants';
 import { buildSortArgs, buildFilterArgs } from '@/common/utils';
 
 // import from presentation/hooks
@@ -20,43 +31,70 @@ import {
   useListModule,
   useDeleteModule,
   useDetailModule,
-  useListProduct,
 } from '@/presentation/hooks';
-import { Autocomplete } from '@/presentation/components/atoms';
 
 // import create Module drawer
 import ModuleCreateDrawer from './Create';
 import ModuleEditDrawer from './Edit';
 
-const ListModule = () => {
-  const { handleGetProductsRequest } = useListProduct();
+// import TableBasic
+import { TableBasic } from '@/presentation/components/molecules/table';
+import { ColumnDef } from '@tanstack/react-table';
 
+const ListModule = () => {
   const { t } = useTranslation('iam');
-  const actionRef = useRef<ActionType | null>(null);
-  const formRef = useRef<FormInstance | undefined>(undefined);
 
   // state to manage selected module and edit popup
   const [selectedModule, setSelectedModule] = useState<ModuleEntity | null>(
-    null
+    null,
   );
   const [selectedModuleDelete, setSelectedModuleDelete] =
     useState<ModuleEntity | null>(null);
   const [openEditPopup, setOpenEditPopup] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   // state to manage create module popup
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
 
   const { handleDeleteModuleRequest } = useDeleteModule();
+  const { handleGetDetailModuleRequest, loading: loadingDetail } =
+    useDetailModule();
 
   const [pagination, setPagination] = useState({
     pageSize: 10,
     page: 1,
+    total: 0,
   });
+
+  const [modules, setModules] = useState<ModuleEntity[]>([]);
 
   // use custom hook to handle Module listing
   const { handleGetModulesRequest, loading } = useListModule();
-  const { handleGetDetailModuleRequest, loading: loadingDetail } =
-    useDetailModule();
+
+  const loadData = useCallback(async () => {
+    if (loading) return;
+    const result = await handleGetModulesRequest({
+      pagination: {
+        page: pagination.page,
+        limit: pagination.pageSize,
+      },
+      sorts: buildSortArgs({}, DEFAULT_SORT),
+      filters: buildFilterArgs({}),
+    });
+
+    if (result) {
+      setModules(result.data || []);
+      setPagination((prev) => ({
+        ...prev,
+        total: result.total || 0,
+      }));
+    }
+  }, [handleGetModulesRequest, pagination.page, pagination.pageSize, loading]);
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.page, pagination.pageSize]);
 
   const handleEdit = async (module: ModuleEntity) => {
     setOpenEditPopup(true);
@@ -68,6 +106,7 @@ const ListModule = () => {
 
   const handleDelete = (module: ModuleEntity) => {
     setSelectedModuleDelete(module);
+    setOpenDeleteDialog(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -78,228 +117,158 @@ const ListModule = () => {
       moduleId: selectedModuleDelete.moduleId,
     });
 
-    // Reset the selected Module after deletion
+    // Reset the selected module after deletion
     setSelectedModuleDelete(null);
+    setOpenDeleteDialog(false);
+
     // Reload the table data
-    actionRef.current?.reloadAndRest?.();
+    loadData();
   };
 
-  const handleSearchProduct = async (value: string) => {
-    const result = await handleGetProductsRequest({
-      filters: { field: 'name', value },
-      pagination: {
-        page: 1,
-        limit: 50,
-      },
-      sorts: [],
-    });
-    if (result && result.data) {
-      const options = result.data.map((item) => ({
-        key: item.productId,
-        label: item.name,
-        value: item.productId,
-      }));
-      return options;
-    }
-    return [];
-  };
-
-  const columns: ProColumns<ModuleEntity>[] = [
+  const columns: ColumnDef<ModuleEntity>[] = [
     {
-      title: t('module.list.table.name', { ns: 'iam' }),
-      dataIndex: 'name',
-      valueType: 'text',
-      sorter: true,
+      accessorKey: 'name',
+      header: t('module.list.table.name', { ns: 'iam' }),
+      size: 200,
     },
     {
-      title: t('module.list.table.product', { ns: 'iam' }),
-      dataIndex: 'product.name',
-      valueType: 'text',
-      sorter: true,
-      search: {
-        transform: (value) => {
-          return {
-            productId: value,
-          };
-        },
-      },
-      render: (text, record) => record.product?.name || 'N/A',
-      renderFormItem: () => {
-        return <Autocomplete onSearchAPI={handleSearchProduct} />;
-      },
+      accessorKey: 'product.name',
+      header: t('module.list.table.product', { ns: 'iam' }),
+      size: 200,
+      cell: ({ row }) => row.original.product?.name || 'N/A',
     },
     {
-      title: t('module.list.table.description', { ns: 'iam' }),
-      dataIndex: 'description',
-      valueType: 'text',
-      search: false,
+      accessorKey: 'description',
+      header: t('module.list.table.description', { ns: 'iam' }),
+      size: 300,
     },
     {
-      title: t('module.list.table.createdAt', { ns: 'iam' }),
-      dataIndex: 'createdAt',
-      valueType: 'dateTime',
-      search: false,
-      sorter: true,
-      width: 200,
-      render: (_, record) =>
-        record.createdAt
-          ? dayjs(record.createdAt).format('YYYY-MM-DD HH:mm [GMT]Z')
+      accessorKey: 'createdAt',
+      header: t('module.list.table.createdAt', { ns: 'iam' }),
+      size: 200,
+      cell: ({ row }) =>
+        row.original.createdAt
+          ? dayjs(row.original.createdAt).format('YYYY-MM-DD HH:mm [GMT]Z')
           : 'N/A',
     },
     {
-      title: t('module.list.table.createdUser', { ns: 'iam' }),
-      dataIndex: 'createdUser.username',
-      valueType: 'text',
-      search: false,
-      width: 200,
-      render: (text, record) => record.createdUser?.username || 'N/A',
+      accessorKey: 'createdUser.username',
+      header: t('module.list.table.createdUser', { ns: 'iam' }),
+      size: 200,
+      cell: ({ row }) => row.original.createdUser?.username || 'N/A',
     },
     {
-      title: t('module.list.table.updatedAt', { ns: 'iam' }),
-      dataIndex: 'updatedAt',
-      valueType: 'dateTime',
-      search: false,
-      sorter: true,
-      width: 200,
-      render: (_, record) =>
-        record.updatedAt
-          ? dayjs(record.updatedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
+      accessorKey: 'updatedAt',
+      header: t('module.list.table.updatedAt', { ns: 'iam' }),
+      size: 200,
+      cell: ({ row }) =>
+        row.original.updatedAt
+          ? dayjs(row.original.updatedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
           : 'N/A',
     },
     {
-      title: t('module.list.table.updatedUser', { ns: 'iam' }),
-      dataIndex: 'updatedUser.username',
-      valueType: 'text',
-      search: false,
-      width: 200,
-      render: (text, record) => record.updatedUser?.username || 'N/A',
+      accessorKey: 'updatedUser.username',
+      header: t('module.list.table.updatedUser', { ns: 'iam' }),
+      size: 200,
+      cell: ({ row }) => row.original.updatedUser?.username || 'N/A',
     },
-    // {
-    //   title: t('module.list.table.deletedAt', { ns: 'iam' }),
-    //   dataIndex: 'deletedAt',
-    //   valueType: 'dateTime',
-    //   search: false,
-    //   sorter: true,
-    //   width: 200,
-    //   render: (_, record) =>
-    //     record.deletedAt
-    //       ? dayjs(record.deletedAt).format('YYYY-MM-DD HH:mm [GMT]Z')
-    //       : 'N/A',
-    // },
-    // {
-    //   title: t('module.list.table.deletedUser', { ns: 'iam' }),
-    //   dataIndex: 'deletedUser.username',
-    //   valueType: 'text',
-    //   search: false,
-    //   width: 200,
-    //   render: (text, record) => record.deletedUser?.username || 'N/A',
-    // },
     {
-      title: t('module.list.table.actions', { ns: 'iam' }),
-      key: 'action',
-      search: false,
-      fixed: 'right',
-      width: 160,
-      render: (_, record) => (
-        <Flex gap="small" wrap>
-          <Button type="primary" onClick={() => handleEdit(record)}>
-            {t('table.editButton', { ns: 'common' })}
-          </Button>
-
-          <Popconfirm
-            title={t('module.delete.confirmTitle', { ns: 'iam' })}
-            description={t('module.delete.confirmMessage', { ns: 'iam' })}
-            onConfirm={handleConfirmDelete}
-            okText={t('table.deleteYesButton', { ns: 'common' })}
-            cancelText={t('table.deleteNoButton', { ns: 'common' })}
+      id: 'actions',
+      header: t('module.list.table.actions', { ns: 'iam' }),
+      size: 160,
+      cell: ({ row }) => (
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton
+            size="small"
+            color="primary"
+            onClick={() => handleEdit(row.original)}
           >
-            <Button danger onClick={() => handleDelete(record)}>
-              {t('table.deleteButton', { ns: 'common' })}
-            </Button>
-          </Popconfirm>
-        </Flex>
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            size="small"
+            color="error"
+            onClick={() => handleDelete(row.original)}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Box>
       ),
     },
   ];
 
   return (
-    <div>
-      <Typography.Title level={3}>{t('module.list.title')}</Typography.Title>
-      <ProTable<ModuleEntity>
+    <Card>
+      <TableBasic<ModuleEntity, any>
         columns={columns}
-        actionRef={actionRef}
-        formRef={formRef}
-        rowKey="moduleId"
-        search={{
-          labelWidth: 'auto',
-          optionRender: (searchConfig) => [
-            <Button
-              key="search"
-              type="primary"
-              onClick={() => {
-                searchConfig.form?.submit();
-              }}
-            >
-              {t('table.filter.search', { ns: 'common' })}
-            </Button>,
-            <Button
-              key="reset"
-              onClick={() => {
-                searchConfig.form?.resetFields();
-                // Trigger search after reset
-                searchConfig.form?.submit();
-              }}
-            >
-              {t('table.filter.reset', { ns: 'common' })}
-            </Button>,
-          ],
-        }}
-        toolBarRender={() => [
-          <Button
-            key="button"
-            type="primary"
-            onClick={() => {
-              setOpenCreatePopup(true);
+        data={modules}
+        isLoading={loading}
+        toolbar={
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              p: 2,
             }}
           >
-            <PlusCircleOutlined />
-            {t('table.filter.add', { ns: 'common' })}
-          </Button>,
-        ]}
+            <Typography variant="h4">{t('module.list.title')}</Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setOpenCreatePopup(true)}
+            >
+              {t('table.filter.add', { ns: 'common' })}
+            </Button>
+          </Box>
+        }
         pagination={{
-          current: pagination.page,
-          pageSize: pagination.pageSize,
-          showSizeChanger: true,
-          pageSizeOptions: PAGE_SIZE_OPTIONS,
-          onChange: (page, pageSize) => {
-            setPagination({ page, pageSize });
-
-            // Reset to page 1
-            actionRef.current?.reloadAndRest?.();
+          totalPage: pagination.total,
+          page: pagination.page - 1,
+          rowsPerPage: pagination.pageSize,
+          onPageChange: (_event: unknown, newPage: number) => {
+            setPagination((prev) => ({ ...prev, page: newPage + 1 }));
           },
+          onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            setPagination((prev) => ({
+              ...prev,
+              pageSize: parseInt(event.target.value, 10),
+              page: 1,
+            }));
+          },
+          rowsPerPageOptions: PAGE_SIZE_OPTIONS,
         }}
-        request={async (params, sorter) => {
-          const { pageSize, current, ...rest } = params;
-          return await handleGetModulesRequest({
-            pagination: {
-              page: current || 1,
-              limit: pageSize || 10,
-            },
-            sorts: buildSortArgs(sorter, DEFAULT_SORT),
-            filters: buildFilterArgs(rest),
-          });
-        }}
-        loading={loading}
-        dateFormatter="string"
-        scroll={{ x: 'max-content' }} // enables horizontal scroll automatically
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>
+          {t('module.delete.confirmTitle', { ns: 'iam' })}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('module.delete.confirmMessage', { ns: 'iam' })}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)}>
+            {t('table.deleteNoButton', { ns: 'common' })}
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+            {t('table.deleteYesButton', { ns: 'common' })}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <ModuleCreateDrawer
         open={openCreatePopup}
         onClose={() => setOpenCreatePopup(false)}
         onCreateSuccess={() => {
           setOpenCreatePopup(false);
-          actionRef.current?.reloadAndRest?.();
+          loadData();
         }}
       />
 
@@ -310,10 +279,10 @@ const ListModule = () => {
         isLoading={loadingDetail}
         onUpdateSuccess={() => {
           setOpenEditPopup(false);
-          actionRef.current?.reloadAndRest?.();
+          loadData();
         }}
       />
-    </div>
+    </Card>
   );
 };
 

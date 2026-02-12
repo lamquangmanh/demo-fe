@@ -1,14 +1,20 @@
 'use client';
 
 import React from 'react';
-import { Drawer, Form, Button, Space } from 'antd';
 import { useTranslation } from 'next-i18next';
+import { useForm } from 'react-hook-form';
+
+// MUI Imports
+import Drawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 // import form component
 import ResourceForm from './Form';
-
-// import from common
-import { mappingErrorToForm } from '@/common/utils';
 
 // import from domain
 import { ResourceEntity } from '@/domain/entities';
@@ -28,60 +34,101 @@ const ResourceCreateDrawer: React.FC<ResourceCreateDrawerProps> = ({
   onCreateSuccess,
 }) => {
   const { t } = useTranslation();
-  const [form] = Form.useForm();
+  const form = useForm<ResourceEntity>({
+    defaultValues: {
+      name: '',
+      moduleId: '',
+      actions: [],
+    },
+  });
   const { handleCreateResourceRequest, loading: isSubmiting } =
-    useCreateResource({ isNotifyError: false, isNotifySuccess: true });
+    useCreateResource();
 
   const handleFinish = async (formValues: ResourceEntity) => {
-    const result: any = await handleCreateResourceRequest({
-      ...formValues,
-      actions:
-        formValues.actions?.map((action) => ({
-          ...action,
-          description: action.description || '',
-        })) || [],
-    });
-
-    // map error to form if any
-    const { hasError } = mappingErrorToForm(form, result);
-    if (hasError) return;
+    const result: any = await handleCreateResourceRequest(
+      {
+        ...formValues,
+        actions:
+          formValues.actions?.map((action) => ({
+            ...action,
+            description: action.description || '',
+          })) || [],
+      },
+      form.setError,
+    );
 
     // if success, reset form and close drawer
     if (result?.resourceId) {
-      form.resetFields();
+      form.reset();
       onCreateSuccess();
     }
   };
 
   const handleClose = () => {
     // Reset form fields and close the drawer
-    form.resetFields();
+    form.reset();
     onClose();
   };
 
   return (
-    <Drawer
-      title={t('resource.create.title', { ns: 'iam' })}
-      width={1200}
-      onClose={handleClose}
-      open={open}
-      destroyOnHidden
-      footer={
-        <Space style={{ float: 'right' }}>
-          <Button onClick={handleClose}>
-            {t('resource.create.cancelButton', { ns: 'iam' })}
-          </Button>
-          <Button
-            loading={isSubmiting}
-            type="primary"
-            onClick={() => form.submit()}
-          >
-            {t('resource.create.saveButton', { ns: 'iam' })}
-          </Button>
-        </Space>
-      }
-    >
-      <ResourceForm onFinish={handleFinish} form={form} />
+    <Drawer anchor="right" open={open} onClose={handleClose}>
+      <Box
+        sx={{
+          width: 1200,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Header */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2,
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6">
+            {t('resource.create.title', { ns: 'iam' })}
+          </Typography>
+          <IconButton onClick={handleClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {/* Content */}
+        <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
+          <ResourceForm onSubmit={handleFinish} form={form} />
+        </Box>
+
+        {/* Footer */}
+        <Box
+          sx={{
+            p: 2,
+            borderTop: 1,
+            borderColor: 'divider',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Stack direction="row" spacing={2}>
+            <Button onClick={handleClose} variant="outlined">
+              {t('resource.create.cancelButton', { ns: 'iam' })}
+            </Button>
+            <Button
+              variant="contained"
+              disabled={isSubmiting}
+              type="submit"
+              form="resource-form"
+            >
+              {t('resource.create.saveButton', { ns: 'iam' })}
+            </Button>
+          </Stack>
+        </Box>
+      </Box>
     </Drawer>
   );
 };

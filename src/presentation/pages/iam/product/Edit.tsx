@@ -1,8 +1,17 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Drawer, Form, Button, Space } from 'antd';
 import { useTranslation } from 'next-i18next';
+import { useForm } from 'react-hook-form';
+
+// MUI Imports
+import Drawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 // import form component
 import ProductForm from './form/Form';
@@ -27,63 +36,107 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
   initialData,
 }) => {
   const { t } = useTranslation();
-  const [form] = Form.useForm();
+  const form = useForm<ProductEntity>({
+    defaultValues: {
+      name: '',
+      description: '',
+      url: '',
+      icon: '',
+    },
+  });
   const { handleUpdateProductRequest, loading: isSubmiting } =
     useUpdateProduct();
 
   useEffect(() => {
     // Reset form fields when the drawer opens or initialData changes
-    if (initialData?.productId && form) {
-      if (initialData) {
-        form?.setFieldsValue(initialData);
-      } else {
-        form?.resetFields();
-      }
+    if (initialData?.productId) {
+      form.reset(initialData);
+    } else {
+      form.reset();
     }
   }, [initialData, form]);
 
   const handleFinish = async (values: ProductEntity) => {
-    const result = await handleUpdateProductRequest({
-      ...values,
-      productId: initialData?.productId ?? '',
-    });
+    const result = await handleUpdateProductRequest(
+      {
+        ...values,
+        productId: initialData?.productId ?? '',
+      },
+      form.setError,
+    );
 
     // check success
-    if (result?.productId) {
+    if (result) {
       onUpdateSuccess();
-      form.resetFields();
+      form.reset();
     }
   };
 
   const handleClose = () => {
     // Reset form fields and close the drawer
-    form.resetFields();
+    form.reset();
     onClose();
   };
 
   return (
-    <Drawer
-      title={t('product.edit.title', { ns: 'iam' })}
-      width={400}
-      onClose={handleClose}
-      open={open}
-      destroyOnHidden
-      footer={
-        <Space style={{ float: 'right' }}>
-          <Button onClick={handleClose}>
-            {t('product.edit.cancelButton', { ns: 'iam' })}
-          </Button>
-          <Button
-            type="primary"
-            loading={isSubmiting}
-            onClick={() => form.submit()}
-          >
-            {t('product.edit.saveButton', { ns: 'iam' })}
-          </Button>
-        </Space>
-      }
-    >
-      <ProductForm onFinish={handleFinish} form={form} />
+    <Drawer anchor="right" open={open} onClose={handleClose}>
+      <Box
+        sx={{
+          width: 400,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Header */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2,
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6">
+            {t('product.edit.title', { ns: 'iam' })}
+          </Typography>
+          <IconButton onClick={handleClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {/* Content */}
+        <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
+          <ProductForm onSubmit={handleFinish} form={form} />
+        </Box>
+
+        {/* Footer */}
+        <Box
+          sx={{
+            p: 2,
+            borderTop: 1,
+            borderColor: 'divider',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Stack direction="row" spacing={2}>
+            <Button onClick={handleClose} variant="outlined">
+              {t('product.edit.cancelButton', { ns: 'iam' })}
+            </Button>
+            <Button
+              variant="contained"
+              disabled={isSubmiting}
+              type="submit"
+              form="product-form"
+            >
+              {t('product.edit.saveButton', { ns: 'iam' })}
+            </Button>
+          </Stack>
+        </Box>
+      </Box>
     </Drawer>
   );
 };

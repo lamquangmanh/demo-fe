@@ -1,22 +1,29 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Form,
-  FormInstance,
-  Input,
-  Button,
-  Card,
-  Row,
-  Col,
-  Select,
-} from 'antd';
 import { useTranslation } from 'next-i18next';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { UseFormReturn, Controller, useFieldArray } from 'react-hook-form';
+
+// MUI Imports
+import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Box from '@mui/material/Box';
+import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // import from domain
 import { RoleEntity, ResourceEntity } from '@/domain/entities';
 
 // import from presentation
-import { Autocomplete } from '@/presentation/components/atoms';
 import {
   useListModule,
   useListResource,
@@ -24,12 +31,22 @@ import {
 } from '@/presentation/hooks';
 
 interface RoleFormProps {
-  form: FormInstance<RoleEntity>;
-  onFinish: (values: RoleEntity) => void;
+  form: UseFormReturn<RoleEntity>;
+  onSubmit: (values: RoleEntity) => void;
   initialData?: RoleEntity;
 }
 
-const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
+interface ModuleOption {
+  label: string;
+  value: string;
+}
+
+interface ResourceOption {
+  label: string;
+  value: string;
+}
+
+const RoleForm: React.FC<RoleFormProps> = ({ form, onSubmit, initialData }) => {
   const { t } = useTranslation();
   const { handleGetModulesRequest } = useListModule();
   const { handleGetResourcesRequest } = useListResource();
@@ -37,6 +54,38 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
   const [resourcesCache, setResourcesCache] = useState<
     Record<string, ResourceEntity>
   >({});
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = form;
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'permissions',
+  });
+
+  const [moduleOptions, setModuleOptions] = useState<ModuleOption[]>([]);
+  const [moduleLoading, setModuleLoading] = useState(false);
+  const [moduleInputValue, setModuleInputValue] = useState('');
+
+  const [resourceOptions, setResourceOptions] = useState<ResourceOption[]>([]);
+  const [resourceLoading, setResourceLoading] = useState(false);
+  const [resourceInputValue, setResourceInputValue] = useState('');
+
+  // Load initial module if editing
+  useEffect(() => {
+    if (initialData?.module) {
+      setModuleOptions([
+        {
+          label: initialData.module.name,
+          value: initialData.module.moduleId,
+        },
+      ]);
+    }
+  }, [initialData]);
 
   // Load initial resource details if editing
   useEffect(() => {
@@ -55,7 +104,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
             if (resource?.resourceId) {
               cache[resourceId] = resource;
             }
-          })
+          }),
         );
 
         setResourcesCache(cache);
@@ -65,6 +114,9 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
   }, [initialData, handleGetDetailResourceRequest]);
 
   const handleSearchModule = async (value: string) => {
+    if (!value || value.length < 2) return;
+
+    setModuleLoading(true);
     const result = await handleGetModulesRequest({
       filters: { field: 'name', value },
       pagination: {
@@ -73,18 +125,31 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
       },
       sorts: [],
     });
+    setModuleLoading(false);
+
     if (result?.data) {
       const options = result.data.map((item) => ({
-        key: item.moduleId,
         label: item.name,
         value: item.moduleId,
       }));
-      return options;
+      setModuleOptions(options);
     }
-    return [];
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (moduleInputValue) {
+        handleSearchModule(moduleInputValue);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [moduleInputValue]);
+
   const handleSearchResource = async (value: string) => {
+    if (!value || value.length < 2) return;
+
+    setResourceLoading(true);
     const result = await handleGetResourcesRequest({
       filters: { field: 'name', value },
       pagination: {
@@ -93,16 +158,26 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
       },
       sorts: [],
     });
+    setResourceLoading(false);
+
     if (result?.data) {
       const options = result.data.map((item) => ({
-        key: item.resourceId,
         label: item.name,
         value: item.resourceId,
       }));
-      return options;
+      setResourceOptions(options);
     }
-    return [];
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (resourceInputValue) {
+        handleSearchResource(resourceInputValue);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resourceInputValue]);
 
   const handleResourceSelect = useCallback(
     async (resourceId: string) => {
@@ -116,7 +191,7 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
         }
       }
     },
-    [resourcesCache, handleGetDetailResourceRequest]
+    [resourcesCache, handleGetDetailResourceRequest],
   );
 
   const getActionsForResource = useCallback(
@@ -129,212 +204,244 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onFinish, initialData }) => {
         value: action.actionId,
       }));
     },
-    [resourcesCache]
+    [resourcesCache],
   );
 
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} autoComplete="off">
-      <Row justify="start">
-        <Col span={8} style={{ paddingRight: 8 }}>
-          <Form.Item
-            name="name"
+    <form onSubmit={handleSubmit(onSubmit)} id="role-form">
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Box sx={{ flex: 1 }}>
+          <TextField
             label={t('role.form.name', { ns: 'iam' })}
-            rules={[
-              {
-                required: true,
-                message: t('role.form.error.name', { ns: 'iam' }),
-              },
-            ]}
-          >
-            <Input placeholder={t('role.form.name', { ns: 'iam' })} />
-          </Form.Item>
-        </Col>
-
-        <Col span={8}>
-          <Form.Item
-            name="description"
-            label={t('role.form.description', { ns: 'iam' })}
-            rules={[
-              {
-                required: true,
-                message: t('role.form.error.description', { ns: 'iam' }),
-              },
-            ]}
-          >
-            <Input placeholder={t('role.form.description', { ns: 'iam' })} />
-          </Form.Item>
-        </Col>
-
-        <Col span={8} style={{ paddingLeft: 8 }}>
-          <Autocomplete
-            formItem={{
-              name: 'moduleId',
-              label: t('role.form.moduleId', { ns: 'iam' }),
-              rules: [
-                {
-                  required: true,
-                  message: t('role.form.error.moduleId', { ns: 'iam' }),
-                },
-              ],
-            }}
-            onSearchAPI={handleSearchModule}
-            selectedOptions={
-              initialData?.module
-                ? [
-                    {
-                      key: initialData.module.moduleId,
-                      label: initialData.module.name,
-                      value: initialData.module.moduleId,
-                    },
-                  ]
-                : []
-            }
+            placeholder={t('role.form.name', { ns: 'iam' })}
+            fullWidth
+            {...register('name', {
+              required: t('role.form.error.name', { ns: 'iam' }),
+            })}
+            error={!!errors.name}
+            helperText={errors.name?.message}
           />
-        </Col>
-      </Row>
+        </Box>
 
-      <Card
-        title={t('role.form.listPermissions', { ns: 'iam' })}
-        style={{ marginTop: 20 }}
-      >
-        <Form.List name="permissions">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name, ...restField }) => (
-                <div
-                  key={key}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    marginBottom: 16,
+        <Box sx={{ flex: 1 }}>
+          <TextField
+            label={t('role.form.description', { ns: 'iam' })}
+            placeholder={t('role.form.description', { ns: 'iam' })}
+            fullWidth
+            {...register('description', {
+              required: t('role.form.error.description', { ns: 'iam' }),
+            })}
+            error={!!errors.description}
+            helperText={errors.description?.message}
+          />
+        </Box>
+
+        <Box sx={{ flex: 1 }}>
+          <Controller
+            name="moduleId"
+            control={control}
+            rules={{
+              required: t('role.form.error.moduleId', { ns: 'iam' }),
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Autocomplete
+                options={moduleOptions}
+                loading={moduleLoading}
+                value={moduleOptions.find((opt) => opt.value === value) || null}
+                onChange={(_, newValue) => {
+                  onChange(newValue?.value || '');
+                }}
+                onInputChange={(_, newInputValue) => {
+                  setModuleInputValue(newInputValue);
+                }}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('role.form.moduleId', { ns: 'iam' })}
+                    error={!!errors.moduleId}
+                    helperText={errors.moduleId?.message}
+                    slotProps={{
+                      input: {
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {moduleLoading ? (
+                              <CircularProgress color="inherit" size={20} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      },
+                    }}
+                  />
+                )}
+              />
+            )}
+          />
+        </Box>
+      </Box>
+
+      <Card sx={{ mt: 3 }}>
+        <CardHeader title={t('role.form.listPermissions', { ns: 'iam' })} />
+        <CardContent>
+          {fields.map((field, index) => (
+            <Box
+              key={field.id}
+              sx={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: 1.5,
+                mb: 2,
+              }}
+            >
+              <Box sx={{ flex: 1 }}>
+                <Controller
+                  name={`permissions.${index}.resourceId`}
+                  control={control}
+                  rules={{
+                    required: t('role.form.error.permission.resourceId', {
+                      ns: 'iam',
+                    }),
                   }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'resourceId']}
-                      label={t('role.form.permission.resourceId', {
-                        ns: 'iam',
-                      })}
-                      rules={[
-                        {
-                          required: true,
-                          message: t('role.form.error.permission.resourceId', {
+                  render={({ field: { onChange, value } }) => (
+                    <Autocomplete
+                      options={resourceOptions}
+                      loading={resourceLoading}
+                      value={
+                        resourceOptions.find((opt) => opt.value === value) ||
+                        null
+                      }
+                      onChange={(_, newValue) => {
+                        const newResourceId = newValue?.value || '';
+                        onChange(newResourceId);
+                        if (newResourceId) {
+                          handleResourceSelect(newResourceId);
+                        }
+                      }}
+                      onInputChange={(_, newInputValue) => {
+                        setResourceInputValue(newInputValue);
+                      }}
+                      isOptionEqualToValue={(option, value) =>
+                        option.value === value.value
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label={t('role.form.permission.resourceId', {
                             ns: 'iam',
-                          }),
-                        },
-                      ]}
-                    >
-                      <Autocomplete
-                        onSearchAPI={handleSearchResource}
-                        selectedOptions={[]}
-                        onChange={(value) => {
-                          // Load resource details when selected
-                          if (value) {
-                            handleResourceSelect(String(value));
+                          })}
+                          size="small"
+                          error={!!errors.permissions?.[index]?.resourceId}
+                          helperText={
+                            errors.permissions?.[index]?.resourceId?.message
                           }
-                        }}
-                      />
-                    </Form.Item>
-                  </div>
-
-                  <div style={{ flex: 1 }}>
-                    <Form.Item
-                      noStyle
-                      shouldUpdate={(prevValues, currentValues) => {
-                        const prevResourceId =
-                          prevValues?.permissions?.[name]?.resourceId;
-                        const currentResourceId =
-                          currentValues?.permissions?.[name]?.resourceId;
-                        return prevResourceId !== currentResourceId;
-                      }}
-                    >
-                      {({ getFieldValue }) => {
-                        const resourceId = getFieldValue([
-                          'permissions',
-                          name,
-                          'resourceId',
-                        ]);
-                        const actions = resourceId
-                          ? getActionsForResource(resourceId)
-                          : [];
-
-                        return (
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'actionId']}
-                            label={t('role.form.permission.actionId', {
-                              ns: 'iam',
-                            })}
-                            rules={[
-                              {
-                                required: true,
-                                message: t(
-                                  'role.form.error.permission.actionIds',
-                                  {
-                                    ns: 'iam',
-                                  }
-                                ),
-                              },
-                            ]}
-                          >
-                            <Select
-                              placeholder={t('role.form.permission.actionId', {
-                                ns: 'iam',
-                              })}
-                              options={actions}
-                              disabled={!resourceId || actions.length === 0}
-                              showSearch
-                              filterOption={(input, option) =>
-                                (option?.label ?? '')
-                                  .toLowerCase()
-                                  .includes(input.toLowerCase())
-                              }
-                            />
-                          </Form.Item>
-                        );
-                      }}
-                    </Form.Item>
-                  </div>
-
-                  <div style={{ paddingTop: 30 }}>
-                    <Button
-                      type="text"
-                      danger
-                      size="small"
-                      icon={<MinusCircleOutlined />}
-                      onClick={() => remove(name)}
-                      style={{
-                        flex: 'none',
-                        width: 30,
-                        height: 30,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
+                          slotProps={{
+                            input: {
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {resourceLoading ? (
+                                    <CircularProgress
+                                      color="inherit"
+                                      size={20}
+                                    />
+                                  ) : null}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            },
+                          }}
+                        />
+                      )}
                     />
-                  </div>
-                </div>
-              ))}
+                  )}
+                />
+              </Box>
 
-              <Form.Item>
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  block
-                  icon={<PlusOutlined />}
+              <Box sx={{ flex: 1 }}>
+                <Controller
+                  name={`permissions.${index}.actionId`}
+                  control={control}
+                  rules={{
+                    required: t('role.form.error.permission.actionIds', {
+                      ns: 'iam',
+                    }),
+                  }}
+                  render={({ field }) => {
+                    const resourceId = form.watch(
+                      `permissions.${index}.resourceId`,
+                    );
+                    const actions = resourceId
+                      ? getActionsForResource(resourceId)
+                      : [];
+
+                    return (
+                      <FormControl
+                        fullWidth
+                        size="small"
+                        error={!!errors.permissions?.[index]?.actionId}
+                      >
+                        <InputLabel>
+                          {t('role.form.permission.actionId', { ns: 'iam' })}
+                        </InputLabel>
+                        <Select
+                          {...field}
+                          label={t('role.form.permission.actionId', {
+                            ns: 'iam',
+                          })}
+                          disabled={!resourceId || actions.length === 0}
+                        >
+                          {actions.map((action) => (
+                            <MenuItem key={action.value} value={action.value}>
+                              {action.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {errors.permissions?.[index]?.actionId && (
+                          <FormHelperText>
+                            {errors.permissions[index]?.actionId?.message}
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    );
+                  }}
+                />
+              </Box>
+
+              <Box sx={{ pt: 0.5 }}>
+                <IconButton
+                  color="error"
+                  size="small"
+                  onClick={() => remove(index)}
                 >
-                  {t('role.form.addPermissionButton', {
-                    ns: 'iam',
-                  })}
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            </Box>
+          ))}
+
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<AddIcon />}
+            onClick={() =>
+              append({
+                permissionId: '',
+                roleId: '',
+                resourceId: '',
+                actionId: '',
+              })
+            }
+            sx={{ mt: 2 }}
+          >
+            {t('role.form.addPermissionButton', { ns: 'iam' })}
+          </Button>
+        </CardContent>
       </Card>
-    </Form>
+    </form>
   );
 };
 

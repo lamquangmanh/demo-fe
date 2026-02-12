@@ -1,64 +1,73 @@
 import React from 'react';
-import { Form, FormInstance, Input } from 'antd';
 import { useTranslation } from 'next-i18next';
+import { UseFormReturn } from 'react-hook-form';
+
+// MUI Imports
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
 
 // import from domain
 import { ProductEntity } from '@/domain/entities';
 
 interface ProductFormProps {
-  form: FormInstance<ProductEntity>;
-  onFinish: (values: ProductEntity) => void;
+  form: UseFormReturn<ProductEntity>;
+  onSubmit: (values: ProductEntity) => void;
 }
 
-const ProductForm: React.FC<ProductFormProps> = ({ form, onFinish }) => {
+const ProductForm: React.FC<ProductFormProps> = ({ form, onSubmit }) => {
   const { t } = useTranslation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
+
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} autoComplete="off">
-      <Form.Item
-        name="name"
-        label={t('product.form.name', { ns: 'iam' })}
-        rules={[
-          {
-            required: true,
-            message: t('product.form.error.name', { ns: 'iam' }),
-          },
-        ]}
-      >
-        <Input placeholder={t('product.form.name', { ns: 'iam' })} />
-      </Form.Item>
-
-      <Form.Item
-        name="description"
-        label={t('product.form.description', { ns: 'iam' })}
-        rules={[
-          {
-            required: true,
-            message: t('product.form.error.description', { ns: 'iam' }),
-          },
-        ]}
-      >
-        <Input.TextArea
-          placeholder={t('product.form.description', { ns: 'iam' })}
+    <form onSubmit={handleSubmit(onSubmit)} id="product-form">
+      <Stack spacing={3}>
+        <TextField
+          label={t('product.form.name', { ns: 'iam' })}
+          placeholder={t('product.form.name', { ns: 'iam' })}
+          fullWidth
+          {...register('name', {
+            required: t('product.form.error.name', { ns: 'iam' }),
+          })}
+          error={!!errors.name}
+          helperText={errors.name?.message}
         />
-      </Form.Item>
 
-      <Form.Item
-        name="url"
-        label={t('product.form.url', { ns: 'iam' })}
-        rules={[
-          {
-            required: true,
-            message: t('product.form.error.url', { ns: 'iam' }),
-          },
-        ]}
-      >
-        <Input placeholder={t('product.form.url', { ns: 'iam' })} />
-      </Form.Item>
+        <TextField
+          label={t('product.form.description', { ns: 'iam' })}
+          placeholder={t('product.form.description', { ns: 'iam' })}
+          fullWidth
+          multiline
+          rows={4}
+          {...register('description', {
+            required: t('product.form.error.description', { ns: 'iam' }),
+          })}
+          error={!!errors.description}
+          helperText={errors.description?.message}
+        />
 
-      <Form.Item name="icon" label={t('product.form.icon', { ns: 'iam' })}>
-        <Input placeholder={t('product.form.icon', { ns: 'iam' })} />
-      </Form.Item>
-    </Form>
+        <TextField
+          label={t('product.form.url', { ns: 'iam' })}
+          placeholder={t('product.form.url', { ns: 'iam' })}
+          fullWidth
+          {...register('url', {
+            required: t('product.form.error.url', { ns: 'iam' }),
+          })}
+          error={!!errors.url}
+          helperText={errors.url?.message}
+        />
+
+        <TextField
+          label={t('product.form.icon', { ns: 'iam' })}
+          placeholder={t('product.form.icon', { ns: 'iam' })}
+          fullWidth
+          {...register('icon')}
+        />
+      </Stack>
+    </form>
   );
 };
 

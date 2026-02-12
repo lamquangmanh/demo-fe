@@ -1,29 +1,33 @@
-import 'server-only';
+// import 'server-only';
 
 // Next Imports
-import { cookies } from 'next/headers';
+// import { cookies } from 'next/headers';
 
 // Type Imports
 import type { Settings } from '@ui/core/contexts/settingsContext';
 import type { SystemMode } from '@ui/core/types';
 
 // Config Imports
-import themeConfig from '@ui/configs/themeConfig';
+// import themeConfig from '@ui/configs/themeConfig';
 
-export const getSettingsFromCookie = async (): Promise<Settings> => {
-  const cookieStore = await cookies();
+// export const getSettingsFromCookie = async (): Promise<Settings> => {
+//   const cookieStore = await cookies();
 
-  const cookieName = themeConfig.settingsCookieName;
+//   const cookieName = themeConfig.settingsCookieName;
 
-  try {
-    const value = cookieStore.get(cookieName)?.value;
-    return value ? JSON.parse(value) : {};
-  } catch {
-    return {};
-  }
+//   try {
+//     const value = cookieStore.get(cookieName)?.value;
+//     return value ? JSON.parse(value) : {};
+//   } catch {
+//     return {};
+//   }
+// };
+
+export const getSettingsFromCookie = (): Settings => {
+  return { mode: 'dark' };
 };
 
-export const getMode = async (): Promise<SystemMode> => {
+export const getMode = (): SystemMode => {
   // const settings = await getSettingsFromCookie();
 
   // // Get mode from cookie or fallback to theme config
