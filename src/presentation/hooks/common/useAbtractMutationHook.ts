@@ -6,13 +6,11 @@ import {
   OperationVariables,
   useMutation,
   MutationHookOptions,
-  FetchResult,
 } from '@apollo/client';
 
 import { useRouter } from 'next/navigation';
 
 import { LOGIN_PATH } from '@/common/constants';
-import { GraphQLError } from '@/common/interfaces';
 
 export function useAbstractMutationHook<
   TData = any,

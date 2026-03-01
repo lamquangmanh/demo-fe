@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { SyntheticEvent, ReactElement } from 'react';
 
 // MUI Imports
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/GridLegacy';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -26,7 +26,7 @@ const AccountSettings = ({
   return (
     <TabContext value={activeTab}>
       <Grid container spacing={6}>
-        <Grid size={{ xs: 12 }}>
+        <Grid item xs={12}>
           <TabList onChange={handleChange} variant="scrollable">
             <Tab
               label="Account"
@@ -48,7 +48,7 @@ const AccountSettings = ({
             />
           </TabList>
         </Grid>
-        <Grid size={{ xs: 12 }}>
+        <Grid item xs={12}>
           <TabPanel value={activeTab} className="p-0">
             {tabContentList[activeTab]}
           </TabPanel>

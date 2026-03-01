@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/GridLegacy';
 import Button from '@mui/material/Button';
 
 // Component Imports
@@ -14,7 +14,7 @@ import Link from '@ui/components/Link';
 import Form from '@ui/components/Form';
 
 // Style Imports
-import tableStyles from '@core/styles/table.module.css';
+import tableStyles from '@ui/core/styles/table.module.css';
 
 type TableDataType = {
   type: string;
@@ -99,13 +99,13 @@ const Notifications = () => {
             When should we send you notifications?
           </Typography>
           <Grid container spacing={6}>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <Select fullWidth defaultValue="online">
                 <MenuItem value="online">Only when I&#39;m online</MenuItem>
                 <MenuItem value="anytime">Anytime</MenuItem>
               </Select>
             </Grid>
-            <Grid className="flex gap-4 flex-wrap" size={{ xs: 12 }}>
+            <Grid className="flex gap-4 flex-wrap" item xs={12}>
               <Button variant="contained" type="submit">
                 Save Changes
               </Button>

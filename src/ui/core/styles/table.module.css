@@ -4,18 +4,18 @@
   font-size: 0.875rem;
   white-space: nowrap;
 
-  [align='right'] > * {
+  & [align='right'] > * {
     text-align: end;
   }
-  [align='center'] > * {
+  & [align='center'] > * {
     text-align: center;
   }
 
-  thead {
+  & thead {
     text-transform: uppercase;
     color: var(--mui-palette-text-primary);
 
-    th {
+    & th {
       font-weight: 500;
       font-size: 0.8125rem;
       letter-spacing: 0.2px;
@@ -43,11 +43,11 @@
     }
   }
 
-  tbody {
+  & tbody {
     color: var(--mui-palette-text-secondary);
 
-    th,
-    td {
+    & th,
+    & td {
       font-size: 0.9375rem;
       line-height: 1.4667;
       block-size: 50px;
@@ -70,23 +70,25 @@
       }
     }
 
-    tr:not(:last-child) {
+    & tr:not(:last-child) {
       border-block-end: 1px solid var(--border-color);
     }
   }
 }
 
-.cellWithInput input {
-  inline-size: 100%;
-  background-color: transparent;
-  font-size: inherit;
-  color: inherit;
-  border-radius: var(--mui-shape-customBorderRadius-sm);
-  padding-block: 6px;
-  padding-inline: 10px;
-  margin-inline: -10px;
+.cellWithInput {
+  & input {
+    inline-size: 100%;
+    background-color: transparent;
+    font-size: inherit;
+    color: inherit;
+    border-radius: var(--mui-shape-customBorderRadius-sm);
+    padding-block: 6px;
+    padding-inline: 10px;
+    margin-inline: -10px;
 
-  &:focus-visible {
-    outline: 1px solid var(--mui-palette-primary-main);
+    &:focus-visible {
+      outline: 1px solid var(--mui-palette-primary-main);
+    }
   }
 }

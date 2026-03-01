@@ -5,7 +5,7 @@ import useVerticalNav from '@ui/menu/hooks/useVerticalNav';
 
 const NavToggle = () => {
   // Hooks
-  const { toggleVerticalNav, isBreakpointReached } = useVerticalNav();
+  const { toggleVerticalNav } = useVerticalNav();
 
   const handleClick = () => {
     toggleVerticalNav();

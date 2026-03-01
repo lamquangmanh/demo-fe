@@ -19,14 +19,14 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
 
 // Type Imports
-import type { Mode } from '@core/types'
+import type { Mode } from '@ui/core/types'
 
 // Component Imports
-import Illustrations from '@components/Illustrations'
-import Logo from '@components/layout/shared/Logo'
+import Illustrations from '@ui/components/Illustrations'
+import Logo from '@ui/components/layout/shared/Logo'
 
 // Hook Imports
-import { useImageVariant } from '@core/hooks/useImageVariant'
+import { useImageVariant } from '@ui/core/hooks/useImageVariant'
 
 const Register = ({ mode }: { mode: Mode }) => {
   // States

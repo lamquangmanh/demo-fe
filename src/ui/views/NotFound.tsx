@@ -8,13 +8,13 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 // Type Imports
-import type { Mode } from '@core/types'
+import type { Mode } from '@ui/core/types'
 
 // Component Imports
-import Illustrations from '@components/Illustrations'
+import Illustrations from '@ui/components/Illustrations'
 
 // Hook Imports
-import { useImageVariant } from '@core/hooks/useImageVariant'
+import { useImageVariant } from '@ui/core/hooks/useImageVariant'
 
 const NotFound = ({ mode }: { mode: Mode }) => {
   // Vars

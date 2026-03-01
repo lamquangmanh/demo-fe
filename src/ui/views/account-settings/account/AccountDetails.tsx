@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { ChangeEvent } from 'react';
 
 // MUI Imports
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/GridLegacy';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
@@ -134,7 +134,7 @@ const AccountDetails = () => {
       <CardContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Grid container spacing={5}>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="First Name"
@@ -143,7 +143,7 @@ const AccountDetails = () => {
                 onChange={(e) => handleFormChange('firstName', e.target.value)}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Last Name"
@@ -152,7 +152,7 @@ const AccountDetails = () => {
                 onChange={(e) => handleFormChange('lastName', e.target.value)}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Email"
@@ -161,7 +161,7 @@ const AccountDetails = () => {
                 onChange={(e) => handleFormChange('email', e.target.value)}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Organization"
@@ -172,7 +172,7 @@ const AccountDetails = () => {
                 }
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Phone Number"
@@ -183,7 +183,7 @@ const AccountDetails = () => {
                 }
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Address"
@@ -192,7 +192,7 @@ const AccountDetails = () => {
                 onChange={(e) => handleFormChange('address', e.target.value)}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="State"
@@ -201,7 +201,7 @@ const AccountDetails = () => {
                 onChange={(e) => handleFormChange('state', e.target.value)}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 type="number"
@@ -211,7 +211,7 @@ const AccountDetails = () => {
                 onChange={(e) => handleFormChange('zipCode', e.target.value)}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Country</InputLabel>
                 <Select
@@ -226,7 +226,7 @@ const AccountDetails = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Language</InputLabel>
                 <Select
@@ -262,7 +262,7 @@ const AccountDetails = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>TimeZone</InputLabel>
                 <Select
@@ -321,7 +321,7 @@ const AccountDetails = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Currency</InputLabel>
                 <Select
@@ -336,7 +336,7 @@ const AccountDetails = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12 }} className="flex gap-4 flex-wrap">
+            <Grid item xs={12} className="flex gap-4 flex-wrap">
               <Button variant="contained" type="submit">
                 Save Changes
               </Button>

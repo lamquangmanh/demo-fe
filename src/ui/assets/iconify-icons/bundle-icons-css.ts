@@ -110,7 +110,7 @@ const target = join(__dirname, 'generated-icons.css')
     await fs.mkdir(dir, {
       recursive: true
     })
-  } catch (err) {
+  } catch {
     //
   }
 
