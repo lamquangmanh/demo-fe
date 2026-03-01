@@ -6,7 +6,8 @@ WORKDIR /app
 # Copy only package files for better cache
 COPY package.json yarn.lock ./
 
-RUN yarn install --frozen-lockfile
+# RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # Copy the rest of the app
 COPY . .
