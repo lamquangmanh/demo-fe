@@ -6,8 +6,7 @@ import { useMemo } from 'react';
 // MUI Imports
 import { deepmerge } from '@mui/utils';
 import {
-  Experimental_CssVarsProvider as CssVarsProvider,
-  // experimental_extendTheme as extendTheme,
+  ThemeProvider as CssVarsProvider,
   extendTheme,
   lighten,
   darken,
@@ -67,6 +66,11 @@ const ThemeProvider = (props: Props) => {
           },
         },
       },
+      cssVarPrefix: 'mui',
+      colorSchemeSelector: 'data',
+      cssVariables: {
+        colorSchemeSelector: 'data-mui-color-scheme', // or 'data' for [data-mui-color-scheme]
+      },
     };
 
     const coreTheme = deepmerge(
@@ -85,6 +89,7 @@ const ThemeProvider = (props: Props) => {
         theme={theme}
         defaultMode={settings.mode}
         modeStorageKey={`${themeConfig.templateName.toLowerCase().split(' ').join('-')}-mui-template-mode`}
+        // colorSchemeSelector="data-mui-color-scheme"
       >
         <>
           <ModeChanger />
