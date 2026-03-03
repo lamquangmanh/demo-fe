@@ -26,6 +26,7 @@
     "@tanstack/react-table": "^8.21.3",
     "antd": "^5.25.4",
     "apexcharts": "^5.3.6",
+    "autoprefixer": "^10.4.27",
     "cookie": "^1.0.2",
     "dayjs": "^1.11.13",
     "eventemitter3": "^5.0.1",
@@ -63,7 +64,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "autoprefixer": "^10",
     "eslint": "^9",
     "eslint-config-next": "15.2.3",
     "typescript": "^5"
