@@ -20,11 +20,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
 // import from domain
-import { ResourceEntity } from '@/domain/entities';
+import { ResourceEntity, ModuleEntity } from '@/domain/entities';
 
 // import from common
 import { DEFAULT_SORT, PAGE_SIZE_OPTIONS } from '@/common/constants';
 import { buildSortArgs, buildFilterArgs } from '@/common/utils';
+import { SortOrder } from '@/infrastructure/graphql';
 
 // import from presentation/hooks
 import {
@@ -32,10 +33,12 @@ import {
   useDeleteResource,
   useDetailResource,
 } from '@/presentation/hooks';
+import { useListModule } from '@/presentation/hooks';
 
 // import create Resource drawer
 import ResourceCreateDrawer from './Create';
 import ResourceEditDrawer from './Edit';
+import ResourceFilter from './ResourceFilter';
 
 // import TableBasic
 import { TableBasic } from '@/presentation/components/molecules/table';
@@ -65,40 +68,82 @@ const ListResource = () => {
 
   const [resources, setResources] = useState<ResourceEntity[]>([]);
 
+  // Filter states
+  const [filterName, setFilterName] = useState('');
+  const [filterModuleName, setFilterModuleName] = useState('');
+  const [selectedModule, setSelectedModule] = useState<ModuleEntity | null>(
+    null,
+  );
+
+  // Module options for autocomplete
+  const [modules, setModules] = useState<ModuleEntity[]>([]);
+
   // use custom hook to handle Resource listing
   const { handleGetResourcesRequest, loading } = useListResource();
   const { handleGetDetailResourceRequest, loading: loadingDetail } =
     useDetailResource();
+  const { handleGetModulesRequest, loading: moduleLoading } = useListModule();
 
-  const loadData = useCallback(async () => {
-    if (loading) return;
-    const result = await handleGetResourcesRequest({
-      pagination: {
-        page: pagination.page,
-        limit: pagination.pageSize,
-      },
-      sorts: buildSortArgs({}, DEFAULT_SORT),
-      filters: buildFilterArgs({}),
-    });
+  // Load modules for autocomplete
+  useEffect(() => {
+    const loadModules = async () => {
+      const result = await handleGetModulesRequest({
+        pagination: { page: 1, limit: 50 },
+        sorts: buildSortArgs({}, { field: 'name', order: SortOrder.Asc }),
+        filters: buildFilterArgs({ name: filterModuleName }),
+      });
+      if (result) {
+        setModules(result.data || []);
+      }
+    };
+    loadModules();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterModuleName]);
 
-    if (result) {
-      setResources(result.data || []);
-      setPagination((prev) => ({
-        ...prev,
-        total: result.total || 0,
-      }));
-    }
-  }, [
-    handleGetResourcesRequest,
-    pagination.page,
-    pagination.pageSize,
-    loading,
-  ]);
+  const loadData = useCallback(
+    async (filterName?: string, filterModuleId?: string) => {
+      if (loading) return;
+      const result = await handleGetResourcesRequest({
+        pagination: {
+          page: pagination.page,
+          limit: pagination.pageSize,
+        },
+        sorts: buildSortArgs({}, DEFAULT_SORT),
+        filters: buildFilterArgs({
+          name: filterName ?? undefined,
+          moduleId: filterModuleId ?? undefined,
+        }),
+      });
+
+      if (result) {
+        setResources(result.data || []);
+        setPagination((prev) => ({
+          ...prev,
+          total: result.total || 0,
+        }));
+      }
+    },
+    [handleGetResourcesRequest, pagination.page, pagination.pageSize, loading],
+  );
 
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.page, pagination.pageSize]);
+  }, []);
+
+  const handleApplyFilter = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+
+    loadData(filterName, selectedModule?.moduleId || '');
+  };
+
+  const handleClearFilter = () => {
+    setFilterName('');
+    setSelectedModule(null);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+
+    loadData('', '');
+  };
 
   const handleEdit = async (resource: ResourceEntity) => {
     setOpenEditPopup(true);
@@ -197,94 +242,127 @@ const ListResource = () => {
   ];
 
   return (
-    <Card>
-      <TableBasic<ResourceEntity, any>
-        columns={columns}
-        data={resources}
-        isLoading={loading}
-        toolbar={
+    <div>
+      <Card className="p-4">
+        <Box sx={{ p: 2 }}>
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              p: 2,
+              mb: 2,
             }}
-            className="p-4"
+            className="mb-4"
           >
             <Typography variant="h4">{t('resource.list.title')}</Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setOpenCreatePopup(true)}
-            >
-              {t('table.filter.add', { ns: 'common' })}
-            </Button>
           </Box>
-        }
-        pagination={{
-          totalPage: pagination.total,
-          page: pagination.page - 1, // MUI TablePagination uses 0-based index
-          rowsPerPage: pagination.pageSize,
-          onPageChange: (_event: unknown, newPage: number) => {
-            setPagination((prev) => ({ ...prev, page: newPage + 1 })); // Convert back to 1-based
-          },
-          onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-            setPagination((prev) => ({
-              ...prev,
-              pageSize: parseInt(event.target.value, 10),
-              page: 1,
-            }));
-          },
-          rowsPerPageOptions: PAGE_SIZE_OPTIONS,
-        }}
-      />
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle>
-          {t('resource.delete.confirmTitle', { ns: 'iam' })}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {t('resource.delete.confirmMessage', { ns: 'iam' })}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>
-            {t('table.deleteNoButton', { ns: 'common' })}
-          </Button>
-          <Button onClick={handleConfirmDelete} color="error" autoFocus>
-            {t('table.deleteYesButton', { ns: 'common' })}
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <ResourceFilter
+            filterName={filterName}
+            onFilterNameChange={setFilterName}
+            filterModuleName={filterModuleName}
+            onFilterModuleNameChange={setFilterModuleName}
+            selectedModule={selectedModule}
+            onModuleChange={setSelectedModule}
+            moduleOptions={modules}
+            moduleLoading={moduleLoading}
+            onApplyFilter={handleApplyFilter}
+            onClearFilter={handleClearFilter}
+            loading={loading}
+          />
+        </Box>
+      </Card>
 
-      <ResourceCreateDrawer
-        open={openCreatePopup}
-        onClose={() => setOpenCreatePopup(false)}
-        onCreateSuccess={() => {
-          setOpenCreatePopup(false);
-          setPagination((prev) => ({ ...prev }));
-          loadData();
-        }}
-      />
+      <Card className="mt-4">
+        <TableBasic<ResourceEntity, any>
+          columns={columns}
+          data={resources}
+          isLoading={loading}
+          toolbar={
+            <Box sx={{ p: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'flex-end',
+                }}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => setOpenCreatePopup(true)}
+                >
+                  {t('table.filter.add', { ns: 'common' })}
+                </Button>
+              </Box>
+            </Box>
+          }
+          pagination={{
+            totalPage: pagination.total,
+            page: pagination.page - 1, // MUI TablePagination uses 0-based index
+            rowsPerPage: pagination.pageSize,
+            onPageChange: (_event: unknown, newPage: number) => {
+              setPagination((prev) => ({ ...prev, page: newPage + 1 })); // Convert back to 1-based
+            },
+            onRowsPerPageChange: (
+              event: React.ChangeEvent<HTMLInputElement>,
+            ) => {
+              setPagination((prev) => ({
+                ...prev,
+                pageSize: parseInt(event.target.value, 10),
+                page: 1,
+              }));
+            },
+            rowsPerPageOptions: PAGE_SIZE_OPTIONS,
+          }}
+        />
 
-      <ResourceEditDrawer
-        open={openEditPopup}
-        onClose={() => setOpenEditPopup(false)}
-        initialData={selectedResource || undefined}
-        isLoading={loadingDetail}
-        onUpdateSuccess={() => {
-          setOpenEditPopup(false);
-          setPagination((prev) => ({ ...prev }));
-          loadData();
-        }}
-      />
-    </Card>
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+        >
+          <DialogTitle>
+            {t('resource.delete.confirmTitle', { ns: 'iam' })}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {t('resource.delete.confirmMessage', { ns: 'iam' })}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDeleteDialog(false)}>
+              {t('table.deleteNoButton', { ns: 'common' })}
+            </Button>
+            <Button onClick={handleConfirmDelete} color="error" autoFocus>
+              {t('table.deleteYesButton', { ns: 'common' })}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <ResourceCreateDrawer
+          open={openCreatePopup}
+          onClose={() => setOpenCreatePopup(false)}
+          onCreateSuccess={() => {
+            setOpenCreatePopup(false);
+            setPagination((prev) => ({ ...prev }));
+            loadData();
+          }}
+        />
+
+        <ResourceEditDrawer
+          open={openEditPopup}
+          onClose={() => setOpenEditPopup(false)}
+          initialData={selectedResource || undefined}
+          isLoading={loadingDetail}
+          onUpdateSuccess={() => {
+            setOpenEditPopup(false);
+            setPagination((prev) => ({ ...prev }));
+            loadData();
+          }}
+        />
+      </Card>
+    </div>
   );
 };
 

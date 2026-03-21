@@ -601,6 +601,32 @@ mutation CreateUser(
   }
 }
 
+mutation UpdateUser(
+  $userId: String!
+  $username: String!
+  $phone: String
+  $avatar: String
+  $status: String!
+  $roleIds: [String!]!
+) {
+  updateUser(
+    userId: $userId
+    username: $username
+    phone: $phone
+    avatar: $avatar
+    status: $status
+    roleIds: $roleIds
+  ) {
+    success
+  }
+}
+
+mutation ChangePassword($userId: String!, $password: String!) {
+  changePassword(userId: $userId, password: $password) {
+    success
+  }
+}
+
 mutation DeleteUser($userId: String!) {
   deleteUser(userId: $userId) {
     success

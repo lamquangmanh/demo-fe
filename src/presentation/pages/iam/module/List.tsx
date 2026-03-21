@@ -20,11 +20,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
 // import from domain
-import { ModuleEntity } from '@/domain/entities';
+import { ModuleEntity, ProductEntity } from '@/domain/entities';
 
 // import from common
 import { DEFAULT_SORT, PAGE_SIZE_OPTIONS } from '@/common/constants';
 import { buildSortArgs, buildFilterArgs } from '@/common/utils';
+import { SortOrder } from '@/infrastructure/graphql';
 
 // import from presentation/hooks
 import {
@@ -32,10 +33,12 @@ import {
   useDeleteModule,
   useDetailModule,
 } from '@/presentation/hooks';
+import { useListProduct } from '@/presentation/hooks';
 
 // import create Module drawer
 import ModuleCreateDrawer from './Create';
 import ModuleEditDrawer from './Edit';
+import ModuleFilter from './ModuleFilter';
 
 // import TableBasic
 import { TableBasic } from '@/presentation/components/molecules/table';
@@ -68,33 +71,81 @@ const ListModule = () => {
 
   const [modules, setModules] = useState<ModuleEntity[]>([]);
 
+  // Filter states
+  const [filterName, setFilterName] = useState('');
+  const [filterProductName, setFilterProductName] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState<ProductEntity | null>(
+    null,
+  );
+
+  // Product options for autocomplete
+  const [products, setProducts] = useState<ProductEntity[]>([]);
+
   // use custom hook to handle Module listing
   const { handleGetModulesRequest, loading } = useListModule();
+  const { handleGetProductsRequest, loading: productLoading } =
+    useListProduct();
 
-  const loadData = useCallback(async () => {
-    if (loading) return;
-    const result = await handleGetModulesRequest({
-      pagination: {
-        page: pagination.page,
-        limit: pagination.pageSize,
-      },
-      sorts: buildSortArgs({}, DEFAULT_SORT),
-      filters: buildFilterArgs({}),
-    });
+  // Load products for autocomplete
+  useEffect(() => {
+    const loadProducts = async () => {
+      const result = await handleGetProductsRequest({
+        pagination: { page: 1, limit: 50 },
+        sorts: buildSortArgs({}, { field: 'name', order: SortOrder.Asc }),
+        filters: buildFilterArgs({ name: filterProductName }),
+      });
+      if (result) {
+        setProducts(result.data || []);
+      }
+    };
+    loadProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterProductName]);
 
-    if (result) {
-      setModules(result.data || []);
-      setPagination((prev) => ({
-        ...prev,
-        total: result.total || 0,
-      }));
-    }
-  }, [handleGetModulesRequest, pagination.page, pagination.pageSize, loading]);
+  const loadData = useCallback(
+    async (filterName?: string, filterProductId?: string) => {
+      if (loading) return;
+      const result = await handleGetModulesRequest({
+        pagination: {
+          page: pagination.page,
+          limit: pagination.pageSize,
+        },
+        sorts: buildSortArgs({}, DEFAULT_SORT),
+        filters: buildFilterArgs({
+          name: filterName ?? undefined,
+          productId: filterProductId ?? undefined,
+        }),
+      });
+
+      if (result) {
+        setModules(result.data || []);
+        setPagination((prev) => ({
+          ...prev,
+          total: result.total || 0,
+        }));
+      }
+    },
+    [handleGetModulesRequest, pagination.page, pagination.pageSize, loading],
+  );
 
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.page, pagination.pageSize]);
+  }, []);
+
+  const handleApplyFilter = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+
+    loadData(filterName, selectedProduct?.productId || '');
+  };
+
+  const handleClearFilter = () => {
+    setFilterName('');
+    setSelectedProduct(null);
+    setPagination((prev) => ({ ...prev, page: 1 }));
+
+    loadData('', '');
+  };
 
   const handleEdit = async (module: ModuleEntity) => {
     setOpenEditPopup(true);
@@ -198,91 +249,125 @@ const ListModule = () => {
   ];
 
   return (
-    <Card>
-      <TableBasic<ModuleEntity, any>
-        columns={columns}
-        data={modules}
-        isLoading={loading}
-        toolbar={
+    <div>
+      <Card className="p-4">
+        <Box sx={{ p: 2 }}>
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              p: 2,
+              mb: 2,
             }}
+            className="mb-4"
           >
             <Typography variant="h4">{t('module.list.title')}</Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setOpenCreatePopup(true)}
-            >
-              {t('table.filter.add', { ns: 'common' })}
-            </Button>
           </Box>
-        }
-        pagination={{
-          totalPage: pagination.total,
-          page: pagination.page - 1,
-          rowsPerPage: pagination.pageSize,
-          onPageChange: (_event: unknown, newPage: number) => {
-            setPagination((prev) => ({ ...prev, page: newPage + 1 }));
-          },
-          onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-            setPagination((prev) => ({
-              ...prev,
-              pageSize: parseInt(event.target.value, 10),
-              page: 1,
-            }));
-          },
-          rowsPerPageOptions: PAGE_SIZE_OPTIONS,
-        }}
-      />
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle>
-          {t('module.delete.confirmTitle', { ns: 'iam' })}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {t('module.delete.confirmMessage', { ns: 'iam' })}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>
-            {t('table.deleteNoButton', { ns: 'common' })}
-          </Button>
-          <Button onClick={handleConfirmDelete} color="error" autoFocus>
-            {t('table.deleteYesButton', { ns: 'common' })}
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <ModuleFilter
+            filterName={filterName}
+            onFilterNameChange={setFilterName}
+            filterProductName={filterProductName}
+            onFilterProductNameChange={setFilterProductName}
+            selectedProduct={selectedProduct}
+            onProductChange={setSelectedProduct}
+            productOptions={products}
+            productLoading={productLoading}
+            onApplyFilter={handleApplyFilter}
+            onClearFilter={handleClearFilter}
+            loading={loading}
+          />
+        </Box>
+      </Card>
 
-      <ModuleCreateDrawer
-        open={openCreatePopup}
-        onClose={() => setOpenCreatePopup(false)}
-        onCreateSuccess={() => {
-          setOpenCreatePopup(false);
-          loadData();
-        }}
-      />
+      <Card className="mt-4">
+        <TableBasic<ModuleEntity, any>
+          columns={columns}
+          data={modules}
+          isLoading={loading}
+          toolbar={
+            <Box sx={{ p: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'flex-end',
+                }}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => setOpenCreatePopup(true)}
+                >
+                  {t('table.filter.add', { ns: 'common' })}
+                </Button>
+              </Box>
+            </Box>
+          }
+          pagination={{
+            totalPage: pagination.total,
+            page: pagination.page - 1,
+            rowsPerPage: pagination.pageSize,
+            onPageChange: (_event: unknown, newPage: number) => {
+              setPagination((prev) => ({ ...prev, page: newPage + 1 }));
+            },
+            onRowsPerPageChange: (
+              event: React.ChangeEvent<HTMLInputElement>,
+            ) => {
+              setPagination((prev) => ({
+                ...prev,
+                pageSize: parseInt(event.target.value, 10),
+                page: 1,
+              }));
+            },
+            rowsPerPageOptions: PAGE_SIZE_OPTIONS,
+          }}
+        />
 
-      <ModuleEditDrawer
-        open={openEditPopup}
-        onClose={() => setOpenEditPopup(false)}
-        initialData={selectedModule || undefined}
-        isLoading={loadingDetail}
-        onUpdateSuccess={() => {
-          setOpenEditPopup(false);
-          loadData();
-        }}
-      />
-    </Card>
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+        >
+          <DialogTitle>
+            {t('module.delete.confirmTitle', { ns: 'iam' })}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {t('module.delete.confirmMessage', { ns: 'iam' })}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDeleteDialog(false)}>
+              {t('table.deleteNoButton', { ns: 'common' })}
+            </Button>
+            <Button onClick={handleConfirmDelete} color="error" autoFocus>
+              {t('table.deleteYesButton', { ns: 'common' })}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <ModuleCreateDrawer
+          open={openCreatePopup}
+          onClose={() => setOpenCreatePopup(false)}
+          onCreateSuccess={() => {
+            setOpenCreatePopup(false);
+            loadData();
+          }}
+        />
+
+        <ModuleEditDrawer
+          open={openEditPopup}
+          onClose={() => setOpenEditPopup(false)}
+          initialData={selectedModule || undefined}
+          isLoading={loadingDetail}
+          onUpdateSuccess={() => {
+            setOpenEditPopup(false);
+            loadData();
+          }}
+        />
+      </Card>
+    </div>
   );
 };
 

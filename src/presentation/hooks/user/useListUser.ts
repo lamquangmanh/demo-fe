@@ -19,7 +19,7 @@ import { TableDataResponse } from '@/common/interfaces';
 import { NO_DATA, DEFAULT_ERROR } from '@/common/constants';
 
 // import from domain
-import { ResourceEntity } from '@/domain/entities';
+import { UserEntity } from '@/domain/entities';
 
 type UseListResourceOptions = QueryHookOptions<
   { users: GetUsersResponse },
@@ -28,7 +28,7 @@ type UseListResourceOptions = QueryHookOptions<
 
 export function useListUser(
   props?: { isNotifyError?: boolean },
-  options?: UseListResourceOptions
+  options?: UseListResourceOptions,
 ) {
   const isNotifyError = props?.isNotifyError ?? true;
 
@@ -43,8 +43,8 @@ export function useListUser(
 
   const handleGetUsersRequest = useCallback(
     async (
-      variables?: UsersQueryVariables
-    ): Promise<TableDataResponse<ResourceEntity>> => {
+      variables?: UsersQueryVariables,
+    ): Promise<TableDataResponse<UserEntity>> => {
       try {
         // if loading is true, return early
         if (loading) {
@@ -72,7 +72,7 @@ export function useListUser(
         return NO_DATA;
       }
     },
-    [runQuery, loading, notify, isNotifyError]
+    [runQuery, loading, notify, isNotifyError],
   );
 
   return {

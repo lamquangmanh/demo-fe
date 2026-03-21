@@ -18,42 +18,44 @@ import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import Chip from '@mui/material/Chip';
 
 // import from domain
-import { ProductEntity } from '@/domain/entities';
+import { UserEntity } from '@/domain/entities';
 
 // import from common
 import { DEFAULT_SORT, PAGE_SIZE_OPTIONS } from '@/common/constants';
+
+// import UserStatus from generated types
+import { UserStatus } from '@/infrastructure/graphql';
 import { buildSortArgs, buildFilterArgs } from '@/common/utils';
 
 // import from presentation/hooks
-import { useListProduct, useDeleteProduct } from '@/presentation/hooks';
+import { useListUser, useDeleteUser } from '@/presentation/hooks';
 
-// import create product drawer
-import ProductCreateDrawer from './Create';
-import ProductEditDrawer from './Edit';
-import ProductFilter from './ProductFilter';
+// import create user drawer
+import UserCreateDrawer from './Create';
+import UserEditDrawer from './Edit';
+import UserFilter from './UserFilter';
 
 // import TableBasic
 import { TableBasic } from '@/presentation/components/molecules/table';
 import { ColumnDef } from '@tanstack/react-table';
 
-const ListProduct = () => {
+const ListUser = () => {
   const { t } = useTranslation('iam');
 
-  // state to manage selected product and edit popup
-  const [selectedProduct, setSelectedProduct] = useState<ProductEntity | null>(
-    null,
-  );
-  const [selectedProductDelete, setSelectedProductDelete] =
-    useState<ProductEntity | null>(null);
+  // state to manage selected user and edit popup
+  const [selectedUser, setSelectedUser] = useState<UserEntity | null>(null);
+  const [selectedUserDelete, setSelectedUserDelete] =
+    useState<UserEntity | null>(null);
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  // state to manage create product popup
+  // state to manage create user popup
   const [openCreatePopup, setOpenCreatePopup] = useState(false);
 
-  const { handleDeleteProductRequest } = useDeleteProduct();
+  const { handleDeleteUserRequest } = useDeleteUser();
 
   const [pagination, setPagination] = useState({
     pageSize: 10,
@@ -61,73 +63,114 @@ const ListProduct = () => {
     total: 0,
   });
 
-  const [products, setProducts] = useState<ProductEntity[]>([]);
+  const [users, setUsers] = useState<UserEntity[]>([]);
 
   // Filter states
   const [filterName, setFilterName] = useState('');
+  const [appliedFilterName, setAppliedFilterName] = useState('');
+  const [filterEmail, setFilterEmail] = useState('');
+  const [appliedFilterEmail, setAppliedFilterEmail] = useState('');
+  const [filterPhone, setFilterPhone] = useState('');
+  const [appliedFilterPhone, setAppliedFilterPhone] = useState('');
+  const [filterStatus, setFilterStatus] = useState<UserStatus | ''>('');
+  const [appliedFilterStatus, setAppliedFilterStatus] = useState<
+    UserStatus | ''
+  >('');
 
-  // use custom hook to handle product listing
-  const { handleGetProductsRequest, loading } = useListProduct();
+  // use custom hook to handle user listing
+  const { handleGetUsersRequest, loading } = useListUser();
 
   const loadData = useCallback(
-    async (filterName?: string) => {
+    async (
+      filterName?: string,
+      filterEmail?: string,
+      filterPhone?: string,
+      filterStatus?: UserStatus | '',
+    ) => {
       if (loading) return;
-      const result = await handleGetProductsRequest({
+      const result = await handleGetUsersRequest({
         pagination: {
           page: pagination.page,
           limit: pagination.pageSize,
         },
         sorts: buildSortArgs({}, DEFAULT_SORT),
-        filters: buildFilterArgs({ name: filterName }),
+        filters: buildFilterArgs({
+          username: filterName ?? undefined,
+          email: filterEmail ?? undefined,
+          phone: filterPhone ?? undefined,
+          status: filterStatus || undefined,
+        }),
       });
 
       if (result) {
-        setProducts(result.data || []);
+        setUsers(result.data || []);
         setPagination((prev) => ({
           ...prev,
           total: result.total || 0,
         }));
       }
     },
-    [loading, handleGetProductsRequest, pagination.page, pagination.pageSize],
+    [
+      loading,
+      handleGetUsersRequest,
+      pagination.page,
+      pagination.pageSize,
+      appliedFilterName,
+      appliedFilterEmail,
+      appliedFilterPhone,
+      appliedFilterStatus,
+    ],
   );
 
   useEffect(() => {
-    loadData(filterName);
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApplyFilter = () => {
+    setAppliedFilterName(filterName);
+    setAppliedFilterEmail(filterEmail);
+    setAppliedFilterPhone(filterPhone);
+    setAppliedFilterStatus(filterStatus);
     setPagination((prev) => ({ ...prev, page: 1 }));
-    loadData(filterName);
+
+    loadData(filterName, filterEmail, filterPhone, filterStatus);
   };
 
   const handleClearFilter = () => {
     setFilterName('');
+    setAppliedFilterName('');
+    setFilterEmail('');
+    setAppliedFilterEmail('');
+    setFilterPhone('');
+    setAppliedFilterPhone('');
+    setFilterStatus('');
+    setAppliedFilterStatus('');
     setPagination((prev) => ({ ...prev, page: 1 }));
-    loadData('');
+
+    loadData('', '', '', '');
   };
 
-  const handleEdit = (product: ProductEntity) => {
-    setSelectedProduct(product);
+  const handleEdit = (user: UserEntity) => {
+    setSelectedUser(user);
     setOpenEditPopup(true);
   };
 
-  const handleDelete = (product: ProductEntity) => {
-    setSelectedProductDelete(product);
+  const handleDelete = (user: UserEntity) => {
+    setSelectedUserDelete(user);
     setOpenDeleteDialog(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (!selectedProductDelete) return;
+    if (!selectedUserDelete) return;
 
-    // Call the delete product request here
-    await handleDeleteProductRequest({
-      productId: selectedProductDelete.productId,
+    // Call the delete user request here
+    await handleDeleteUserRequest({
+      userId: selectedUserDelete.userId,
     });
 
-    // Reset the selected product after deletion
-    setSelectedProductDelete(null);
+    // Reset the selected user after deletion
+    setSelectedUserDelete(null);
     setOpenDeleteDialog(false);
 
     // Reload the table data
@@ -135,20 +178,51 @@ const ListProduct = () => {
     loadData();
   };
 
-  const columns: ColumnDef<ProductEntity>[] = [
+  const getStatusColor = (status: UserStatus) => {
+    switch (status) {
+      case UserStatus.Active:
+        return 'success';
+      case UserStatus.Deactivated:
+        return 'default';
+      case UserStatus.Deleted:
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
+  const columns: ColumnDef<UserEntity>[] = [
     {
-      accessorKey: 'name',
-      header: t('product.list.table.name', { ns: 'iam' }),
+      accessorKey: 'username',
+      header: t('user.list.table.username', { ns: 'iam' }),
+      size: 150,
+    },
+    {
+      accessorKey: 'email',
+      header: t('user.list.table.email', { ns: 'iam' }),
       size: 200,
     },
     {
-      accessorKey: 'description',
-      header: t('product.list.table.description', { ns: 'iam' }),
-      size: 300,
+      accessorKey: 'phone',
+      header: t('user.list.table.phone', { ns: 'iam' }),
+      size: 150,
+      cell: ({ row }) => row.original.phone || 'N/A',
+    },
+    {
+      accessorKey: 'status',
+      header: t('user.list.table.status', { ns: 'iam' }),
+      size: 120,
+      cell: ({ row }) => (
+        <Chip
+          label={row.original.status}
+          color={getStatusColor(row.original.status)}
+          size="small"
+        />
+      ),
     },
     {
       accessorKey: 'createdAt',
-      header: t('product.list.table.createdAt', { ns: 'iam' }),
+      header: t('user.list.table.createdAt', { ns: 'iam' }),
       size: 200,
       cell: ({ row }) =>
         row.original.createdAt
@@ -157,13 +231,13 @@ const ListProduct = () => {
     },
     {
       accessorKey: 'createdUser.username',
-      header: t('product.list.table.createdUser', { ns: 'iam' }),
-      size: 200,
+      header: t('user.list.table.createdUser', { ns: 'iam' }),
+      size: 150,
       cell: ({ row }) => row.original.createdUser?.username || 'N/A',
     },
     {
       accessorKey: 'updatedAt',
-      header: t('product.list.table.updatedAt', { ns: 'iam' }),
+      header: t('user.list.table.updatedAt', { ns: 'iam' }),
       size: 200,
       cell: ({ row }) =>
         row.original.updatedAt
@@ -172,13 +246,13 @@ const ListProduct = () => {
     },
     {
       accessorKey: 'updatedUser.username',
-      header: t('product.list.table.updatedUser', { ns: 'iam' }),
-      size: 200,
+      header: t('user.list.table.updatedUser', { ns: 'iam' }),
+      size: 150,
       cell: ({ row }) => row.original.updatedUser?.username || 'N/A',
     },
     {
       id: 'actions',
-      header: t('product.list.table.actions', { ns: 'iam' }),
+      header: t('user.list.table.actions', { ns: 'iam' }),
       size: 160,
       cell: ({ row }) => (
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -214,12 +288,18 @@ const ListProduct = () => {
             }}
             className="mb-4"
           >
-            <Typography variant="h4">{t('product.list.title')}</Typography>
+            <Typography variant="h4">{t('user.list.title')}</Typography>
           </Box>
 
-          <ProductFilter
+          <UserFilter
             filterName={filterName}
             onFilterNameChange={setFilterName}
+            filterEmail={filterEmail}
+            onFilterEmailChange={setFilterEmail}
+            filterPhone={filterPhone}
+            onFilterPhoneChange={setFilterPhone}
+            filterStatus={filterStatus}
+            onFilterStatusChange={setFilterStatus}
             onApplyFilter={handleApplyFilter}
             onClearFilter={handleClearFilter}
             loading={loading}
@@ -228,9 +308,9 @@ const ListProduct = () => {
       </Card>
 
       <Card className="mt-4">
-        <TableBasic<ProductEntity, any>
+        <TableBasic<UserEntity, any>
           columns={columns}
-          data={products}
+          data={users}
           isLoading={loading}
           toolbar={
             <Box sx={{ p: 2 }}>
@@ -277,11 +357,11 @@ const ListProduct = () => {
           onClose={() => setOpenDeleteDialog(false)}
         >
           <DialogTitle>
-            {t('product.delete.confirmTitle', { ns: 'iam' })}
+            {t('user.delete.confirmTitle', { ns: 'iam' })}
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {t('product.delete.confirmMessage', { ns: 'iam' })}
+              {t('user.delete.confirmMessage', { ns: 'iam' })}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -294,7 +374,7 @@ const ListProduct = () => {
           </DialogActions>
         </Dialog>
 
-        <ProductCreateDrawer
+        <UserCreateDrawer
           open={openCreatePopup}
           onClose={() => setOpenCreatePopup(false)}
           onCreateSuccess={() => {
@@ -304,10 +384,10 @@ const ListProduct = () => {
           }}
         />
 
-        <ProductEditDrawer
+        <UserEditDrawer
           open={openEditPopup}
           onClose={() => setOpenEditPopup(false)}
-          initialData={selectedProduct || undefined}
+          initialData={selectedUser || undefined}
           onUpdateSuccess={() => {
             setOpenEditPopup(false);
             setPagination((prev) => ({ ...prev }));
@@ -319,4 +399,4 @@ const ListProduct = () => {
   );
 };
 
-export default ListProduct;
+export default ListUser;

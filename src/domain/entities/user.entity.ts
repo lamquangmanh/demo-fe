@@ -1,4 +1,4 @@
-import { UserStatus } from '@/common/constants';
+import { UserStatus } from '@/infrastructure/graphql';
 import { BaseEntity } from './base.entity';
 
 export interface UserEntity extends BaseEntity {

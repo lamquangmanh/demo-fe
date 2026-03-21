@@ -70,12 +70,12 @@ export type CreatedUserEntity = {
   createdUser: CreatedUserEntity;
   deletedUser: DeletedUserEntity;
   /** email */
-  email: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
   updatedUser: UpdatedUserEntity;
   /** userId */
-  userId: Scalars['String']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
   /** username */
-  username: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 /** Delete successfully response */
@@ -92,12 +92,12 @@ export type DeletedUserEntity = {
   createdUser: CreatedUserEntity;
   deletedUser: DeletedUserEntity;
   /** email */
-  email: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
   updatedUser: UpdatedUserEntity;
   /** userId */
-  userId: Scalars['String']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
   /** username */
-  username: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type FilterArgs = {
@@ -219,6 +219,7 @@ export type ModuleEntity = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  changePassword: UpdateSuccessResponse;
   createModule: ModuleEntity;
   createProduct: ProductEntity;
   createResource: ResourceEntity;
@@ -234,6 +235,12 @@ export type Mutation = {
   updateResource: UpdateSuccessResponse;
   updateRole: UpdateSuccessResponse;
   updateUser: UpdateSuccessResponse;
+};
+
+
+export type MutationChangePasswordArgs = {
+  password: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
 };
 
 
@@ -342,7 +349,12 @@ export type MutationUpdateRoleArgs = {
 
 
 export type MutationUpdateUserArgs = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
+  roleIds: Array<Scalars['String']['input']>;
+  status: Scalars['String']['input'];
   userId: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 };
 
 export type PaginationArgs = {
@@ -649,12 +661,12 @@ export type UpdatedUserEntity = {
   createdUser: CreatedUserEntity;
   deletedUser: DeletedUserEntity;
   /** email */
-  email: Scalars['String']['output'];
+  email?: Maybe<Scalars['String']['output']>;
   updatedUser: UpdatedUserEntity;
   /** userId */
-  userId: Scalars['String']['output'];
+  userId?: Maybe<Scalars['String']['output']>;
   /** username */
-  username: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 /** User entity */
@@ -766,7 +778,7 @@ export type GetModulesQueryVariables = Exact<{
 }>;
 
 
-export type GetModulesQuery = { __typename?: 'Query', modules: { __typename?: 'GetModulesResponse', data: Array<{ __typename?: 'ModuleEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, moduleId: string, productId?: string | null, name: string, description?: string | null, icon?: string | null, url?: string | null, product: { __typename?: 'ProductEntity', name: string }, createdUser?: { __typename?: 'CreatedUserEntity', username: string, email: string } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username: string, email: string } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username: string, email: string } | null }>, pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number } } };
+export type GetModulesQuery = { __typename?: 'Query', modules: { __typename?: 'GetModulesResponse', data: Array<{ __typename?: 'ModuleEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, moduleId: string, productId?: string | null, name: string, description?: string | null, icon?: string | null, url?: string | null, product: { __typename?: 'ProductEntity', name: string }, createdUser?: { __typename?: 'CreatedUserEntity', username?: string | null, email?: string | null } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username?: string | null, email?: string | null } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username?: string | null, email?: string | null } | null }>, pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number } } };
 
 export type CreateModuleMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -817,7 +829,7 @@ export type ProductsQueryVariables = Exact<{
 }>;
 
 
-export type ProductsQuery = { __typename?: 'Query', products: { __typename?: 'GetProductsResponse', pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number }, data: Array<{ __typename?: 'ProductEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, productId: string, name: string, url: string, icon?: string | null, description?: string | null, createdUser?: { __typename?: 'CreatedUserEntity', username: string, email: string } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username: string, email: string } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username: string, email: string } | null }> } };
+export type ProductsQuery = { __typename?: 'Query', products: { __typename?: 'GetProductsResponse', pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number }, data: Array<{ __typename?: 'ProductEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, productId: string, name: string, url: string, icon?: string | null, description?: string | null, createdUser?: { __typename?: 'CreatedUserEntity', username?: string | null, email?: string | null } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username?: string | null, email?: string | null } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username?: string | null, email?: string | null } | null }> } };
 
 export type CreateProductMutationVariables = Exact<{
   name: Scalars['String']['input'];
@@ -854,7 +866,7 @@ export type ResourcesQueryVariables = Exact<{
 }>;
 
 
-export type ResourcesQuery = { __typename?: 'Query', resources: { __typename?: 'GetResourcesResponse', pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number }, data: Array<{ __typename?: 'ResourceEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, resourceId: string, name: string, moduleId: string, createdUser?: { __typename?: 'CreatedUserEntity', username: string, email: string } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username: string, email: string } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username: string, email: string } | null, module: { __typename?: 'ModuleEntity', name: string } }> } };
+export type ResourcesQuery = { __typename?: 'Query', resources: { __typename?: 'GetResourcesResponse', pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number }, data: Array<{ __typename?: 'ResourceEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, resourceId: string, name: string, moduleId: string, createdUser?: { __typename?: 'CreatedUserEntity', username?: string | null, email?: string | null } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username?: string | null, email?: string | null } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username?: string | null, email?: string | null } | null, module: { __typename?: 'ModuleEntity', name: string } }> } };
 
 export type ResourceQueryVariables = Exact<{
   resourceId: Scalars['String']['input'];
@@ -905,7 +917,7 @@ export type RolesQueryVariables = Exact<{
 }>;
 
 
-export type RolesQuery = { __typename?: 'Query', roles: { __typename?: 'GetRolesResponse', data: Array<{ __typename?: 'RoleEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, roleId: string, name: string, description?: string | null, moduleId: string, createdUser?: { __typename?: 'CreatedUserEntity', username: string } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username: string } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username: string } | null, module?: { __typename?: 'ModuleEntity', name: string } | null }>, pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number } } };
+export type RolesQuery = { __typename?: 'Query', roles: { __typename?: 'GetRolesResponse', data: Array<{ __typename?: 'RoleEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, roleId: string, name: string, description?: string | null, moduleId: string, createdUser?: { __typename?: 'CreatedUserEntity', username?: string | null } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username?: string | null } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username?: string | null } | null, module?: { __typename?: 'ModuleEntity', name: string } | null }>, pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number } } };
 
 export type RoleQueryVariables = Exact<{
   roleId: Scalars['String']['input'];
@@ -949,7 +961,7 @@ export type UsersQueryVariables = Exact<{
 }>;
 
 
-export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'GetUsersResponse', data: Array<{ __typename?: 'UserEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, userId: string, username: string, email: string, password?: string | null, phone?: string | null, avatar?: string | null, status: UserStatus, createdUser?: { __typename?: 'CreatedUserEntity', username: string } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username: string } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username: string } | null }>, pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number } } };
+export type UsersQuery = { __typename?: 'Query', users: { __typename?: 'GetUsersResponse', data: Array<{ __typename?: 'UserEntity', createdAt?: string | null, createdUserId?: string | null, updatedAt?: string | null, updatedUserId?: string | null, deletedAt?: string | null, deletedUserId?: string | null, userId: string, username: string, email: string, password?: string | null, phone?: string | null, avatar?: string | null, status: UserStatus, createdUser?: { __typename?: 'CreatedUserEntity', username?: string | null } | null, updatedUser?: { __typename?: 'UpdatedUserEntity', username?: string | null } | null, deletedUser?: { __typename?: 'DeletedUserEntity', username?: string | null } | null }>, pagination: { __typename?: 'PaginationResponse', page: number, limit: number, totalItems: number, totalPages: number, itemCount: number } } };
 
 export type UserQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -970,6 +982,26 @@ export type CreateUserMutationVariables = Exact<{
 
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'UserEntity', userId: string, username: string, email: string, password?: string | null, phone?: string | null, avatar?: string | null, status: UserStatus, userRoles?: Array<{ __typename?: 'UserRoleEntity', roleId: string, userId: string, userRoleId: string }> | null } };
+
+export type UpdateUserMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+  phone?: InputMaybe<Scalars['String']['input']>;
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  status: Scalars['String']['input'];
+  roleIds: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'UpdateSuccessResponse', success: boolean } };
+
+export type ChangePasswordMutationVariables = Exact<{
+  userId: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+}>;
+
+
+export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UpdateSuccessResponse', success: boolean } };
 
 export type DeleteUserMutationVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -1014,6 +1046,9 @@ export function useLoginLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Logi
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<LoginQuery, LoginQueryVariables>(LoginDocument, options);
         }
+// @ts-ignore
+export function useLoginSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<LoginQuery, LoginQueryVariables>): Apollo.UseSuspenseQueryResult<LoginQuery, LoginQueryVariables>;
+export function useLoginSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<LoginQuery, LoginQueryVariables>): Apollo.UseSuspenseQueryResult<LoginQuery | undefined, LoginQueryVariables>;
 export function useLoginSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<LoginQuery, LoginQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<LoginQuery, LoginQueryVariables>(LoginDocument, options);
@@ -1058,6 +1093,9 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
         }
+// @ts-ignore
+export function useGetMeSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetMeQuery, GetMeQueryVariables>): Apollo.UseSuspenseQueryResult<GetMeQuery, GetMeQueryVariables>;
+export function useGetMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMeQuery, GetMeQueryVariables>): Apollo.UseSuspenseQueryResult<GetMeQuery | undefined, GetMeQueryVariables>;
 export function useGetMeSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMeQuery, GetMeQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<GetMeQuery, GetMeQueryVariables>(GetMeDocument, options);
@@ -1111,6 +1149,9 @@ export function useGetSuperMenusLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<GetSuperMenusQuery, GetSuperMenusQueryVariables>(GetSuperMenusDocument, options);
         }
+// @ts-ignore
+export function useGetSuperMenusSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetSuperMenusQuery, GetSuperMenusQueryVariables>): Apollo.UseSuspenseQueryResult<GetSuperMenusQuery, GetSuperMenusQueryVariables>;
+export function useGetSuperMenusSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSuperMenusQuery, GetSuperMenusQueryVariables>): Apollo.UseSuspenseQueryResult<GetSuperMenusQuery | undefined, GetSuperMenusQueryVariables>;
 export function useGetSuperMenusSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSuperMenusQuery, GetSuperMenusQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<GetSuperMenusQuery, GetSuperMenusQueryVariables>(GetSuperMenusDocument, options);
@@ -1166,6 +1207,9 @@ export function useModuleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Mod
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ModuleQuery, ModuleQueryVariables>(ModuleDocument, options);
         }
+// @ts-ignore
+export function useModuleSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ModuleQuery, ModuleQueryVariables>): Apollo.UseSuspenseQueryResult<ModuleQuery, ModuleQueryVariables>;
+export function useModuleSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ModuleQuery, ModuleQueryVariables>): Apollo.UseSuspenseQueryResult<ModuleQuery | undefined, ModuleQueryVariables>;
 export function useModuleSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ModuleQuery, ModuleQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<ModuleQuery, ModuleQueryVariables>(ModuleDocument, options);
@@ -1243,6 +1287,9 @@ export function useGetModulesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<GetModulesQuery, GetModulesQueryVariables>(GetModulesDocument, options);
         }
+// @ts-ignore
+export function useGetModulesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetModulesQuery, GetModulesQueryVariables>): Apollo.UseSuspenseQueryResult<GetModulesQuery, GetModulesQueryVariables>;
+export function useGetModulesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetModulesQuery, GetModulesQueryVariables>): Apollo.UseSuspenseQueryResult<GetModulesQuery | undefined, GetModulesQueryVariables>;
 export function useGetModulesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetModulesQuery, GetModulesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<GetModulesQuery, GetModulesQueryVariables>(GetModulesDocument, options);
@@ -1419,6 +1466,9 @@ export function useGetPermissionsByUserLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>(GetPermissionsByUserDocument, options);
         }
+// @ts-ignore
+export function useGetPermissionsByUserSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>): Apollo.UseSuspenseQueryResult<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>;
+export function useGetPermissionsByUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>): Apollo.UseSuspenseQueryResult<GetPermissionsByUserQuery | undefined, GetPermissionsByUserQueryVariables>;
 export function useGetPermissionsByUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<GetPermissionsByUserQuery, GetPermissionsByUserQueryVariables>(GetPermissionsByUserDocument, options);
@@ -1469,6 +1519,9 @@ export function useProductLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Pr
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ProductQuery, ProductQueryVariables>(ProductDocument, options);
         }
+// @ts-ignore
+export function useProductSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ProductQuery, ProductQueryVariables>): Apollo.UseSuspenseQueryResult<ProductQuery, ProductQueryVariables>;
+export function useProductSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ProductQuery, ProductQueryVariables>): Apollo.UseSuspenseQueryResult<ProductQuery | undefined, ProductQueryVariables>;
 export function useProductSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ProductQuery, ProductQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<ProductQuery, ProductQueryVariables>(ProductDocument, options);
@@ -1542,6 +1595,9 @@ export function useProductsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<P
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ProductsQuery, ProductsQueryVariables>(ProductsDocument, options);
         }
+// @ts-ignore
+export function useProductsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ProductsQuery, ProductsQueryVariables>): Apollo.UseSuspenseQueryResult<ProductsQuery, ProductsQueryVariables>;
+export function useProductsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ProductsQuery, ProductsQueryVariables>): Apollo.UseSuspenseQueryResult<ProductsQuery | undefined, ProductsQueryVariables>;
 export function useProductsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ProductsQuery, ProductsQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<ProductsQuery, ProductsQueryVariables>(ProductsDocument, options);
@@ -1738,6 +1794,9 @@ export function useResourcesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ResourcesQuery, ResourcesQueryVariables>(ResourcesDocument, options);
         }
+// @ts-ignore
+export function useResourcesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ResourcesQuery, ResourcesQueryVariables>): Apollo.UseSuspenseQueryResult<ResourcesQuery, ResourcesQueryVariables>;
+export function useResourcesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ResourcesQuery, ResourcesQueryVariables>): Apollo.UseSuspenseQueryResult<ResourcesQuery | undefined, ResourcesQueryVariables>;
 export function useResourcesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ResourcesQuery, ResourcesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<ResourcesQuery, ResourcesQueryVariables>(ResourcesDocument, options);
@@ -1792,6 +1851,9 @@ export function useResourceLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<R
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ResourceQuery, ResourceQueryVariables>(ResourceDocument, options);
         }
+// @ts-ignore
+export function useResourceSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ResourceQuery, ResourceQueryVariables>): Apollo.UseSuspenseQueryResult<ResourceQuery, ResourceQueryVariables>;
+export function useResourceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ResourceQuery, ResourceQueryVariables>): Apollo.UseSuspenseQueryResult<ResourceQuery | undefined, ResourceQueryVariables>;
 export function useResourceSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ResourceQuery, ResourceQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<ResourceQuery, ResourceQueryVariables>(ResourceDocument, options);
@@ -1959,6 +2021,9 @@ export function useSearchResourcesLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SearchResourcesQuery, SearchResourcesQueryVariables>(SearchResourcesDocument, options);
         }
+// @ts-ignore
+export function useSearchResourcesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SearchResourcesQuery, SearchResourcesQueryVariables>): Apollo.UseSuspenseQueryResult<SearchResourcesQuery, SearchResourcesQueryVariables>;
+export function useSearchResourcesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchResourcesQuery, SearchResourcesQueryVariables>): Apollo.UseSuspenseQueryResult<SearchResourcesQuery | undefined, SearchResourcesQueryVariables>;
 export function useSearchResourcesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SearchResourcesQuery, SearchResourcesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<SearchResourcesQuery, SearchResourcesQueryVariables>(SearchResourcesDocument, options);
@@ -2031,6 +2096,9 @@ export function useRolesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Role
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<RolesQuery, RolesQueryVariables>(RolesDocument, options);
         }
+// @ts-ignore
+export function useRolesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<RolesQuery, RolesQueryVariables>): Apollo.UseSuspenseQueryResult<RolesQuery, RolesQueryVariables>;
+export function useRolesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RolesQuery, RolesQueryVariables>): Apollo.UseSuspenseQueryResult<RolesQuery | undefined, RolesQueryVariables>;
 export function useRolesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RolesQuery, RolesQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<RolesQuery, RolesQueryVariables>(RolesDocument, options);
@@ -2088,6 +2156,9 @@ export function useRoleLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RoleQ
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<RoleQuery, RoleQueryVariables>(RoleDocument, options);
         }
+// @ts-ignore
+export function useRoleSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<RoleQuery, RoleQueryVariables>): Apollo.UseSuspenseQueryResult<RoleQuery, RoleQueryVariables>;
+export function useRoleSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RoleQuery, RoleQueryVariables>): Apollo.UseSuspenseQueryResult<RoleQuery | undefined, RoleQueryVariables>;
 export function useRoleSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RoleQuery, RoleQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<RoleQuery, RoleQueryVariables>(RoleDocument, options);
@@ -2285,6 +2356,9 @@ export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<User
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
         }
+// @ts-ignore
+export function useUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UsersQuery, UsersQueryVariables>): Apollo.UseSuspenseQueryResult<UsersQuery, UsersQueryVariables>;
+export function useUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<UsersQuery, UsersQueryVariables>): Apollo.UseSuspenseQueryResult<UsersQuery | undefined, UsersQueryVariables>;
 export function useUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<UsersQuery, UsersQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
@@ -2339,6 +2413,9 @@ export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQ
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<UserQuery, UserQueryVariables>(UserDocument, options);
         }
+// @ts-ignore
+export function useUserSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UserQuery, UserQueryVariables>): Apollo.UseSuspenseQueryResult<UserQuery, UserQueryVariables>;
+export function useUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<UserQuery, UserQueryVariables>): Apollo.UseSuspenseQueryResult<UserQuery | undefined, UserQueryVariables>;
 export function useUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<UserQuery, UserQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
           return Apollo.useSuspenseQuery<UserQuery, UserQueryVariables>(UserDocument, options);
@@ -2405,6 +2482,85 @@ export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($userId: String!, $username: String!, $phone: String, $avatar: String, $status: String!, $roleIds: [String!]!) {
+  updateUser(
+    userId: $userId
+    username: $username
+    phone: $phone
+    avatar: $avatar
+    status: $status
+    roleIds: $roleIds
+  ) {
+    success
+  }
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      username: // value for 'username'
+ *      phone: // value for 'phone'
+ *      avatar: // value for 'avatar'
+ *      status: // value for 'status'
+ *      roleIds: // value for 'roleIds'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const ChangePasswordDocument = gql`
+    mutation ChangePassword($userId: String!, $password: String!) {
+  changePassword(userId: $userId, password: $password) {
+    success
+  }
+}
+    `;
+export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
+
+/**
+ * __useChangePasswordMutation__
+ *
+ * To run a mutation, you first call `useChangePasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangePasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changePasswordMutation, { data, loading, error }] = useChangePasswordMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangePasswordMutation, ChangePasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument, options);
+      }
+export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
+export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
+export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const DeleteUserDocument = gql`
     mutation DeleteUser($userId: String!) {
   deleteUser(userId: $userId) {

@@ -1,5 +1,10 @@
 {
   "product": {
+    "filter": {
+      "name": "Tìm kiếm theo tên",
+      "searchButton": "Tìm kiếm",
+      "resetButton": "Đặt lại"
+    },
     "list": {
       "title": "Quản lý Sản phẩm",
       "table": {
@@ -52,6 +57,12 @@
     }
   },
   "module": {
+    "filter": {
+      "name": "Tìm kiếm theo tên",
+      "product": "Tìm kiếm theo sản phẩm",
+      "searchButton": "Tìm kiếm",
+      "resetButton": "Đặt lại"
+    },
     "list": {
       "title": "Quản lý Mô-đun",
       "table": {
@@ -107,6 +118,12 @@
     }
   },
   "resource": {
+    "filter": {
+      "name": "Tìm kiếm theo tên",
+      "module": "Tìm kiếm theo mô-đun",
+      "searchButton": "Tìm kiếm",
+      "resetButton": "Đặt lại"
+    },
     "list": {
       "title": "Quản lý Tài nguyên",
       "table": {
@@ -174,6 +191,12 @@
     }
   },
   "role": {
+    "filter": {
+      "name": "Tìm kiếm theo tên",
+      "module": "Tìm kiếm theo mô-đun",
+      "searchButton": "Tìm kiếm",
+      "resetButton": "Đặt lại"
+    },
     "list": {
       "title": "Quản lý vai trò",
       "table": {
@@ -234,6 +257,100 @@
       "confirmMessage": "Bạn có chắc chắn muốn xóa vai trò này không?",
       "successMessage": "Thành công",
       "successDescription": "Xóa vai trò thành công"
+    }
+  },
+  "user": {
+    "status": {
+      "active": "Hoạt động",
+      "deactivated": "Không hoạt động",
+      "deleted": "Bị xóa",
+      "all": "Tất cả"
+    },
+    "filter": {
+      "name": "Tìm kiếm theo tên",
+      "email": "Tìm kiếm theo email",
+      "phone": "Tìm kiếm theo số điện thoại",
+      "status": "Tìm kiếm theo trạng thái",
+      "module": "Tìm kiếm theo mô-đun",
+      "searchButton": "Tìm kiếm",
+      "resetButton": "Đặt lại"
+    },
+    "list": {
+      "title": "Quản lý người dùng",
+      "table": {
+        "username": "Tên đăng nhập",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "avatar": "Ảnh đại diện",
+        "status": "Trạng thái",
+        "roleIds": "Vai trò",
+        "createdAt": "Ngày tạo",
+        "createdUser": "Người tạo",
+        "updatedAt": "Ngày cập nhật",
+        "updatedUser": "Người cập nhật",
+        "deletedAt": "Ngày xóa",
+        "deletedUser": "Người xóa",
+        "actions": "Hành động"
+      },
+      "empty": {
+        "title": "Không tìm thấy người dùng nào",
+        "description": "Bạn có thể tạo người dùng mới bằng cách nhấn nút bên dưới."
+      }
+    },
+    "form": {
+      "username": "Tên đăng nhập",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "passwordHint": "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+      "phone": "Số điện thoại",
+      "avatar": "Ảnh đại diện",
+      "status": "Trạng thái",
+      "roleIds": "Vai trò",
+      "statusActive": "Hoạt động",
+      "statusDeactivate": "Không hoạt động",
+      "statusDeleted": "Bị xóa",
+      "roles": "Vai trò",
+      "selectRoles": "Vai trò được chọn",
+      "permission": {
+        "resourceId": "Tài nguyên",
+        "actionId": "Hành động",
+        "actionIds": "Hành động"
+      },
+      "error": {
+        "username": "Vui lòng nhập tên đăng nhập",
+        "email": "Vui lòng nhập email",
+        "phone": "Vui lòng nhập số điện thoại",
+        "avatar": "Vui lòng nhập ảnh đại diện",
+        "status": "Vui lòng chọn trạng thái",
+        "roleIds": "Vui lòng chọn vai trò",
+        "permission": {
+          "resourceId": "Vui lòng chọn tài nguyên",
+          "actionId": "Vui lòng chọn hành động",
+          "actionIds": "Vui lòng chọn danh sách hành động"
+        }
+      },
+      "addPermissionButton": "Thêm quyền",
+      "listPermissions": "Danh sách quyền"
+    },
+    "create": {
+      "title": "Tạo người dùng mới",
+      "saveButton": "Lưu",
+      "cancelButton": "Hủy",
+      "successMessage": "Thành công",
+      "successDescription": "Tạo người dùng thành công"
+    },
+    "edit": {
+      "title": "Chỉnh sửa người dùng",
+      "saveButton": "Lưu",
+      "cancelButton": "Hủy",
+      "successMessage": "Thành công",
+      "successDescription": "Cập nhật người dùng thành công"
+    },
+    "delete": {
+      "confirmTitle": "Xóa người dùng",
+      "confirmMessage": "Bạn có chắc chắn muốn xóa người dùng này không?",
+      "successMessage": "Thành công",
+      "successDescription": "Xóa người dùng thành công"
     }
   }
 }
