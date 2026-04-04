@@ -1,31 +1,5 @@
-'use client';
-
-// import from libs
-import { Card, Row, Col } from 'antd';
+import { redirect } from 'next/navigation';
 
 export default function IndexPage() {
-  return (
-    <>
-      <div>
-        <h3>Index Page</h3>
-      </div>
-      <Row gutter={16}>
-        <Col span={8}>
-          <Card title="Users" variant="borderless">
-            124
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card title="Revenue" variant="borderless">
-            $4,200
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card title="Sessions" variant="borderless">
-            312
-          </Card>
-        </Col>
-      </Row>
-    </>
-  );
+  redirect('/dashboard');
 }
