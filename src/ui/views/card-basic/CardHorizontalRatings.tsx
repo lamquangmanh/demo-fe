@@ -1,5 +1,8 @@
 'use client';
 
+// Next Imports
+import Image from 'next/image';
+
 // MUI Imports
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/GridLegacy';
@@ -40,7 +43,13 @@ const CardHorizontalRatings = () => {
           className="flex items-center justify-center md:order-[unset] -order-1"
         >
           <CardContent className="flex items-center justify-center">
-            <img src="/images/cards/5.png" height="175" className="rounded" />
+            <Image
+              src="/images/cards/5.png"
+              alt="Stumptown Roasters"
+              width={250}
+              height={175}
+              className="rounded"
+            />
           </CardContent>
         </Grid>
       </Grid>

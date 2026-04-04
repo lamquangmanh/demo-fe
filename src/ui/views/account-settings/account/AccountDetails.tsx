@@ -4,6 +4,9 @@
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
 
+// Next Imports
+import Image from 'next/image';
+
 // MUI Imports
 import Grid from '@mui/material/GridLegacy';
 import Card from '@mui/material/Card';
@@ -93,7 +96,7 @@ const AccountDetails = () => {
     <Card>
       <CardContent className="mbe-5">
         <div className="flex max-sm:flex-col items-center gap-6">
-          <img
+          <Image
             height={100}
             width={100}
             className="rounded"

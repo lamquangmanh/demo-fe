@@ -1,51 +1,56 @@
-'use client'
+'use client';
 
 // Next Imports
-import Link from 'next/link'
+import Link from 'next/link';
+import Image from 'next/image';
 
 // MUI Imports
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 // Type Imports
-import type { Mode } from '@ui/core/types'
+import type { Mode } from '@ui/core/types';
 
 // Component Imports
-import Illustrations from '@ui/components/Illustrations'
+import Illustrations from '@ui/components/Illustrations';
 
 // Hook Imports
-import { useImageVariant } from '@ui/core/hooks/useImageVariant'
+import { useImageVariant } from '@ui/core/hooks/useImageVariant';
 
 const NotFound = ({ mode }: { mode: Mode }) => {
   // Vars
-  const darkImg = '/images/pages/misc-mask-dark.png'
-  const lightImg = '/images/pages/misc-mask-light.png'
+  const darkImg = '/images/pages/misc-mask-dark.png';
+  const lightImg = '/images/pages/misc-mask-light.png';
 
   // Hooks
-  const miscBackground = useImageVariant(mode, lightImg, darkImg)
+  const miscBackground = useImageVariant(mode, lightImg, darkImg);
 
   return (
-    <div className='flex items-center justify-center min-bs-[100dvh] relative p-6 overflow-x-hidden'>
-      <div className='flex items-center flex-col text-center gap-10'>
-        <div className='flex flex-col gap-2 is-[90vw] sm:is-[unset]'>
-          <Typography className='font-medium text-8xl' color='text.primary'>
+    <div className="flex items-center justify-center min-bs-[100dvh] relative p-6 overflow-x-hidden">
+      <div className="flex items-center flex-col text-center gap-10">
+        <div className="flex flex-col gap-2 is-[90vw] sm:is-[unset]">
+          <Typography className="font-medium text-8xl" color="text.primary">
             404
           </Typography>
-          <Typography variant='h4'>Page Not Found ⚠️</Typography>
-          <Typography>We couldn&#39;t find the page you are looking for.</Typography>
+          <Typography variant="h4">Page Not Found ⚠️</Typography>
+          <Typography>
+            We could&#39;t find the page you are looking for.
+          </Typography>
         </div>
-        <img
-          alt='error-illustration'
-          src='/images/illustrations/characters/5.png'
-          className='object-cover bs-[400px] md:bs-[450px] lg:bs-[500px]'
+        <Image
+          alt="error-illustration"
+          src="/images/illustrations/characters/5.png"
+          width={500}
+          height={500}
+          className="object-cover bs-[400px] md:bs-[450px] lg:bs-[500px] w-auto"
         />
-        <Button href='/' component={Link} variant='contained'>
+        <Button href="/" component={Link} variant="contained">
           Back to Home
         </Button>
       </div>
       <Illustrations maskImg={{ src: miscBackground }} />
     </div>
-  )
-}
+  );
+};
 
-export default NotFound
+export default NotFound;

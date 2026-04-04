@@ -3,6 +3,9 @@
 // React Imports
 import type { ReactNode } from 'react';
 
+// Next Imports
+import Image from 'next/image';
+
 // MUI Components
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled, useTheme } from '@mui/material/styles';
@@ -57,13 +60,13 @@ const Illustrations = (props: IllustrationsProp) => {
     return (
       <>
         {typeof image1 === 'undefined' || isImageObj(image1) ? (
-          <img
+          <Image
             alt={image1?.alt || 'tree-1'}
             src={image1?.src || '/images/illustrations/objects/tree-1.png'}
             className={
               image1?.className || 'absolute inline-start-0 block-end-0'
             }
-            width={image1?.width}
+            width={image1?.width || 240}
             height={image1?.height || 200}
           />
         ) : (
@@ -81,11 +84,11 @@ const Illustrations = (props: IllustrationsProp) => {
           maskImg
         )}
         {typeof image2 === 'undefined' || isImageObj(image2) ? (
-          <img
+          <Image
             alt={image2?.alt || 'tree-2'}
             src={image2?.src || '/images/illustrations/objects/tree-2.png'}
             className={image2?.className || 'absolute inline-end-0 block-end-0'}
-            width={image2?.width}
+            width={image2?.width || 240}
             height={image2?.height || 200}
           />
         ) : (

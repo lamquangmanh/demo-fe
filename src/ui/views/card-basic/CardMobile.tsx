@@ -4,6 +4,9 @@
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
 
+// Next Imports
+import Image from 'next/image';
+
 // MUI Imports
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/GridLegacy';
@@ -34,7 +37,12 @@ const CardMobile = () => {
       <Grid container>
         <Grid item xs={12} md={5} className="flex items-center justify-center">
           <CardContent className="flex items-center justify-center">
-            <img alt="iPhone 11 Pro" src="/images/cards/4.png" height={175} />
+            <Image
+              alt="iPhone 11 Pro"
+              src="/images/cards/4.png"
+              width={122}
+              height={175}
+            />
           </CardContent>
         </Grid>
         <Grid

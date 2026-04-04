@@ -5,6 +5,9 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/GridLegacy';
 
+// Next Imports
+import Image from 'next/image';
+
 // Component Imports
 import Link from '@ui/components/Link';
 
@@ -107,7 +110,12 @@ const DepositWithdraw = () => {
           <CardContent className="flex flex-col gap-5">
             {depositData.map((item, index) => (
               <div key={index} className="flex items-center gap-4">
-                <img src={item.logo} alt={item.title} width={30} />
+                <Image
+                  src={item.logo}
+                  alt={item.title}
+                  width={30}
+                  height={30}
+                />
                 <div className="flex justify-between items-center is-full flex-wrap gap-x-4 gap-y-2">
                   <div className="flex flex-col gap-0.5">
                     <Typography color="text.primary" className="font-medium">
@@ -139,7 +147,12 @@ const DepositWithdraw = () => {
           <CardContent className="flex flex-col gap-5">
             {withdrawData.map((item, index) => (
               <div key={index} className="flex items-center gap-4">
-                <img src={item.logo} alt={item.title} width={30} />
+                <Image
+                  src={item.logo}
+                  alt={item.title}
+                  width={30}
+                  height={30}
+                />
                 <div className="flex justify-between items-center is-full flex-wrap gap-x-4 gap-y-2">
                   <div className="flex flex-col gap-0.5">
                     <Typography color="text.primary" className="font-medium">

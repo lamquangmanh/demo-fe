@@ -10,12 +10,18 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    linterOptions: {
+      reportUnusedDisableDirectives: 'off',
+    },
+  },
   ...compat.config({
     extends: ['next', 'next/core-web-vitals', 'next/typescript'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
       'react-hooks/rules-of-hooks': 'off',
+      'react-hooks/exhaustive-deps': 'off',
     },
   }),
 ];

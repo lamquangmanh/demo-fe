@@ -1,5 +1,6 @@
 // Next Imports
 import Link from 'next/link';
+import Image from 'next/image';
 
 // MUI Imports
 import Card from '@mui/material/Card';
@@ -109,7 +110,7 @@ const Connections = () => {
                 className="flex items-center justify-between gap-4"
               >
                 <div className="flex flex-grow items-center gap-4">
-                  <img
+                  <Image
                     height={32}
                     width={32}
                     src={item.logo}
@@ -139,7 +140,7 @@ const Connections = () => {
                 className="flex items-center justify-between gap-4"
               >
                 <div className="flex flex-grow items-center gap-4">
-                  <img
+                  <Image
                     height={32}
                     width={32}
                     src={item.logo}

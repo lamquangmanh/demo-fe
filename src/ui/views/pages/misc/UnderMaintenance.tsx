@@ -2,6 +2,7 @@
 
 // Next Imports
 import Link from 'next/link';
+import Image from 'next/image';
 
 // MUI Imports
 import Button from '@mui/material/Button';
@@ -34,10 +35,12 @@ const UnderMaintenance = ({ mode }: { mode: Mode }) => {
             maintenance at the moment
           </Typography>
         </div>
-        <img
+        <Image
           alt="error-illustration"
           src="/images/illustrations/characters/6.png"
-          className="object-cover bs-[400px] md:bs-[450px] lg:bs-[500px]"
+          width={500}
+          height={500}
+          className="object-cover bs-[400px] md:bs-[450px] lg:bs-[500px] w-auto"
         />
         <Button href="/" component={Link} variant="contained">
           Back to Home
