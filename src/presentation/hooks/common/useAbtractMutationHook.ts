@@ -64,9 +64,6 @@ export function useAbstractMutationHook<
   // type RunSafeMutationResult = FetchResult<TData> | undefined | GraphQLError;
 
   const safeRunMutation = async (variables?: TVariables) => {
-    // check if loading is true
-    if (loading) return;
-
     const result = await runMutation({ variables });
 
     // Check for 401 unauthorized errors

@@ -71,9 +71,6 @@ export function useAbstractHook<
   const safeRunQuery = async (
     variables?: TVariables,
   ): Promise<RunSafeQueryResult> => {
-    // check if loading is true
-    if (loading) return;
-
     const result = await runQuery({ variables });
 
     // Check for 401 unauthorized errors

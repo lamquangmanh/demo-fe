@@ -28,7 +28,7 @@ type UseListRoleOptions = QueryHookOptions<
 
 export function useListRole(
   props?: { isNotifyError?: boolean },
-  options?: UseListRoleOptions
+  options?: UseListRoleOptions,
 ) {
   const isNotifyError = props?.isNotifyError ?? true;
 
@@ -43,14 +43,9 @@ export function useListRole(
 
   const handleGetRolesRequest = useCallback(
     async (
-      variables?: RolesQueryVariables
+      variables?: RolesQueryVariables,
     ): Promise<TableDataResponse<RoleEntity>> => {
       try {
-        // if loading is true, return early
-        if (loading) {
-          return NO_DATA;
-        }
-
         const result = await runQuery(variables);
         // handle error if any
         if (!result || result?.error) {
@@ -72,7 +67,7 @@ export function useListRole(
         return NO_DATA;
       }
     },
-    [runQuery, loading, notify, isNotifyError]
+    [runQuery, notify, isNotifyError],
   );
 
   return {

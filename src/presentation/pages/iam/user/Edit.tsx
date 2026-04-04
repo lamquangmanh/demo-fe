@@ -20,12 +20,10 @@ import UserForm from './Form';
 import { UserEntity, RoleEntity } from '@/domain/entities';
 
 // import from presentation/hooks
-import { useUpdateUser, useListRole } from '@/presentation/hooks';
+import { useUpdateUser, useDetailUser } from '@/presentation/hooks';
 
 // import UserStatus from generated types
 import { UserStatus } from '@/infrastructure/graphql';
-import { buildSortArgs, buildFilterArgs } from '@/common/utils';
-import { SortOrder } from '@/infrastructure/graphql';
 
 interface UserEditDrawerProps {
   open: boolean;
@@ -41,9 +39,6 @@ const UserEditDrawer: React.FC<UserEditDrawerProps> = ({
   initialData,
 }) => {
   const { t } = useTranslation();
-  const [roles, setRoles] = React.useState<RoleEntity[]>([]);
-  const { handleGetRolesRequest, loading: roleLoading } = useListRole();
-
   const form = useForm<UserEntity & { roles?: RoleEntity[] }>({
     defaultValues: {
       username: '',
@@ -56,42 +51,74 @@ const UserEditDrawer: React.FC<UserEditDrawerProps> = ({
     },
   });
   const { handleUpdateUserRequest, loading: isSubmitting } = useUpdateUser();
-
-  const loadRoles = async () => {
-    const result = await handleGetRolesRequest({
-      pagination: { page: 1, limit: 100 },
-      sorts: buildSortArgs({}, { field: 'name', order: SortOrder.Asc }),
-      filters: buildFilterArgs({}),
-    });
-    if (result) {
-      setRoles(result.data || []);
-    }
-  };
-
-  // Load roles on mount
-  React.useEffect(() => {
-    if (open) {
-      loadRoles();
-    }
-  }, []);
+  const { handleGetDetailUserRequest } = useDetailUser();
 
   useEffect(() => {
-    // Reset form fields when the drawer opens or initialData changes
-    if (initialData?.userId) {
-      form.reset(initialData);
-    } else {
-      form.reset();
-    }
-  }, [initialData, form]);
+    if (!open) return;
 
-  const handleFinish = async (values: UserEntity) => {
+    const loadUserDetail = async () => {
+      if (!initialData?.userId) {
+        console.log('[Edit User] No userId provided');
+        form.reset();
+        return;
+      }
+
+      console.log(
+        '[Edit User] Fetching detail for userId:',
+        initialData.userId,
+      );
+      const detail: any = await handleGetDetailUserRequest({
+        userId: initialData.userId,
+      });
+
+      console.log('[Edit User] Detail fetched:', detail);
+
+      if (!detail) {
+        console.warn('[Edit User] Failed to fetch detail');
+        return;
+      }
+
+      const roles: RoleEntity[] =
+        detail?.userRoles?.map((userRole: any) => ({
+          roleId: userRole?.roleId,
+          name: userRole?.role?.name || '',
+          moduleId: '',
+        })) || [];
+
+      console.log('[Edit User] Mapped roles:', roles);
+
+      form.reset({
+        userId: detail?.userId || initialData.userId,
+        username: detail?.username || '',
+        email: detail?.email || '',
+        password: '',
+        phone: detail?.phone || '',
+        avatar: detail?.avatar || '',
+        status: detail?.status || UserStatus.Active,
+        roles,
+      });
+
+      console.log('[Edit User] Form reset completed');
+    };
+
+    loadUserDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialData?.userId]);
+
+  const handleFinish = async (
+    values: UserEntity & { roles?: RoleEntity[] },
+  ) => {
     // NOTE: Update functionality is disabled due to backend API limitations
     // Backend updateUser only accepts userId parameter, not full update
     console.log('Update requested with values:', values);
-    const result = await handleUpdateUserRequest();
+    const roleIds = values.roles?.map((role: RoleEntity) => role.roleId) || [];
+    const result = await handleUpdateUserRequest({
+      ...values,
+      roleIds,
+    });
 
     // check success
-    if (result) {
+    if ((result as any)?.success) {
       onUpdateSuccess();
       form.reset();
     }
@@ -134,13 +161,7 @@ const UserEditDrawer: React.FC<UserEditDrawerProps> = ({
 
         {/* Content */}
         <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
-          <UserForm
-            onSubmit={handleFinish}
-            form={form}
-            isEdit
-            roleOptions={roles}
-            roleLoading={roleLoading}
-          />
+          <UserForm onSubmit={handleFinish} form={form} isEdit />
         </Box>
 
         {/* Footer */}

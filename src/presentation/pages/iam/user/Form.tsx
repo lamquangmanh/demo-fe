@@ -9,6 +9,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Autocomplete from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 
+// import from common utils
+import { buildSortArgs, buildFilterArgs } from '@/common/utils';
+
 // import from domain
 import { UserEntity, RoleEntity } from '@/domain/entities';
 
@@ -16,25 +19,22 @@ import { UserEntity, RoleEntity } from '@/domain/entities';
 import { useListRole } from '@/presentation/hooks';
 
 // import UserStatus from generated types
-import { UserStatus } from '@/infrastructure/graphql';
+import { UserStatus, SortOrder } from '@/infrastructure/graphql';
 
 interface UserFormProps {
   form: UseFormReturn<UserEntity & { roles?: RoleEntity[] }, any, any>;
   onSubmit: (values: UserEntity & { roles?: RoleEntity[] }) => void;
   isEdit?: boolean;
-  roleOptions: RoleEntity[];
-  roleLoading?: boolean;
 }
 
 const UserForm: React.FC<UserFormProps> = ({
   form,
   onSubmit,
   isEdit = false,
-  roleOptions,
-  roleLoading = false,
 }) => {
   const [filterRoleName, setFilterRoleName] = useState<string>('');
   const [roles, setRoles] = React.useState<RoleEntity[]>([]);
+  const requestRef = React.useRef(0);
   const { handleGetRolesRequest, loading: roleLoading } = useListRole();
 
   const { t } = useTranslation();
@@ -48,20 +48,25 @@ const UserForm: React.FC<UserFormProps> = ({
 
   const statusValue = watch('status');
 
-  const loadRoles = async (filterName?: string) => {
+  const loadRoles = React.useCallback(async (filterName?: string) => {
+    const currentRequest = ++requestRef.current;
     const result = await handleGetRolesRequest({
       pagination: { page: 1, limit: 100 },
       sorts: buildSortArgs({}, { field: 'name', order: SortOrder.Asc }),
       filters: buildFilterArgs({ name: filterName ?? undefined }),
     });
-    if (result) {
+    if (result && currentRequest === requestRef.current) {
       setRoles(result.data || []);
     }
-  };
+  }, []);
 
   // Load roles on mount
   React.useEffect(() => {
-    loadRoles(filterRoleName);
+    const timeout = setTimeout(() => {
+      loadRoles(filterRoleName.trim() || undefined);
+    }, 300);
+
+    return () => clearTimeout(timeout);
   }, [filterRoleName]);
 
   return (
@@ -163,9 +168,14 @@ const UserForm: React.FC<UserFormProps> = ({
           render={({ field: { onChange, value } }) => (
             <Autocomplete
               multiple
-              options={roleOptions}
+              options={roles}
               value={value || []}
               onChange={(_event, newValue) => onChange(newValue)}
+              onInputChange={(_event, newInputValue, reason) => {
+                if (reason === 'input' || reason === 'clear') {
+                  setFilterRoleName(newInputValue);
+                }
+              }}
               getOptionLabel={(option) => option.name}
               isOptionEqualToValue={(option, value) =>
                 option.roleId === value.roleId

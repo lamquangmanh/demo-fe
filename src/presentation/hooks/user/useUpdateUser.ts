@@ -2,17 +2,21 @@
 
 // import from libraries
 import { useCallback } from 'react';
+import { useTranslation } from 'next-i18next';
 
 // import from presentation/hooks
-import { useNotify } from '../common';
+import { useAbstractMutationHook, useNotify } from '../common';
+
+// import from infrastructure
+import {
+  UpdateSuccessResponse,
+  UpdateUserDocument,
+  UpdateUserMutationVariables,
+} from '@/infrastructure/graphql';
 
 // import from common
 import { DEFAULT_ERROR } from '@/common/constants';
 import { GraphQLError } from '@/common/interfaces';
-
-// NOTE: UpdateUser mutation is commented out in client.graphql due to backend schema mismatch
-// Backend only accepts updateUser(userId: String!) but frontend needs full update capability
-// This is a temporary stub until backend API is updated
 
 export interface UseUpdateUserProps {
   isNotifyError?: boolean; // default true
@@ -21,39 +25,60 @@ export interface UseUpdateUserProps {
 
 export function useUpdateUser(props?: UseUpdateUserProps) {
   const isNotifyError = props?.isNotifyError ?? true;
+  const isNotifySuccess = props?.isNotifySuccess ?? true;
+
+  // initialize hooks
+  const { safeRunMutation, loading, data, error, called } =
+    useAbstractMutationHook<
+      { updateUser: UpdateSuccessResponse },
+      UpdateUserMutationVariables
+    >(UpdateUserDocument);
 
   // initialize notify hook
   const notify = useNotify();
+  const { t } = useTranslation();
 
-  const handleUpdateUserRequest = useCallback(async (): Promise<
-    boolean | undefined | GraphQLError
-  > => {
-    try {
-      // TODO: Implement when backend updateUser mutation is ready
-      console.warn(
-        'UpdateUser mutation not implemented - backend API mismatch',
-      );
+  const handleUpdateUserRequest = useCallback(
+    async (
+      variables?: UpdateUserMutationVariables,
+    ): Promise<UpdateSuccessResponse | undefined | GraphQLError> => {
+      try {
+        // if loading is true, return early
+        if (loading) {
+          return;
+        }
 
-      if (isNotifyError) {
-        notify.error({
-          message: 'Update User Not Available',
-          description: 'Backend API does not support full user updates yet',
-        });
+        const result = await safeRunMutation(variables);
+        // handle error if any
+        if (!result || result?.errors) {
+          console.log('GraphQL error:', result?.errors);
+          if (isNotifyError) notify.error(DEFAULT_ERROR.message);
+          return result as GraphQLError;
+        }
+
+        // handle success
+        if (isNotifySuccess) {
+          notify.success({
+            message: t('user.edit.successMessage', { ns: 'iam' }),
+            description: t('user.edit.successDescription', { ns: 'iam' }),
+          });
+        }
+
+        return result?.data?.updateUser;
+      } catch (error) {
+        console.log('Network or unexpected error:', error);
+        if (isNotifyError) notify.error(DEFAULT_ERROR.message);
+        return error as GraphQLError;
       }
-
-      return false;
-    } catch (error) {
-      console.log('Network or unexpected error:', error);
-      if (isNotifyError) notify.error(DEFAULT_ERROR.message);
-      return error as GraphQLError;
-    }
-  }, [notify, isNotifyError]);
+    },
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess],
+  );
 
   return {
     handleUpdateUserRequest,
-    loading: false,
-    data: null,
-    error: null,
-    called: false,
+    loading,
+    data,
+    error,
+    called,
   };
 }
