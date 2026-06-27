@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { DASHBOARD_PATH } from '@/common/constants';
 
 // import from presentation/hooks
-import { useAbstractHook } from '../common/useAbtractHook';
+import { useAbstractHook } from '../common/useAbstractHook';
 import { useNotify } from '../common/useNotify';
 
 // import from domain
@@ -34,7 +34,7 @@ export function useLogin(options?: Record<string, any>) {
     called,
   } = useAbstractHook<{ login: LoginResponse }, LoginQueryVariables>(
     LoginDocument,
-    options
+    options,
   );
 
   // handle login function
@@ -77,7 +77,7 @@ export function useLogin(options?: Record<string, any>) {
         });
       }
     },
-    [runLoginQuery, router, notify, setAuthenticated]
+    [runLoginQuery, router, notify, setAuthenticated],
   );
 
   return {

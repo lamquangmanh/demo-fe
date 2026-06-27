@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -26,7 +26,7 @@ export function useDeleteModule() {
     >(DeleteModuleDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleDeleteModuleRequest = useCallback(
@@ -52,10 +52,7 @@ export function useDeleteModule() {
         }
 
         // handle success
-        notify.success({
-          message: t('module.delete.successMessage', { ns: 'iam' }),
-          description: t('module.delete.successDescription', { ns: 'iam' }),
-        });
+        notify.success(t('module.delete.successMessage', { ns: 'iam' }));
 
         return result?.data?.deleteModule;
       } catch (error: any) {

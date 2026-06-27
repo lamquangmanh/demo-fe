@@ -154,21 +154,10 @@ export function TableBasic<TData, TValue>(
     handleRowSelectionChange();
   }, [rowSelection, handleRowSelectionChange]);
 
+  const totalColumns = columns.length + (selection?.enabled ? 1 : 0);
   return (
     <>
-      <Box
-        style={style}
-        data-cy={dataCy}
-        className={clsx(
-          // 'p-0',
-          // 'flex-1',
-          // 'mag-scrollable-true',
-          // 'w-full',
-          // 'hiddenTextContainerTable',
-          // 'border border-[var(--mag-colors-neutral-200)] rounded-lg',
-          className,
-        )}
-      >
+      <Box style={style} data-cy={dataCy} className={clsx(className)}>
         {(title || subTitle) && (
           <Box sx={{ p: 2 }}>
             {title}
@@ -228,21 +217,22 @@ export function TableBasic<TData, TValue>(
             {isLoading && (
               <TableRow className="border-none">
                 <TableCell
-                  className="hover:bg-white"
-                  colSpan={columns.length + 1}
+                  // className="hover:bg-white"
+                  colSpan={totalColumns}
                 >
                   <Box
                     sx={{
                       display: 'flex',
                       flexDirection: 'column',
-                      minHeight: '180px',
+                      // minHeight: '100px',
                       justifyContent: 'center',
                       alignItems: 'center',
                       width: '100%',
                       gap: 2,
                     }}
                   >
-                    <CircularProgress size="large" />
+                    <CircularProgress color="primary" size={40} />
+                    <Typography variant="h6">Loading...</Typography>
                   </Box>
                 </TableCell>
               </TableRow>
@@ -251,8 +241,8 @@ export function TableBasic<TData, TValue>(
             {!isLoading && data.length === 0 && (
               <TableRow className="border-none">
                 <TableCell
-                  className="hover:bg-white"
-                  colSpan={columns.length + 1}
+                  // className="hover:bg-white"
+                  colSpan={totalColumns}
                 >
                   {customNoData ?? (
                     <Box
@@ -280,7 +270,7 @@ export function TableBasic<TData, TValue>(
                   <TableBaseRow
                     table={table}
                     row={row}
-                    cols={columns.length + 1}
+                    cols={totalColumns}
                     key={row.id}
                     selection={selection}
                   />

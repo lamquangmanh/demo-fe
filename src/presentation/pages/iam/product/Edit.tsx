@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // import form component
 import ProductForm from './form/Form';
@@ -27,6 +28,7 @@ interface ProductEditDrawerProps {
   onClose: () => void;
   onUpdateSuccess: () => void;
   initialData?: ProductEntity;
+  isLoading?: boolean;
 }
 
 const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
@@ -34,6 +36,7 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
   onClose,
   onUpdateSuccess,
   initialData,
+  isLoading,
 }) => {
   const { t } = useTranslation();
   const form = useForm<ProductEntity>({
@@ -44,7 +47,7 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
       icon: '',
     },
   });
-  const { handleUpdateProductRequest, loading: isSubmiting } =
+  const { handleUpdateProductRequest, loading: isSubmitting } =
     useUpdateProduct();
 
   useEffect(() => {
@@ -109,7 +112,18 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
 
         {/* Content */}
         <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
-          <ProductForm onSubmit={handleFinish} form={form} />
+          {isLoading || !initialData ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="100%"
+            >
+              <CircularProgress size={40} />
+            </Box>
+          ) : (
+            <ProductForm onSubmit={handleFinish} form={form} />
+          )}
         </Box>
 
         {/* Footer */}
@@ -128,7 +142,7 @@ const ProductEditDrawer: React.FC<ProductEditDrawerProps> = ({
             </Button>
             <Button
               variant="contained"
-              disabled={isSubmiting}
+              disabled={isSubmitting}
               type="submit"
               form="product-form"
             >

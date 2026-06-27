@@ -1,4 +1,4 @@
-import { DashboardOutlined, SettingOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingsApplications } from '@mui/icons-material';
 
 export const DASHBOARD_PATH = '/dashboard';
 
@@ -25,7 +25,7 @@ export const ROUTES = [
   {
     path: LOGIN_PATH,
     name: 'IAM',
-    icon: <SettingOutlined />,
+    icon: <SettingsApplications />,
     children: [
       { path: IAM_USERS_PATH, name: 'Users' },
       { path: IAM_ROLES_PATH, name: 'Roles' },

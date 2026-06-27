@@ -14,7 +14,7 @@ export const DEFAULT_ERROR = {
 };
 
 export const DEFAULT_SORT: SortArgs = {
-  field: 'createdAt',
+  field: 'created_at',
   order: SortOrder.Desc,
 };
 

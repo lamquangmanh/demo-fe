@@ -20,7 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
 // import from domain
-import { ModuleEntity, ProductEntity } from '@/domain/entities';
+import { ModuleEntity } from '@/domain/entities';
 
 // import from common
 import { DEFAULT_SORT, PAGE_SIZE_OPTIONS } from '@/common/constants';
@@ -39,6 +39,7 @@ import { useListProduct } from '@/presentation/hooks';
 import ModuleCreateDrawer from './Create';
 import ModuleEditDrawer from './Edit';
 import ModuleFilter from './ModuleFilter';
+import type { ProductOption } from './ModuleFilter';
 
 // import TableBasic
 import { TableBasic } from '@/presentation/components/molecules/table';
@@ -74,12 +75,12 @@ const ListModule = () => {
   // Filter states
   const [filterName, setFilterName] = useState('');
   const [filterProductName, setFilterProductName] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<ProductEntity | null>(
+  const [selectedProduct, setSelectedProduct] = useState<ProductOption | null>(
     null,
   );
 
   // Product options for autocomplete
-  const [products, setProducts] = useState<ProductEntity[]>([]);
+  const [products, setProducts] = useState<ProductOption[]>([]);
 
   // use custom hook to handle Module listing
   const { handleGetModulesRequest, loading } = useListModule();
@@ -95,7 +96,12 @@ const ListModule = () => {
         filters: buildFilterArgs({ name: filterProductName }),
       });
       if (result) {
-        setProducts(result.data || []);
+        const productOptions = (result.data || []).map((product) => ({
+          productId: product.productId,
+          name: product.name,
+          value: product.productId,
+        }));
+        setProducts(productOptions);
       }
     };
     loadProducts();
@@ -310,6 +316,7 @@ const ListModule = () => {
             rowsPerPage: pagination.pageSize,
             onPageChange: (_event: unknown, newPage: number) => {
               setPagination((prev) => ({ ...prev, page: newPage + 1 }));
+              loadData(filterName, selectedProduct?.productId || '');
             },
             onRowsPerPageChange: (
               event: React.ChangeEvent<HTMLInputElement>,
@@ -319,6 +326,7 @@ const ListModule = () => {
                 pageSize: parseInt(event.target.value, 10),
                 page: 1,
               }));
+              loadData(filterName, selectedProduct?.productId || '');
             },
             rowsPerPageOptions: PAGE_SIZE_OPTIONS,
           }}

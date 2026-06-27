@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { QueryHookOptions } from '@apollo/client';
 
 // import from presentation/hooks
-import { useAbstractHook, useNotify } from '../common';
+import { useAbstractHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -33,7 +33,7 @@ export function useDetailModule(options?: UseListModuleOptions) {
   >(ModuleDocument, options);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
 
   const handleGetDetailModuleRequest = useCallback(
     async (variables?: ModuleQueryVariables): Promise<ModuleEntity | null> => {
@@ -55,7 +55,7 @@ export function useDetailModule(options?: UseListModuleOptions) {
         return null;
       }
     },
-    [runQuery, notify]
+    [runQuery, notify],
   );
 
   return {

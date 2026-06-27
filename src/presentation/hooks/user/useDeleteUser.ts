@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -34,12 +34,12 @@ export function useDeleteUser(props?: UseDeleteUserProps) {
     >(DeleteUserDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleDeleteUserRequest = useCallback(
     async (
-      variables?: DeleteUserMutationVariables
+      variables?: DeleteUserMutationVariables,
     ): Promise<DeleteUserMutationResult | undefined> => {
       try {
         // if loading is true, return early
@@ -57,10 +57,7 @@ export function useDeleteUser(props?: UseDeleteUserProps) {
 
         // handle success
         if (isNotifySuccess) {
-          notify.success({
-            message: t('user.delete.successMessage', { ns: 'iam' }),
-            description: t('user.delete.successDescription', { ns: 'iam' }),
-          });
+          notify.success(t('user.delete.successMessage', { ns: 'iam' }));
         }
 
         return result?.data?.deleteUser;
@@ -71,7 +68,7 @@ export function useDeleteUser(props?: UseDeleteUserProps) {
         return;
       }
     },
-    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess]
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess],
   );
 
   return {

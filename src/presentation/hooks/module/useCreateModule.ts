@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next';
 import { UseFormSetError } from 'react-hook-form';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -30,7 +30,7 @@ export function useCreateModule() {
     >(CreateModuleDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleCreateModuleRequest = useCallback(
@@ -57,10 +57,7 @@ export function useCreateModule() {
         }
 
         // handle success
-        notify.success({
-          message: t('module.create.successMessage', { ns: 'iam' }),
-          description: t('module.create.successDescription', { ns: 'iam' }),
-        });
+        notify.success(t('module.create.successMessage', { ns: 'iam' }));
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return result?.data?.createModule as any;

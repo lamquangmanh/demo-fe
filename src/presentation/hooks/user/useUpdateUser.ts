@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -35,7 +35,7 @@ export function useUpdateUser(props?: UseUpdateUserProps) {
     >(UpdateUserDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleUpdateUserRequest = useCallback(
@@ -58,10 +58,7 @@ export function useUpdateUser(props?: UseUpdateUserProps) {
 
         // handle success
         if (isNotifySuccess) {
-          notify.success({
-            message: t('user.edit.successMessage', { ns: 'iam' }),
-            description: t('user.edit.successDescription', { ns: 'iam' }),
-          });
+          notify.success(t('user.edit.successMessage', { ns: 'iam' }));
         }
 
         return result?.data?.updateUser;

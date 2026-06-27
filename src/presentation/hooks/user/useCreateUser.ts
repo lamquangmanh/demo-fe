@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -38,12 +38,12 @@ export function useCreateUser(props?: UseCreateUserProps) {
     >(CreateUserDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleCreateUserRequest = useCallback(
     async (
-      variables?: CreateUserMutationVariables
+      variables?: CreateUserMutationVariables,
     ): Promise<UserEntity | undefined | GraphQLError> => {
       try {
         // if loading is true, return early
@@ -61,10 +61,7 @@ export function useCreateUser(props?: UseCreateUserProps) {
 
         // handle success
         if (isNotifySuccess) {
-          notify.success({
-            message: t('user.create.successMessage', { ns: 'iam' }),
-            description: t('user.create.successDescription', { ns: 'iam' }),
-          });
+          notify.success(t('user.create.successMessage', { ns: 'iam' }));
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,7 +73,7 @@ export function useCreateUser(props?: UseCreateUserProps) {
         return error as GraphQLError;
       }
     },
-    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess]
+    [safeRunMutation, loading, notify, t, isNotifyError, isNotifySuccess],
   );
 
   return {

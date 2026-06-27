@@ -303,6 +303,7 @@ const ListResource = () => {
             rowsPerPage: pagination.pageSize,
             onPageChange: (_event: unknown, newPage: number) => {
               setPagination((prev) => ({ ...prev, page: newPage + 1 })); // Convert back to 1-based
+              loadData(filterName, selectedModule?.moduleId || '');
             },
             onRowsPerPageChange: (
               event: React.ChangeEvent<HTMLInputElement>,
@@ -312,6 +313,7 @@ const ListResource = () => {
                 pageSize: parseInt(event.target.value, 10),
                 page: 1,
               }));
+              loadData(filterName, selectedModule?.moduleId || '');
             },
             rowsPerPageOptions: PAGE_SIZE_OPTIONS,
           }}

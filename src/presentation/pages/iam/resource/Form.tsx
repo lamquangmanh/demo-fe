@@ -75,25 +75,28 @@ const ResourceForm: React.FC<ResourceFormProps> = ({
   }, [initialData]);
 
   const handleSearchModule = async (value: string) => {
-    if (!value || value.length < 2) return;
+    try {
+      setModuleLoading(true);
+      const result = await handleGetModulesRequest({
+        filters: value ? [{ field: 'name', value }] : [],
+        pagination: {
+          page: 1,
+          limit: 50,
+        },
+        sorts: [],
+      });
 
-    setModuleLoading(true);
-    const result = await handleGetModulesRequest({
-      filters: { field: 'name', value },
-      pagination: {
-        page: 1,
-        limit: 50,
-      },
-      sorts: [],
-    });
-    setModuleLoading(false);
-
-    if (result && result.data) {
-      const options = result.data.map((item) => ({
-        label: item.name,
-        value: item.moduleId,
-      }));
-      setModuleOptions(options);
+      if (result && result.data) {
+        const options = result.data.map((item) => ({
+          label: item.name,
+          value: item.moduleId,
+        }));
+        setModuleOptions(options);
+      }
+    } catch (error) {
+      console.error('Error fetching modules:', error);
+    } finally {
+      setModuleLoading(false);
     }
   };
 
@@ -144,6 +147,11 @@ const ResourceForm: React.FC<ResourceFormProps> = ({
                 isOptionEqualToValue={(option, value) =>
                   option.value === value.value
                 }
+                renderOption={(props, option) => (
+                  <li {...props} key={option.value}>
+                    {option.label}
+                  </li>
+                )}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -208,7 +216,11 @@ const ResourceForm: React.FC<ResourceFormProps> = ({
                   })}
                   fullWidth
                   size="small"
-                  {...register(`actions.${index}.description`)}
+                  {...register(`actions.${index}.description`, {
+                    required: t('resource.form.error.action.description', {
+                      ns: 'iam',
+                    }),
+                  })}
                 />
               </Box>
 

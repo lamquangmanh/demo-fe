@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { QueryHookOptions } from '@apollo/client';
 
 // import from presentation/hooks
-import { useAbstractHook, useNotify } from '../common';
+import { useAbstractHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -25,7 +25,7 @@ export function useListProduct(
   options?: QueryHookOptions<
     { products: GetProductsResponse },
     ProductsQueryVariables
-  >
+  >,
 ) {
   // initialize hooks
   const {
@@ -40,11 +40,11 @@ export function useListProduct(
   >(ProductsDocument, options);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
 
   const handleGetProductsRequest = useCallback(
     async (
-      variables?: ProductsQueryVariables
+      variables?: ProductsQueryVariables,
     ): Promise<TableDataResponse<ProductEntity>> => {
       try {
         // if loading is true, return early
@@ -73,7 +73,7 @@ export function useListProduct(
         return NO_DATA;
       }
     },
-    [getProductsQuery, loading, notify]
+    [getProductsQuery, loading, notify],
   );
 
   return {

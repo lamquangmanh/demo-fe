@@ -91,6 +91,7 @@ const CustomSnackbar = forwardRef<HTMLDivElement, CustomContentProps>(
               <CloseIcon fontSize="small" />
             </IconButton>
           }
+          variant="filled"
         >
           {parsedMessage.description ? (
             <>

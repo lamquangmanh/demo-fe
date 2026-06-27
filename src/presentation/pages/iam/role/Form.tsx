@@ -257,6 +257,11 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onSubmit, initialData }) => {
                 isOptionEqualToValue={(option, value) =>
                   option.value === value.value
                 }
+                renderOption={(props, option) => (
+                  <li {...props} key={option.value}>
+                    {option.label}
+                  </li>
+                )}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -327,6 +332,11 @@ const RoleForm: React.FC<RoleFormProps> = ({ form, onSubmit, initialData }) => {
                       isOptionEqualToValue={(option, value) =>
                         option.value === value.value
                       }
+                      renderOption={(props, option) => (
+                        <li {...props} key={option.value}>
+                          {option.label}
+                        </li>
+                      )}
                       renderInput={(params) => (
                         <TextField
                           {...params}

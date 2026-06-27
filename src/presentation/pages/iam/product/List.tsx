@@ -257,6 +257,7 @@ const ListProduct = () => {
             rowsPerPage: pagination.pageSize,
             onPageChange: (_event: unknown, newPage: number) => {
               setPagination((prev) => ({ ...prev, page: newPage + 1 })); // Convert back to 1-based
+              loadData(filterName);
             },
             onRowsPerPageChange: (
               event: React.ChangeEvent<HTMLInputElement>,
@@ -266,6 +267,7 @@ const ListProduct = () => {
                 pageSize: parseInt(event.target.value, 10),
                 page: 1,
               }));
+              loadData(filterName);
             },
             rowsPerPageOptions: PAGE_SIZE_OPTIONS,
           }}

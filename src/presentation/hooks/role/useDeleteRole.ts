@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -34,7 +34,7 @@ export function useDeleteRole(props?: UseDeleteRoleProps) {
     >(DeleteRoleDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleDeleteRoleRequest = useCallback(
@@ -61,10 +61,7 @@ export function useDeleteRole(props?: UseDeleteRoleProps) {
 
         // handle success
         if (isNotifySuccess) {
-          notify.success({
-            message: t('role.delete.successMessage', { ns: 'iam' }),
-            description: t('role.delete.successDescription', { ns: 'iam' }),
-          });
+          notify.success(t('role.delete.successMessage', { ns: 'iam' }));
         }
 
         return result?.data?.deleteRole;

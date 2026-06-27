@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { QueryHookOptions } from '@apollo/client';
 
 // import from presentation/hooks
-import { useAbstractHook, useNotify } from '../common';
+import { useAbstractHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -28,7 +28,7 @@ type UseListResourceOptions = QueryHookOptions<
 
 export function useListResource(
   props?: { isNotifyError?: boolean },
-  options?: UseListResourceOptions
+  options?: UseListResourceOptions,
 ) {
   const isNotifyError = props?.isNotifyError ?? true;
 
@@ -39,11 +39,11 @@ export function useListResource(
   >(ResourcesDocument, options);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
 
   const handleGetResourcesRequest = useCallback(
     async (
-      variables?: ResourcesQueryVariables
+      variables?: ResourcesQueryVariables,
     ): Promise<TableDataResponse<ResourceEntity>> => {
       try {
         // if loading is true, return early
@@ -72,7 +72,7 @@ export function useListResource(
         return NO_DATA;
       }
     },
-    [runQuery, loading, notify, isNotifyError]
+    [runQuery, loading, notify, isNotifyError],
   );
 
   return {

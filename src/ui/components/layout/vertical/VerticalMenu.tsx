@@ -93,8 +93,8 @@ const VerticalMenu = ({
           Dashboard
         </MenuItem>
 
-        <MenuSection label="Admin">
-          <SubMenu label="IAM" icon={<i className="ri-admin-line" />}>
+        <MenuSection label="IAM">
+          <SubMenu label="IAM" icon={<i className="ri-settings-4-line" />}>
             <MenuItem
               href={IAM_PRODUCTS_PATH}
               icon={<i className="ri-product-hunt-line" />}

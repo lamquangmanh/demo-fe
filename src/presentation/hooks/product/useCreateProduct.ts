@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next';
 import { UseFormSetError } from 'react-hook-form';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -30,8 +30,8 @@ export function useCreateProduct() {
     >(CreateProductDocument);
 
   // initialize notify hook
-  const notify = useNotify();
   const { t } = useTranslation();
+  const notify = useToastify();
 
   const handleCreateProductRequest = useCallback(
     async (

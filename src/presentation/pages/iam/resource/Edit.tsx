@@ -46,7 +46,7 @@ const ResourceEditDrawer: React.FC<ResourceEditDrawerProps> = ({
       actions: [],
     },
   });
-  const { handleUpdateResourceRequest, loading: isSubmiting } =
+  const { handleUpdateResourceRequest, loading: isSubmitting } =
     useUpdateResource();
 
   useEffect(() => {
@@ -165,7 +165,7 @@ const ResourceEditDrawer: React.FC<ResourceEditDrawerProps> = ({
             </Button>
             <Button
               variant="contained"
-              disabled={isSubmiting || isLoading}
+              disabled={isSubmitting || isLoading}
               type="submit"
               form="resource-form"
             >

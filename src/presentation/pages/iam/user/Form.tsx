@@ -181,6 +181,11 @@ const UserForm: React.FC<UserFormProps> = ({
                 option.roleId === value.roleId
               }
               loading={roleLoading}
+              renderOption={(props, option) => (
+                <li {...props} key={option.roleId}>
+                  {option.name}
+                </li>
+              )}
               renderInput={(params) => (
                 <TextField
                   {...params}

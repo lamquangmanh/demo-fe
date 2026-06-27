@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { QueryHookOptions } from '@apollo/client';
 
 // import from presentation/hooks
-import { useAbstractHook, useNotify } from '../common';
+import { useAbstractHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -28,7 +28,7 @@ type UseListUserOptions = QueryHookOptions<
 
 export function useDetailUser(
   props?: { isNotifyError?: boolean },
-  options?: UseListUserOptions
+  options?: UseListUserOptions,
 ) {
   const isNotifyError = props?.isNotifyError ?? true;
 
@@ -39,11 +39,11 @@ export function useDetailUser(
   >(UserDocument, options);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
 
   const handleGetDetailUserRequest = useCallback(
     async (
-      variables?: UserQueryVariables
+      variables?: UserQueryVariables,
     ): Promise<UserEntity | null | GraphQLError> => {
       try {
         const result = await runQuery(variables);
@@ -63,7 +63,7 @@ export function useDetailUser(
         return error as GraphQLError;
       }
     },
-    [runQuery, notify, isNotifyError]
+    [runQuery, notify, isNotifyError],
   );
 
   return {

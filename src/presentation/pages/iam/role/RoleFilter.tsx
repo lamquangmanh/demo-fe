@@ -87,6 +87,11 @@ const RoleFilter: React.FC<RoleFilterProps> = ({
             onChange={(e) => onFilterModuleNameChange(e.target.value)}
           />
         )}
+        renderOption={(props, option) => (
+          <li {...props} key={option.moduleId}>
+            {option.name}
+          </li>
+        )}
         sx={{ minWidth: 250 }}
       />
 

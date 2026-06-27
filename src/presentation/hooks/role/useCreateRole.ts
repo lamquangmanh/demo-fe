@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next';
 import { UseFormSetError } from 'react-hook-form';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -39,7 +39,7 @@ export function useCreateRole(props?: UseCreateRoleProps) {
     >(CreateRoleDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleCreateRoleRequest = useCallback(
@@ -67,10 +67,7 @@ export function useCreateRole(props?: UseCreateRoleProps) {
 
         // handle success
         if (isNotifySuccess) {
-          notify.success({
-            message: t('role.create.successMessage', { ns: 'iam' }),
-            description: t('role.create.successDescription', { ns: 'iam' }),
-          });
+          notify.success(t('role.create.successMessage', { ns: 'iam' }));
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

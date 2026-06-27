@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 
 // import from presentation/hooks
-import { useAbstractMutationHook, useNotify } from '../common';
+import { useAbstractMutationHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -34,7 +34,7 @@ export function useDeleteResource(props?: UseDeleteResourceProps) {
     >(DeleteResourceDocument);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
   const { t } = useTranslation();
 
   const handleDeleteResourceRequest = useCallback(
@@ -61,10 +61,7 @@ export function useDeleteResource(props?: UseDeleteResourceProps) {
 
         // handle success
         if (isNotifySuccess) {
-          notify.success({
-            message: t('resource.delete.successMessage', { ns: 'iam' }),
-            description: t('resource.delete.successDescription', { ns: 'iam' }),
-          });
+          notify.success(t('resource.delete.successMessage', { ns: 'iam' }));
         }
 
         return result?.data?.deleteResource;

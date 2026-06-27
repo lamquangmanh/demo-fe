@@ -10,16 +10,21 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 
 // import from domain
-import { ProductEntity } from '@/domain/entities';
+// import { ProductEntity } from '@/domain/entities';
+export interface ProductOption {
+  productId: string;
+  name: string;
+  value: string;
+}
 
 interface ModuleFilterProps {
   filterName: string;
   onFilterNameChange: (value: string) => void;
   filterProductName: string;
   onFilterProductNameChange: (value: string) => void;
-  selectedProduct: ProductEntity | null;
-  onProductChange: (value: ProductEntity | null) => void;
-  productOptions: ProductEntity[];
+  selectedProduct: ProductOption | null;
+  onProductChange: (value: ProductOption | null) => void;
+  productOptions: ProductOption[];
   productLoading?: boolean;
   onApplyFilter: () => void;
   onClearFilter: () => void;
@@ -87,6 +92,11 @@ const ModuleFilter: React.FC<ModuleFilterProps> = ({
             value={filterProductName}
             onChange={(e) => onFilterProductNameChange(e.target.value)}
           />
+        )}
+        renderOption={(props, option) => (
+          <li {...props} key={option.value}>
+            {option.name}
+          </li>
         )}
         sx={{ minWidth: 250 }}
       />

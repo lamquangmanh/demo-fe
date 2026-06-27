@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { QueryHookOptions } from '@apollo/client';
 
 // import from presentation/hooks
-import { useAbstractHook, useNotify } from '../common';
+import { useAbstractHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -28,7 +28,7 @@ type UseListRoleOptions = QueryHookOptions<
 
 export function useDetailRole(
   props?: { isNotifyError?: boolean },
-  options?: UseListRoleOptions
+  options?: UseListRoleOptions,
 ) {
   const isNotifyError = props?.isNotifyError ?? true;
 
@@ -39,11 +39,11 @@ export function useDetailRole(
   >(RoleDocument, options);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
 
   const handleGetDetailRoleRequest = useCallback(
     async (
-      variables?: RoleQueryVariables
+      variables?: RoleQueryVariables,
     ): Promise<RoleEntity | null | GraphQLError> => {
       try {
         const result = await runQuery(variables);
@@ -63,7 +63,7 @@ export function useDetailRole(
         return error as GraphQLError;
       }
     },
-    [runQuery, notify, isNotifyError]
+    [runQuery, notify, isNotifyError],
   );
 
   return {

@@ -41,7 +41,7 @@ const ResourceCreateDrawer: React.FC<ResourceCreateDrawerProps> = ({
       actions: [],
     },
   });
-  const { handleCreateResourceRequest, loading: isSubmiting } =
+  const { handleCreateResourceRequest, loading: isSubmitting } =
     useCreateResource();
 
   const handleFinish = async (formValues: ResourceEntity) => {
@@ -120,7 +120,7 @@ const ResourceCreateDrawer: React.FC<ResourceCreateDrawerProps> = ({
             </Button>
             <Button
               variant="contained"
-              disabled={isSubmiting}
+              disabled={isSubmitting}
               type="submit"
               form="resource-form"
             >

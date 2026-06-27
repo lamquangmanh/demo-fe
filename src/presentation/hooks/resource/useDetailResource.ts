@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { QueryHookOptions } from '@apollo/client';
 
 // import from presentation/hooks
-import { useAbstractHook, useNotify } from '../common';
+import { useAbstractHook, useToastify } from '../common';
 
 // import from infrastructure
 import {
@@ -28,7 +28,7 @@ type UseListResourceOptions = QueryHookOptions<
 
 export function useDetailResource(
   props?: { isNotifyError?: boolean },
-  options?: UseListResourceOptions
+  options?: UseListResourceOptions,
 ) {
   const isNotifyError = props?.isNotifyError ?? true;
 
@@ -39,11 +39,11 @@ export function useDetailResource(
   >(ResourceDocument, options);
 
   // initialize notify hook
-  const notify = useNotify();
+  const notify = useToastify();
 
   const handleGetDetailResourceRequest = useCallback(
     async (
-      variables?: ResourceQueryVariables
+      variables?: ResourceQueryVariables,
     ): Promise<ResourceEntity | null | GraphQLError> => {
       try {
         const result = await runQuery(variables);
@@ -63,7 +63,7 @@ export function useDetailResource(
         return error as GraphQLError;
       }
     },
-    [runQuery, notify, isNotifyError]
+    [runQuery, notify, isNotifyError],
   );
 
   return {

@@ -59,7 +59,7 @@ const ModuleForm: React.FC<ModuleFormProps> = ({
     try {
       setProductLoading(true);
       const result = await handleGetProductsRequest({
-        filters: { field: 'name', value },
+        filters: value ? [{ field: 'name', value }] : [],
         pagination: {
           page: 1,
           limit: 50,
@@ -119,6 +119,11 @@ const ModuleForm: React.FC<ModuleFormProps> = ({
               onOpen={() => {
                 handleSearchProduct('');
               }}
+              renderOption={(props, option) => (
+                <li {...props} key={option.value}>
+                  {option.label}
+                </li>
+              )}
               renderInput={(params) => (
                 <TextField
                   {...params}

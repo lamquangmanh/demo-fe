@@ -1,5 +1,7 @@
 'use client';
 
+import { ToastContainer } from 'react-toastify';
+
 // Third-party Imports
 import 'react-perfect-scrollbar/dist/css/styles.css';
 
@@ -20,7 +22,7 @@ import '@/infrastructure/i18n/i18n';
 import {
   GraphqlProvider,
   LanguageProvider,
-  NotificationProvider,
+  // NotificationProvider,
 } from '@/presentation/providers';
 
 // import authorized layout
@@ -48,15 +50,16 @@ const RootLayout = ({ children }: ChildrenType) => {
   return (
     <html id="__next" dir={direction}>
       <body className="flex is-full min-bs-full flex-auto flex-col">
+        <ToastContainer />
         {isIgnoreLayout && <>{children}</>}
         {!isIgnoreLayout && (
           <GraphqlProvider>
-            <NotificationProvider>
-              <LanguageProvider>
-                {isAuthPage && <>{children}</>}
-                {!isAuthPage && <AuthorizedLayout>{children}</AuthorizedLayout>}
-              </LanguageProvider>
-            </NotificationProvider>
+            {/* <NotificationProvider> */}
+            <LanguageProvider>
+              {isAuthPage && <>{children}</>}
+              {!isAuthPage && <AuthorizedLayout>{children}</AuthorizedLayout>}
+            </LanguageProvider>
+            {/* </NotificationProvider> */}
           </GraphqlProvider>
         )}
       </body>

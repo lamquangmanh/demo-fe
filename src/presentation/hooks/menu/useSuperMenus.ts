@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 // import from presentation/hooks
-import { useAbstractHook } from '../common/useAbtractHook';
+import { useAbstractHook } from '../common/useAbstractHook';
 
 // import from domain
 import { useMenuStore } from '@/domain/stores';

@@ -115,7 +115,7 @@ const ModuleEditDrawer: React.FC<ModuleEditDrawerProps> = ({
 
         {/* Content */}
         <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
-          {isLoading ? (
+          {isLoading || !initialData ? (
             <Box
               display="flex"
               justifyContent="center"
